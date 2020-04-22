@@ -5,12 +5,6 @@ import os
 import xlrd
 import json
 
-def print_obj(obj):
-    print(obj)
-
-def print_obj_beautified(obj):
-    print(obj)
-
 def aoa_to_obj(aoa, has_header=True):
     if len(aoa) < 1:
         return []
@@ -19,7 +13,7 @@ def aoa_to_obj(aoa, has_header=True):
         keys = aoa[0]
         max_index = len(keys)
     else:
-        return []
+        return aoa
     # 开始解析
     result = []
     for line in aoa[1:]:
