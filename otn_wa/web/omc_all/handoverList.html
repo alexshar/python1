@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>业务倒换报表</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="header">
+            <span class="header-icon"></span>
+            <span class="word">业务倒换报表</span>
+        </div>
+
+        <el-card style="margin: 1rem;">
+            <div style="text-align: left; margin-bottom: 0.5rem;">
+                <span>请选择统计周期</span>
+                <el-select v-model="duration" placeholder="请选择">
+                    <el-option v-for="item in durationOption" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+                <el-date-picker v-if="duration<3" v-model="targetDate" type="year" placeholder="选择年"></el-date-picker>
+                <el-date-picker v-if="duration==3" v-model="targetDate" type="month" placeholder="选择月"></el-date-picker>
+                <el-date-picker v-if="duration==4" 
+                    v-model="targetDate"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期">
+                </el-date-picker>
+                <el-select v-if="duration==2" v-model="season" placeholder="请选择">
+                    <el-option label="一季度" :value="0"></el-option>
+                    <el-option label="二季度" :value="1"></el-option>
+                    <el-option label="三季度" :value="2"></el-option>
+                    <el-option label="四季度" :value="3"></el-option>
+                </el-select>
+                <el-button @click="search()" type="primary">确定</el-button>
+            </div>
+            <el-table :data="connectionList" border max-height="400" highlight-current-row @current-change="handleCurrentChange">
+                <el-table-column label="路径名称" prop="name" min-width="200"></el-table-column>
+                <el-table-column label="源端" prop="aPort" min-width="150"></el-table-column>
+                <el-table-column label="宿端" prop="zPort" min-width="150"></el-table-column>
+                <el-table-column label="倒换次数" prop="counter" min-width="100"></el-table-column>
+            </el-table>
+        </el-card>
+
+        <el-card v-if="selectedConnection" style="margin: 1rem;">
+            <div style="margin-bottom: 0.5rem;">
+                <span><strong>路径：{{selectedConnection.name}}</strong></span>
+            </div>
+            <el-table :data="filteredLogs" border max-height="300">
+                <el-table-column label="倒换时间" prop="time"></el-table-column>
+                <el-table-column label="倒换原因" prop="reason"></el-table-column>
+            </el-table>
+        </el-card>
+
+    </div>    
+</body>
+
+</html>
+
+<style>
+    body {
+        margin: 0;
+        height: 100%
+    }
+
+    html,
+    #app {
+        height: 100%
+    }
+
+    #app {
+        height: calc(100% - 68px)
+    }
+
+    .header {
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+
+    .main-content {
+        min-height: 100%;
+    }
+
+    .header .header-icon {
+        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+
+    .header .word {
+        color: rgba(255, 255, 255, 0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+</style>
+
+<script>
+
+// This is sample of response
+var raw_data = [
+    {
+        "ack_operator": "Admin",
+        "acknowledged_i": "Acknowledged_acknowledged",
+        "acknowledged_time": "1588015585000",
+        "act": "ManageConnectionSNCPForceMain",
+        "app": "ClogApplication_OTN",
+        "client_host": "10.242.96.222",
+        "clogPriority": "ClogPriority_low",
+        "end_time": "1587968755000",
+        "host": "otneVM1",
+        "id": 3667,
+        "key": "CommandLog/3667",
+        "className": "CommandLog",
+        "involved_object": "pss32-140/OPS-1-7-SIG pss32-141/OPS-1-7-SIG OMS",
+        "operator": "alcatel",
+        "request_id": "2327456879231274",
+        "session_id": "1931b4de420a48cfb8ba8f2989e896e3",
+        "status": "CommandStatus_Fail",
+        "subsys": "SubSystem_OTN",
+        "utc_time": "1587968754000"
+    },
+    {
+        "ack_operator": "Admin",
+        "acknowledged_i": "Acknowledged_acknowledged",
+        "acknowledged_time": "1588015585000",
+        "act": "ManageConnectionSNCPLockout",
+        "app": "ClogApplication_OTN",
+        "client_host": "10.242.96.222",
+        "clogPriority": "ClogPriority_low",
+        "end_time": "1587968739000",
+        "host": "otneVM1",
+        "id": 3666,
+        "key": "CommandLog/3666",
+        "className": "CommandLog",
+        "involved_object": "pss32-140/OPS-1-7-SIG pss32-141/OPS-1-7-SIG OMS",
+        "operator": "alcatel",
+        "request_id": "2327437956434963",
+        "session_id": "1931b4de420a48cfb8ba8f2989e896e3",
+        "status": "CommandStatus_Fail",
+        "subsys": "SubSystem_OTN",
+        "utc_time": "1587968735000"
+    },
+    {
+        "ack_operator": "Admin",
+        "acknowledged_i": "Acknowledged_acknowledged",
+        "acknowledged_time": "1586390700000",
+        "act": "Clear PM Bin",
+        "app": "ClogApplication_OTN",
+        "client_host": "10.242.96.206",
+        "clogPriority": "ClogPriority_low",
+        "end_time": "1586343340000",
+        "host": "otneVM1",
+        "id": 1497,
+        "key": "CommandLog/1497",
+        "className": "CommandLog",
+        "involved_object": "pss32-140/130SCX10-1-14-L1 pss32-152/130SCX10-1-5-L1 OTU4",
+        "operator": "alcatel",
+        "request_id": "759928096172254",
+        "session_id": "c89d3b13f73c496981eaafa0c93ee941",
+        "status": "CommandStatus_Success",
+        "subsys": "SubSystem_CPM",
+        "utc_time": "1586343338000"
+    },
+    {
+        "ack_operator": "Admin",
+        "acknowledged_i": "Acknowledged_acknowledged",
+        "acknowledged_time": "1586407801000",
+        "act": "NtwConnManualEnableASAP",
+        "app": "ClogApplication_OTN",
+        "client_host": "10.242.96.206",
+        "clogPriority": "ClogPriority_low",
+        "end_time": "1586360577000",
+        "host": "otneVM1",
+        "id": 1512,
+        "key": "CommandLog/1512",
+        "className": "CommandLog",
+        "involved_object": "pss32-140/130SCX10-1-14-L1 pss32-152/130SCX10-1-5-L1 OTU4",
+        "operator": "alcatel",
+        "request_id": "777095185359959",
+        "session_id": "f14f6f1bb481474b8f2fb1d629912c13",
+        "status": "CommandStatus_Success",
+        "subsys": "SubSystem_OTN",
+        "utc_time": "1586360505000"
+    },
+    {
+        "ack_operator": "Admin",
+        "acknowledged_i": "Acknowledged_acknowledged",
+        "acknowledged_time": "1587099037000",
+        "act": "NtwConnManualEnableASAP",
+        "app": "ClogApplication_OTN",
+        "client_host": "10.242.96.222",
+        "clogPriority": "ClogPriority_low",
+        "end_time": "1587051837000",
+        "host": "otneVM1",
+        "id": 2950,
+        "key": "CommandLog/2950",
+        "className": "CommandLog",
+        "involved_object": "pss32-140/OTU-2-20-1 pss32-141/OTU-2-20-1 OTU4",
+        "operator": "alcatel",
+        "request_id": "1468355125323123",
+        "session_id": "b3c7c7dfe60e4151a4c8daea7e44559b",
+        "status": "CommandStatus_Success",
+        "subsys": "SubSystem_OTN",
+        "utc_time": "1587051765000"
+    },
+    {
+        "ack_operator": "Admin",
+        "acknowledged_i": "Acknowledged_acknowledged",
+        "acknowledged_time": "1587123339000",
+        "act": "TCMCreateSubmit",
+        "app": "ClogApplication_OTN",
+        "client_host": "10.243.140.53",
+        "clogPriority": "ClogPriority_low",
+        "end_time": "1587075905000",
+        "host": "otneVM1",
+        "id": 2967,
+        "key": "CommandLog/2967",
+        "className": "CommandLog",
+        "involved_object": "pss32-140/OCH-1-5-L1 pss32-141/OCH-1-5-L1 OTU4X2 ODU4:1",
+        "operator": "alcatel",
+        "request_id": "1492491006040104",
+        "session_id": "773798aac2ad49a9953d3a4b87f7c0fb",
+        "status": "CommandStatus_Fail",
+        "subsys": "SubSystem_OTN",
+        "utc_time": "1587075901000"
+    },
+    {
+        "ack_operator": "Admin",
+        "acknowledged_i": "Acknowledged_acknowledged",
+        "acknowledged_time": "1587336653000",
+        "act": "Compute Latency",
+        "app": "ClogApplication_OTN",
+        "client_host": "10.242.96.222",
+        "clogPriority": "ClogPriority_low",
+        "end_time": "1587289160000",
+        "host": "otneVM1",
+        "id": 2981,
+        "key": "CommandLog/2981",
+        "className": "CommandLog",
+        "involved_object": "pss32-140/130SCX10-1-14-L1 pss32-152/130SCX10-1-5-L1 OTU4 ODU4:1 ODU2E:1 DSR:1",
+        "operator": "alcatel",
+        "request_id": "1705741297293496",
+        "session_id": "0a826c01073648ceb70cbe3da40009ef",
+        "status": "CommandStatus_Fail",
+        "subsys": "SubSystem_OTN",
+        "utc_time": "1587289151000"
+    },
+    {
+        "ack_operator": "Admin",
+        "acknowledged_i": "Acknowledged_acknowledged",
+        "acknowledged_time": "1587336653000",
+        "act": "Compute Latency",
+        "app": "ClogApplication_OTN",
+        "client_host": "10.242.96.222",
+        "clogPriority": "ClogPriority_low",
+        "end_time": "1587289160000",
+        "host": "otneVM1",
+        "id": 2980,
+        "key": "CommandLog/2980",
+        "className": "CommandLog",
+        "involved_object": "pss32-140/OCH-1-5-L1 pss32-141/OCH-1-5-L1 OTU4X2 ODU4:1 ODU4:1 DSR:1",
+        "operator": "alcatel",
+        "request_id": "1705741157164554",
+        "session_id": "0a826c01073648ceb70cbe3da40009ef",
+        "status": "CommandStatus_Fail",
+        "subsys": "SubSystem_OTN",
+        "utc_time": "1587289151000"
+    }                    
+];
+
+    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                fullList: [],
+                connectionList: [],
+                duration: 1,
+                durationOption: [
+                    {label: "年", value: 1},
+                    {label: "季", value: 2},
+                    {label: "月", value: 3},
+                    {label: "自定义", value: 4}
+                ],
+                targetDate: null,
+                season: 0,
+                selectedConnection: null,
+                filteredLogs: [],
+                isTimeApplied: false,
+                timeRange: null,
+                loading: false
+            }
+        },
+        methods: {
+            init() {
+                this.selectedConnection = null;
+                this.filteredLogs = [];
+                this.getList();
+            },
+            getList() {
+                this.fullList = [];
+
+                // this.fullList = raw_data;
+                // this.fullList.forEach(log => {
+                //     let parts = log.involved_object.split(" ");
+                //     log.aPort = parts[0];
+                //     log.zPort = parts[1];
+                // });
+                let actionNames = {
+                    "ManageConnectionSNCPLockout":     "锁定保护倒换",
+                    "ManageConnectionSNCPForceMain":   "强制倒换到工作",
+                    "ManageConnectionSNCPForceSpare":  "强制倒换到保护",
+                    "ManageConnectionSNCPManualMain":  "手动倒换到工作",
+                    "ManageConnectionSNCPManualSpare": "手动倒换到保护"
+                }
+                Promise.all([
+                    axios.get("/oms1350/data/otn/connections/trails"),
+                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPLockout"),    //1
+                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPForceMain"),  //2
+                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPForceSpare"), //3
+                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPManualMain"), //4
+                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPManualSpare") //5
+                ])
+                //.then(([logs1, logs2, logs3, logs4, logs5, log6, logs7, logs8, log9, connections]) => {
+                .then( responseList => {
+                    let connections = responseList[0];
+                    if (connections && connections.data && connections.data.items) {
+                        connections = connections.data.items;
+                    } else {
+                        return;
+                    }
+                    let logs = [];
+                    for (let j = 1; j < responseList.length; j++) {
+                        if (responseList[j] == undefined || responseList[j].data == undefined) {
+                            continue;
+                        }
+                        let subLogs = responseList[j].data;
+                        for (let k = 0; k < subLogs.length; k++) {
+                            let connectionName = subLogs[k].involved_object;
+                            let found = connections.find(v => v.guiLabel == connectionName);
+                            if (!found) continue;
+                            logs.push({
+                                "involved_object": connectionName,
+                                "reason": actionNames[subLogs[k].act],
+                                "aPort": found.aPortLabel,
+                                "zPort": found.zPortLabel,
+                                "end_time": subLogs[k]["end_time"]
+                            });
+                        }
+                    }
+                    this.fullList = logs;
+                    this.handleData();
+                })
+
+            },
+            handleData() {
+                this.connectionList = [];
+                if (this.isTimeApplied) {
+                    this.fullList = this.fullList.filter(v => {
+                        let logTime = +v.end_time;
+                        if (logTime >= this.timeRange[0] && logTime <= this.timeRange[1]) {
+                            return true;
+                        }
+                        return false;
+                    })
+                }
+                for (let i = 0; i < this.fullList.length; i ++) {
+                    let log = this.fullList[i];
+                    let found = this.connectionList.find(v => (v.name == log.involved_object));
+                    if (found) {
+                        found.counter ++;
+                    } else {
+                        this.connectionList.push({
+                            name: log.involved_object,
+                            aPort: log.aPort,
+                            zPort: log.zPort,
+                            counter: 1
+                        })
+                    }
+                }
+            },
+            search() {
+                this.timeRange = this.getTime();
+                if (this.timeRange) {
+                    this.isTimeApplied = true;
+                    console.log("output1=", new Date(this.timeRange[0]));
+                    console.log("output2=", new Date(this.timeRange[1]));
+                } else {
+                    console.log("return null!!!!");
+                    this.isTimeApplied = false;
+                }
+                this.init();
+            },
+            handleCurrentChange(currentRow) {
+                this.filteredLogs = [];
+                this.selectedConnection = currentRow;
+                if (currentRow == null) return;
+                let name = currentRow.name;
+                this.fullList.map(log => {
+                    if (log.involved_object == name) {
+                        let timeObj = new Date(+log.end_time);
+                        this.filteredLogs.push({
+                            time: timeObj.toLocaleDateString() + ' ' + timeObj.toLocaleTimeString(),
+                            reason: log.reason
+                        })
+                    }
+                })
+            },
+            getTime() {
+                if (!this.targetDate) return null;
+                if (!this.duration) return null;
+                let start = 0, end = 0;
+                let hour24 = 24 * 3600000;
+                if (this.duration == 1) {
+                    start = this.targetDate.getTime();
+                    let timeObj = new Date(start);
+                    timeObj.setYear(timeObj.getFullYear() + 1);
+                    end = timeObj.getTime();
+                    return [start, end-1];
+                }
+                else if (this.duration == 2) {
+                    let year = this.targetDate.getFullYear();
+                    let m1 = this.season * 3;
+                    let m2 = this.season * 3 + 3;
+                    return [
+                        new Date(year, m1, 1).getTime(),
+                        new Date(year, m2, 1).getTime() - 1
+                    ]
+                }
+                else if (this.duration == 3) {
+                    let year = this.targetDate.getFullYear();
+                    let m1 = this.targetDate.getMonth();
+                    let m2 = m1 + 1;
+                    return [
+                        new Date(year, m1, 1).getTime(),
+                        new Date(year, m2, 1).getTime() - 1                        
+                    ]
+                }
+                else {
+                    return [
+                        this.targetDate[0].getTime(),
+                        this.targetDate[1].getTime() + hour24 - 1
+                    ]
+                }
+            }
+        },
+        created() {
+            this.getList();
+        },
+        mounted() { }
+
+    })
+
+</script>
