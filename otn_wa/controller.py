@@ -178,6 +178,21 @@ def put_alarm_names():
             abort(500)
         return jsonify(alarm_names.get_all_alarm_names(request.args['lang']))
 
+@app.route('/shift_monitor', methods=['POST', 'DELETE', 'GET'])
+def shift_monitor():
+    if request.method == 'POST':
+        if not request.json:
+            abort(500)
+        return "OK"
+        
+    elif request.method == 'DELETE':
+        if not request.args or 'port' not in request.args:
+            abort(500)
+        return "OK"
+
+    elif request.method == 'GET':
+        return jsonify([{"name": "foobar"}])
+
 if __name__ == "__main__":
     alarm_names.init()
     pm_data_ftp.init()
