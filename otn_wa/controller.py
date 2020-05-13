@@ -8,6 +8,7 @@ import json
 import alarm_names
 import pm_data_ftp, alarm_data_ftp
 import enms_db
+import pm_monitor
 
 app = Flask(__name__)
 CORS(app, resources=r'/*')
@@ -183,19 +184,25 @@ def shift_monitor():
     if request.method == 'POST':
         if not request.json:
             abort(500)
-        return "OK"
+        return jsonify(pm_monitor.add_port(request.json))
         
     elif request.method == 'DELETE':
         if not request.args or 'port' not in request.args:
             abort(500)
-        return "OK"
+        return jsonify(pm_monitor.delete_port(request.args["port"]))
 
     elif request.method == 'GET':
-        return jsonify([{"name": "foobar"}])
+        return jsonify(pm_monitor.get_ports())
+
+@app.route('/xxxx', methods=['POST', 'GET'])
+def xxxxx():
+    xx = request
+    return ("OK")
 
 if __name__ == "__main__":
     alarm_names.init()
     pm_data_ftp.init()
     alarm_data_ftp.init()
+    m = pm_monitor.NspPmMonitor()
     # 将host设置为0.0.0.0，则外网用户也可以访问到这个服务
     app.run(host="0.0.0.0", port=5031, debug=True, ssl_context='adhoc')
