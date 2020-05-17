@@ -9,6 +9,7 @@ import alarm_names
 import pm_data_ftp, alarm_data_ftp
 import enms_db
 import pm_monitor
+import cutover
 
 app = Flask(__name__)
 CORS(app, resources=r'/*')
@@ -179,6 +180,9 @@ def put_alarm_names():
             abort(500)
         return jsonify(alarm_names.get_all_alarm_names(request.args['lang']))
 
+'''
+Wave Shift 波长偏移
+'''
 @app.route('/shift_monitor', methods=['POST', 'DELETE', 'GET'])
 def shift_monitor():
     if request.method == 'POST':
@@ -194,15 +198,27 @@ def shift_monitor():
     elif request.method == 'GET':
         return jsonify(pm_monitor.get_ports())
 
-@app.route('/xxxx', methods=['POST', 'GET'])
-def xxxxx():
-    xx = request
-    return ("OK")
+'''
+Cut Over 割接
+'''
+cutover_task = cutover.CutOverTask()
+
+@app.route('/cutover_task', methods=['GET', 'POST', 'DELETE'])
+def cutover_task():
+    if request.method == 'GET':
+        return "OK"
+    if request.method == 'POST':
+        return "OK"
+    if request.method == 'DELETE':
+        return "OK"
+    abort(500)
+
 
 if __name__ == "__main__":
     alarm_names.init()
     pm_data_ftp.init()
     alarm_data_ftp.init()
     m = pm_monitor.NspPmMonitor()
+    m.start()
     # 将host设置为0.0.0.0，则外网用户也可以访问到这个服务
     app.run(host="0.0.0.0", port=5031, debug=True, ssl_context='adhoc')

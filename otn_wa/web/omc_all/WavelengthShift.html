@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>波长偏移</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="app">
+    <div class="header">
+        <span class="header-icon"></span>
+        <span class="word">波长偏移</span>
+    </div>
+    <el-card style="margin: 1rem;">
+        <div class="main-content" v-loading="loading"
+            element-loading-text="加载中"
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="rgba(0, 0, 0, 0.8)">
+    <!--        <i class="el-icon-refresh-right"></i>-->
+    <!--        <el-button @click="getList" style="margin: 10px" type="primary" size="mini" icon="el-icon-refresh-right">刷新</el-button>-->
+            <el-table :data="portsInConnectionsDetailed" style="width: 100%" max-height="600">
+                <el-table-column label="TP标签" prop="tpLabel"></el-table-column>
+                <el-table-column label="节点名称" prop="neLabel"></el-table-column>
+                <el-table-column label="连接名称" prop="connectionName"></el-table-column>
+                <el-table-column label="监控速率" prop="monitoredRateStr"></el-table-column>
+                <el-table-column label="粒度" prop="granStr"></el-table-column>
+                <el-table-column label="方向" prop="direction"></el-table-column>
+                <el-table-column label="技术" prop="technology"></el-table-column>
+                <el-table-column label="开启监控" width="180">
+                    <template slot-scope="scope">
+                        <el-button v-if="scope.row.isActive" type="success" @click="onClickPort(scope.row)">已开启</el-button>
+                        <el-button v-else type="primary" @click="onClickPort(scope.row)">开启</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+    </el-card>
+    <el-card v-if="showThreshold" style="margin: 1rem;">
+        <div style="margin-bottom: 0.5rem;">
+            <span>设置门限：</span><el-tag>{{currentPort.tpLabel||""}}</el-tag>
+        </div>
+        <el-row style="margin-bottom: 0.5rem;">
+            <el-col :span="4"><strong>当前偏移：</strong></el-col>
+            <el-col :span="4"><span>FOFFR(GHz)={{currentPort.pm.foffr}}</span></el-col>
+            <el-col :span="4"><span>FOFFRL(GHz)={{currentPort.pm.foffrl}}</span></el-col>
+            <el-col :span="4"><span>FOFFRH(GHz)={{currentPort.pm.foffrh}}</span></el-col>
+        </el-row>
+        <el-row v-if="currentPort.isActive" >
+            <el-col :span="4"><strong>当前门限：</strong></el-col>
+            <el-col :span="4"><span>FOFFR(GHz)={{currentPort.threshold.t}}</span></el-col>
+            <el-col :span="4"><span>FOFFRL(GHz)={{currentPort.threshold.tl}}</span></el-col>
+            <el-col :span="4"><span>FOFFRH(GHz)={{currentPort.threshold.th}}</span></el-col>
+        </el-row>
+        <el-row v-else>
+            <el-col :span="4"><strong>告警门限</strong></el-col>
+            <el-col :span="4">
+                <span>FOFFR(GHz)=</span>
+                <el-input v-model="inputThreshold.t" class="short-input" size="mini"></el-input>
+            </el-col>
+            <el-col :span="4">
+                <span>FOFFRL(GHz)=</span>
+                <el-input v-model="inputThreshold.tl" class="short-input" size="mini"></el-input>
+            </el-col>
+            <el-col :span="4">
+                <span>FOFFRH(GHz)=</span>
+                <el-input v-model="inputThreshold.th" class="short-input" size="mini"></el-input>
+            </el-col>
+        </el-row>
+        <el-row v-if="currentPort.isActive" style="text-align: right;">
+            <el-button type="danger" @click="onDeactive">关闭告警监控</el-button>
+            <el-button type="info" @click="onClose">关闭</el-button>
+        </el-row>
+        <el-row v-else style="text-align: right;">
+            <el-button type="success" @click="onActive">开启告警监控</el-button>
+            <el-button type="info" @click="onClose">关闭</el-button>
+        </el-row>
+        
+    </el-card>
+
+
+</div>
+</body>
+</html>
+
+<style>
+    body{margin: 0;height: 100%}
+    html,#app{height: 100%}
+    #app{height: calc(100% - 68px)}
+    .header{
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+    .main-content{
+        min-height: 100%;
+    }
+    .header .header-icon{
+        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+    .header .word{
+        color: rgba(255,255,255,0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+    .short-input {
+        width: 4rem;
+    }
+</style>
+
+<script>
+    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+    const client2 = axios.create({ baseURL: 'https://135.251.96.98:5031' });
+
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                tableData: [],
+                loading:false,
+                activePortList: [],
+                connections: [],
+                nes: [],
+                portsInConnectionsDetailed: [],
+                showThreshold: false,
+                currentPort: null,
+                inputThreshold: {
+                    t: "",
+                    tl: "",
+                    th: ""
+                }
+            }
+        },
+        methods: {
+            // async getList(){
+            //     let _this= this;
+            //     _this.loading=true;
+            //     axios.get('/oms1350/data/cpm/monTps/43/WDM?connectionId=43&pm15min=Started&pm24hour=Started&category=CC_MANAGED_PLANE&id=43&defaultClassName=monTps')
+            //         .then(async function (response) {
+            //             let _list = response.data.items;
+            //             let arr =[];
+            //             for (let i = 0; i < _list.length; i++) {
+            //                 if(_list[i].monitoredRateStr == 'OS'){
+            //                     arr.push(_list[i])
+            //                 }
+            //             }
+            //             _this.tableData = arr;
+            //             _this.loading = false;
+            //         })
+            //         .catch(function (error) {
+            //             console.log(error);
+            //             _this.loading=false;
+            //         });
+            // },
+            init() {
+                this.getList();
+                this.showThreshold = false;
+            },
+            getList() {
+                this.loading = true;
+                Promise.all([
+                    axios.get("/oms1350/data/npr/nes"),
+                    //基础架构连接
+                    axios.get("/oms1350/data/otn/connections/trails"),
+                    client2.get("/shift_monitor")
+                ])
+                .then(([response1, response2, activePortList]) => {
+                    // 得到NE
+                    if (!response1 || !response1.data) {
+                        console.error("GET:/oms1350/data/npr/nes: error")
+                        this.loading = false;
+                    }
+                    this.nes = response1.data;
+                    // 得到链接，并过滤
+                    if (!response2 || !response2.data || !response2.data.items) {
+                        console.error("GET:/oms1350/data/otn/connections/trails: error");
+                        this.loading = false;
+                    }
+                    this.connections = response2.data.items.filter(v => 
+                        v.effectiveRate.includes("OTU")
+                        //&& v.alarmState == "Cleared"
+                    );
+                    // 采集连接中的NE和端口
+                    this.portsInConnectionsDetailed = [];
+                    this.activePortList = activePortList.data;
+                    this.connections.forEach(v => {
+                        // 采集性能点 
+                        this.getPmPointsByConnection(v);
+                    })
+                    this.loading = false;
+                })
+                .catch(errors => {
+                    console.log(errors);
+                    this.loading = false;
+                })
+            },
+            getPmPointsByConnection(connection) {
+                let id = connection.id;
+                let url = `https://135.251.96.98:8443/oms1350/data/cpm/monTps/${id}/WDM`;
+                axios.get(url).then( rsp => {
+                    // console.log("getPmPointsByConnectionId", id, rsp)
+                    let filtered = rsp.data.items.filter( v => (v.direction=="RCV" && v.granularity==0 && v.monitoredRateStr.trim().toLowerCase()=="os"))
+                    // let filtered = rsp.data.items.filter( v => (v.direction=="RCV" && v.technology=="Digital" && v.granularity==0 && v.monitoredRateStr.trim()=="OCH"))
+                    for (let i = 0; i < filtered.length; i++) {
+                        filtered[i].connectionId = id;
+                        filtered[i].connectionName = connection.guiLabel;
+                        filtered[i].alarmState = connection.alarmState;
+                        filtered[i].serviceState = connection.serviceState;
+                        filtered[i].pm = {
+                            foffr: "N/A",
+                            foffrh: "N/A",
+                            foffrl: "N/A"
+                        }
+                        let ne = this.nes.find(v => (v.guiLabel == filtered[i].neName))
+                        if (ne) {
+                            filtered[i].nodeType = ne.nodeType;
+                        }
+                        let activeInfo = this.activePortList.find(v => (v.name == filtered[i].tpLabel))
+                        if (activeInfo) {
+                            filtered[i].isActive = true;
+                            filtered[i].threshold = activeInfo.threshold;
+                        } else {
+                            filtered[i].isActive = false;
+                        }
+                    }
+                    this.portsInConnectionsDetailed.push(...filtered);
+                })
+            },
+            // step 1/2 of getting pm data
+            syncPmData(port) {
+                let url = "/oms1350/pm/consistpm";
+                let reqBody = {operationType: 5, connId: port.id, selectedEntities: port.id};
+                axios.post(url, reqBody).then( rsp => {
+                    this.getPmDate_history(port)
+                })
+            },
+            // step 2/2 of getting pm data
+            getPmDate_history(port) {
+                let url = "/oms1350/pm/pmdata";
+                let hookmapper = port.hookmapper.split(";").find(v=>v.includes("FOFFR"));
+                if (hookmapper == undefined) {
+                    console.error("can not find FOFFR group in this port");
+                    return;
+                }
+                // "selectedEntities" 是由多个字段用'@'符号拼接而成
+                // 最后形成的字符串的例子如下：
+                // "pss32-140@pss32-140/130SCX10-1-14-L1:OTU4:preFECBER:NEND:Receive:1-DAY,130SCX10-1-14-L1||/frequency=WXYZ:230:5:2:2@129.280@10@19",
+                port.selectedEntities = [port.neLabel, hookmapper, port.bitrate, port.fectype, port.pmLayerRate].join("@");
+                let reqBody = {
+                    "clientTz":8,
+                    "granularity":"day",
+                    "selectedEntities": port.selectedEntities,
+                    "expFormat":"",
+                    "operationType":0,
+                    "neName": port.neLabel
+                }
+                axios.post(url, reqBody).then( rsp => {
+                    if (rsp && rsp.data && rsp.data.items && rsp.data.items.length > 0) {
+                        let data = rsp.data.items[rsp.data.items.length-1];
+                        if (data.pmData) {
+                            port.pm = {
+                                foffr:  data.pmData["FOFFR(GHz)"],
+                                foffrh: data.pmData["FOFFRH(GHz)"],
+                                foffrl: data.pmData["FOFFRL(GHz)"]
+                            }
+                        }
+                    } else {
+                        console.log(this.currentPort)
+                        console.error("pmData return error", rsp.data);
+                    }
+                    this.showThreshold = true;
+                })
+                .catch(error => {
+                    this.showThreshold = false;
+                })
+            },
+            onClickPort(port) {
+                console.log(port)
+                this.currentPort = port;
+                this.showThreshold = false;
+                this.syncPmData(port);
+            },
+            onClose() {
+                if (!this.currentPort.isActive) {
+                    this.inputThreshold.t = "";
+                    this.inputThreshold.tl = "";
+                    this.inputThreshold.th = "";
+                }
+                this.showThreshold = false;
+            },
+            onActive() {
+                // 输入门限不能为空
+                if (this.inputThreshold.t.trim() == ""
+                || this.inputThreshold.tl.trim() == ""
+                || this.inputThreshold.th.trim() == "") {
+                    this.$message.warning("请输入门限值");
+                    return;
+                }
+                let t  = +this.inputThreshold.t;
+                let tl = +this.inputThreshold.tl;
+                let th = +this.inputThreshold.th;
+                if (t == NaN || tl == NaN || th == NaN) {
+                    this.$message.warning("请输入数字");
+                    return;
+                }
+                let reqBody = {
+                    name: this.currentPort.tpLabel,
+                    monitorReq: {
+                        "clientTz":8,
+                        "granularity":"day",
+                        "selectedEntities": this.currentPort.selectedEntities,
+                        "expFormat":"",
+                        "operationType":0,
+                        "neName": this.currentPort.neLabel
+                    },
+                    threshold: {
+                        t, tl, th
+                    },
+                    connectionId: this.currentPort.connectionId,
+                    id: this.currentPort.id
+                }
+
+                //调用接口，成功后直接刷新前台数据，并关闭小窗口
+                client2.post("/shift_monitor", reqBody).then( rsp => {
+                    this.currentPort.isActive = true;
+                    this.currentPort.threshold = {
+                        foffr: t,
+                        foffrl: tl,
+                        foffrh: th
+                    }
+                    this.inputThreshold.t = "";
+                    this.inputThreshold.tl = "";
+                    this.inputThreshold.th = "";
+                    this.showThreshold = false;
+                })
+            },
+            onDeactive() {
+                client2.delete("/shift_monitor?port="+this.currentPort.tpLabel).then(rsp=> {
+                    this.currentPort.isActive = false;
+                    this.showThreshold = false;
+                })
+            }
+
+        },
+        created(){
+            this.getList();
+        }
+    })
+
+</script>

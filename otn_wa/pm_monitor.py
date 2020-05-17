@@ -3,6 +3,7 @@ import os
 import json
 import threading
 import time
+import telnetlib
 
 import requests
 
@@ -13,6 +14,9 @@ url_login = 'https://135.251.96.98/cas/login'
 url_test = 'https://localhost/xxxx'
 username = 'alcatel'
 password = 'Lucent3.#'
+
+telnet_host = "135.251.96.98"
+telnet_port = "29876"
 
 def add_port(port_info):
     f = open(pm_monitor_trace_file, 'r', encoding='utf-8')
@@ -63,6 +67,27 @@ def get_ports():
     f.close()
     return existings
 
+def write_ports(existings):
+    f = open(pm_monitor_trace_file, 'w', encoding='utf-8')
+    f.write(json.dumps(existings, ensure_ascii=False, indent=4, separators=(',', ': ')))
+    f.close()
+
+def insert_alarm(port):
+    # 写出一个告警
+    time_str = str(time.time())
+    file_name = 'alarm'+time_str
+    alarm_str = f'simple,1.3.6.1.4.1.12.1.1,0.3.0.2.7.7=90|0.3.0.2.7.13=3|1.3.6.1.4.1=1{time_str},communicationalarm,1.3.12.2.1006.57.3.11.35,warning,{port["name"]},-'
+    f = open(file_name, 'w', encoding='utf-8')
+    f.write(alarm_str)
+    f.close()
+
+    path = os.path.abspath(file_name).encode('ascii') + b'\n'
+    tl = telnetlib.Telnet(telnet_host, telnet_port)
+    time.sleep(1)
+    tl.write(path)
+    command_result = tl.read_very_eager().decode('ascii')
+    time.sleep(5)
+    tl.close()
 
 class NspPmMonitor(threading.Thread):
 
@@ -83,16 +108,24 @@ class NspPmMonitor(threading.Thread):
         
     def run(self):
         time.sleep(1)
-        self.login2()
         while True:
-            self.single_round()
+            ports = get_ports()
+            if len(ports) < 1:
+                continue
+            self.login2()
+            self.single_round(ports)
             time.sleep(60)
 
-    def single_round(self):
-        ports = get_ports()
+    def single_round(self, ports):
+        temp = []
+        print(f'开始扫描端口波长偏移，端口个数{len(ports)}')
         for port in ports:
             r = self.send_consistpm(port)
             r = self.send_pmdata(port)
+            if r != 1:
+                temp.append(port)
+        # print(temp)
+        write_ports(temp)
 
     def send_consistpm(self, port):
         consistpm_req_body = {
@@ -107,9 +140,7 @@ class NspPmMonitor(threading.Thread):
         pmdata_req_body = port["monitorReq"]
         r = self.session.post(url_pmdata, json=pmdata_req_body, verify=False)
         result = json.loads(r.text)
-        print(result)
-        self.compare(result["items"], port)
-        pass
+        return self.compare(result["items"], port)
 
     def login(self):
         formdata = {
@@ -146,14 +177,16 @@ class NspPmMonitor(threading.Thread):
     def compare(self, monitor, port):
         length = len(monitor)
         if length < 1:
-            return
+            return -1
         threshold = port["threshold"]
         measure = monitor[len(monitor)-1]["pmData"]
         if float(measure["FOFFR(GHz)"]) > threshold["t"]\
         or float(measure["FOFFRH(GHz)"]) > threshold["th"]\
         or float(measure["FOFFRL(GHz)"]) > threshold["tl"]:
-            # TODO: 
-            print("触发告警！")
+            print(f'触发告警: {port["name"]}')
+            insert_alarm(port)
+            return 1
+        return -2
 
 
 if __name__ == "__main__":
