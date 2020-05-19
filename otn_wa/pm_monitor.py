@@ -7,16 +7,24 @@ import telnetlib
 
 import requests
 
-pm_monitor_trace_file = 'monitor_trace.json'
-url_consistpm = 'https://135.251.96.98:8443/oms1350/pm/consistpm'
-url_pmdata = 'https://135.251.96.98:8443/oms1350/pm/pmdata'
-url_login = 'https://135.251.96.98/cas/login'
-url_test = 'https://localhost/xxxx'
-username = 'alcatel'
-password = 'Lucent3.#'
+import config
 
-telnet_host = "135.251.96.98"
-telnet_port = "29876"
+pm_monitor_trace_file = 'monitor_trace.json'
+
+base_url = f'{config.NSP_BASE_IP}:{config.NSP_PORT}'
+
+url_consistpm = base_url + '/oms1350/pm/consistpm'  # example: 'https://135.251.96.98:8443/oms1350/pm/consistpm'
+url_pmdata =    base_url + '/oms1350/pm/pmdata'
+
+url_login = f'{config.NSP_BASE_IP}/cas/login'  # example: 'https://135.251.96.98/cas/login'
+url_init0 = f'{config.NSP_BASE_IP}'
+url_init1 = base_url + '/oms1350/pages/otn/mainOtn?initLocalStorage=true'
+# url_test = 'https://localhost/xxxx'
+username = config.NSP_USERNAME
+password = config.NSP_PASSWORD
+
+telnet_host = config.ALARM_INSERT_IP
+telnet_port = config.ALARM_INSERT_PORT
 
 def add_port(port_info):
     f = open(pm_monitor_trace_file, 'r', encoding='utf-8')
@@ -161,8 +169,6 @@ class NspPmMonitor(threading.Thread):
             "_eventId": "submit",
             "geolocation": ""
         }
-        url_init0 = "https://135.251.96.98"
-        url_init1 = "https://135.251.96.98:8443/oms1350/pages/otn/mainOtn?initLocalStorage=true"
         headers = {
             # "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
         }

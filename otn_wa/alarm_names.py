@@ -14,35 +14,38 @@ alarm_names_obj_en = {}
 
 # we take the assumption that the file do exist
 def read_name_file():
-    f = open(alarm_names_file_cn, 'r', encoding='utf-8')
-    is_end = False
-    index = 0
-    while not is_end:
-        raw_line = f.readline()
-        if raw_line == '':
-            is_end = True
-        line_parts = raw_line.split('   ')
-        if len(line_parts) == 2:
-            key = line_parts[0]
-            value = line_parts[1].split('\n')[0]
-            index = index + 1
-            alarm_names_obj_cn[key] = value
-    f.close()
+    try:
+        f = open(alarm_names_file_cn, 'r', encoding='utf-8')
+        is_end = False
+        index = 0
+        while not is_end:
+            raw_line = f.readline()
+            if raw_line == '':
+                is_end = True
+            line_parts = raw_line.split('   ')
+            if len(line_parts) == 2:
+                key = line_parts[0]
+                value = line_parts[1].split('\n')[0]
+                index = index + 1
+                alarm_names_obj_cn[key] = value
+        f.close()
 
-    f = open(alarm_names_file_en, 'r', encoding='utf-8')
-    is_end = False
-    index = 0
-    while not is_end:
-        raw_line = f.readline()
-        if raw_line == '':
-            is_end = True
-        line_parts = raw_line.split('\t\t')
-        if len(line_parts) == 2:
-            key = line_parts[0]
-            value = line_parts[1].split('\n')[0]
-            index = index + 1
-            alarm_names_obj_en[key] = value
-    f.close()
+        f = open(alarm_names_file_en, 'r', encoding='utf-8')
+        is_end = False
+        index = 0
+        while not is_end:
+            raw_line = f.readline()
+            if raw_line == '':
+                is_end = True
+            line_parts = raw_line.split('\t\t')
+            if len(line_parts) == 2:
+                key = line_parts[0]
+                value = line_parts[1].split('\n')[0]
+                index = index + 1
+                alarm_names_obj_en[key] = value
+        f.close()
+    except Exception as e:
+        print("alarm name file is not found", e)
 
 def write_name_file(lang):
     if lang == 'en':

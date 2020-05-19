@@ -10,6 +10,7 @@ import pm_data_ftp, alarm_data_ftp
 import enms_db
 import pm_monitor
 import cutover
+import misc_data_ftp
 
 app = Flask(__name__)
 CORS(app, resources=r'/*')
@@ -201,18 +202,42 @@ def shift_monitor():
 '''
 Cut Over 割接
 '''
-cutover_task = cutover.CutOverTask()
+cutover_task_ins = cutover.CutOverManage()
 
 @app.route('/cutover_task', methods=['GET', 'POST', 'DELETE'])
 def cutover_task():
     if request.method == 'GET':
-        return "OK"
+        return jsonify(cutover_task_ins.get_all_tasks())
     if request.method == 'POST':
-        return "OK"
+        if not request.json:
+            abort(500)
+        return jsonify(cutover_task_ins.update_task(request.json))
     if request.method == 'DELETE':
-        return "OK"
-    abort(500)
+        if not request.args or 'id' not in request.args:
+            abort(500)
+        return jsonify(cutover_task_ins.delete_task(request.args["id"]))
 
+@app.route('/cutover_exec', methods=['POST'])
+def cutover_exec():
+    pass
+
+'''
+其他文件ftp
+'''
+misc_data_ftp.init()
+
+@app.route("/get_db_backups", methods=['GET'])
+def get_db_backups():
+    return jsonify(misc_data_ftp.get_history())
+
+@app.route('/file_upload', methods=['POST'])
+def file_upload():
+    if not request.json:
+        abort(500)
+    r = misc_data_ftp.file_upload(request.json)
+    if r < 0:
+        abort(501)
+    return jsonify("OK")
 
 if __name__ == "__main__":
     alarm_names.init()

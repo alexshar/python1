@@ -3,7 +3,9 @@ import pymongo
 import json
 import datetime
 
-db_host = 'mongodb://135.251.96.92:27017/'
+import config
+
+db_host = config.ENMS_DB_ADDRESS
 
 def init_target_db(db_name):
     client = pymongo.MongoClient(db_host)

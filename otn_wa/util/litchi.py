@@ -47,7 +47,7 @@ class Litchi():
         f.close()        
 
     def add_update_item(self, item):
-        pass
+        return self.update_item(item)
 
     def add_item(self, item):
         self.write_look.acquire()
@@ -63,7 +63,7 @@ class Litchi():
     def delete_item_by_id(self, id):
         self.write_look.acquire()
         for index in range(len(self.items)):
-            if id == self.items[index]["id"]:
+            if id == str(self.items[index]["id"]):
                 self.items.pop(index)
                 self.__write_items()
                 self.write_look.release()
@@ -73,10 +73,12 @@ class Litchi():
         return -1
 
     def update_item(self, item):
-        for ex_item in self.items[:]:
-            if item["id"] == ex_item["id"]:
+        if item["id"] is None or item["id"] == "":
+            return self.add_item(item)
+        for index in range(len(self.items)):
+            if item["id"] == self.items[index]["id"]:
                 self.write_look.acquire()
-                ex_item = item
+                self.items[index] = item
                 self.__write_items()
                 self.write_look.release()
                 return item["id"]
