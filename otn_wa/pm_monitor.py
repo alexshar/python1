@@ -110,10 +110,9 @@ class NspPmMonitor(threading.Thread):
         time.sleep(1)
         while True:
             ports = get_ports()
-            if len(ports) < 1:
-                continue
-            self.login2()
-            self.single_round(ports)
+            if len(ports) > 0:
+                self.login2()
+                self.single_round(ports)
             time.sleep(60)
 
     def single_round(self, ports):
@@ -190,6 +189,5 @@ class NspPmMonitor(threading.Thread):
 
 
 if __name__ == "__main__":
-    m = NspPmMonitor()
-    m.start()
+    pass
 
