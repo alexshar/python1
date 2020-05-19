@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>备份文件FTP服务</title>
+    <script src="js/vue.min.js"></script>
+    <script src="js/axios.min.js"></script>
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/elementui.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="header">
+            <span class="header-icon"></span>
+            <span class="word">备份文件FTP服务</span>
+        </div>
+
+        <el-card style="margin: 1rem;">
+            <span>点击文件上传文件</span>
+            <el-table :data="fileList" border highlight-current-row @current-change="handleCurrentChange">
+                <el-table-column label="类别" prop="category" min-width="100"></el-table-column>
+                <el-table-column label="备份时间" prop="date" min-width="110"></el-table-column>
+                <el-table-column label="备份文件名" prop="file_name" min-width="120"></el-table-column>
+                <el-table-column label="域" prop="domain" min-width="100"></el-table-column>
+                <el-table-column label="上传的FTP服务器" prop="host" min-width="100"></el-table-column>
+                <el-table-column label="位置" prop="remote_location" min-width="100"></el-table-column>
+                <el-table-column label="目标文件名" prop="remote_name" min-width="100"></el-table-column>
+                <el-table-column label="操作" width="180">
+                    <template slot-scope="scope">
+                        <el-button type="primary" @click="handleCurrentChange(scope.row)">上传</el-button>
+                    </template>
+                </el-table-column>                
+            </el-table>
+        </el-card>
+
+        <el-dialog title="FTP上传" :visible.sync="dialogFormVisible">
+            <el-form :model="form">
+                <el-form-item label="文件名" :label-width="formLabelWidth">
+                    <el-input disabled v-model="currentFile.file_name" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="类别" :label-width="formLabelWidth">
+                    <el-input disabled v-model="currentFile.category" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="备份时间" :label-width="formLabelWidth">
+                    <el-input disabled v-model="currentFile.date" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="FTP主机" :label-width="formLabelWidth">
+                    <el-input v-model="form.host" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="用户名" :label-width="formLabelWidth">
+                    <el-input v-model="form.username" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" :label-width="formLabelWidth">
+                    <el-input v-model="form.password" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="远程路径" :label-width="formLabelWidth">
+                    <el-input v-model="form.remote_location" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="另存文件名" :label-width="formLabelWidth">
+                    <el-input v-model="form.remote_name" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="onUpload" :loading="loading">上传</el-button>
+            </div>
+        </el-dialog>
+    </div>    
+</body>
+
+</html>
+
+<style>
+    body {
+        margin: 0;
+        height: 100%
+    }
+
+    html,
+    #app {
+        height: 100%
+    }
+
+    #app {
+        height: calc(100% - 68px)
+    }
+
+    .header {
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+
+    .main-content {
+        min-height: 100%;
+    }
+
+    .header .header-icon {
+        background: url("pic/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+
+    .header .word {
+        color: rgba(255, 255, 255, 0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+</style>
+
+<script>
+
+// This is sample of response
+var bkBaseUrl = 'https://135.251.96.148:5031';
+bkBaseUrl = 'https://localhost:5031';
+var app = new Vue({
+    el: '#app',
+    data() {
+        return {
+            fileList: [],
+            dialogFormVisible: false,
+            form: {
+                host: '',
+                port: '',
+                username: '',
+                password: '',
+                remote_location: '',
+                remote_name: ''
+            },
+            formLabelWidth: '120px',
+            currentFile: {
+                file_name: '',
+                category: '',
+                date: ''
+            },
+            loading: true
+        }
+    },
+    methods: {
+        init() {
+            this.getList();
+        },
+        getList() {
+            let url = `${bkBaseUrl}/get_db_backups`;
+            axios.get(url).then(rsp => {
+                console.log(rsp.data);
+                for (const category in rsp.data) {
+                    if (rsp.data.hasOwnProperty(category)) {
+                        const element = rsp.data[category];
+                        for (const key in element) {
+                            if (element.hasOwnProperty(key)) {
+                                const file = element[key];
+                                this.fileList.push(file)
+                            }
+                        }
+                    }
+                }
+            })
+        },
+        handleCurrentChange(current) {
+            this.dialogFormVisible = true;
+            this.loading = false;
+            this.form.remote_name = current.file_name;
+            this.currentFile = current
+        },
+        onUpload() {
+            let url = `${bkBaseUrl}/file_upload`;
+            this.loading = true;
+            axios.post(url, {
+                host: this.form.host,
+                port: 21,
+                user: this.form.username,
+                password: this.form.password,
+                abspath: this.currentFile.abspath,
+                filename: this.currentFile.file_name,
+                category: this.currentFile.category,
+                key: this.currentFile.key,
+                remote_location: this.form.remote_location,
+                remote_name: this.form.remote_name
+            }).then(rsp => {
+                this.dialogFormVisible = false
+                this.currentFile.remote_location = this.form.remote_location
+                this.currentFile.remote_name = this.form.remote_name
+                this.currentFile.host = this.form.host
+            }).catch(e => {
+            }).then(() => {
+                this.loading = false;
+            })
+        }
+    },
+    created() {
+        this.init();
+    }
+})
+
+</script>
