@@ -4,10 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <title>业务倒换报表</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <!-- replaced by local files
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    -->
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/index.css">    
 </head>
 
 <body>
@@ -39,6 +46,7 @@
                     <el-option label="四季度" :value="3"></el-option>
                 </el-select>
                 <el-button @click="search()" type="primary">确定</el-button>
+                <el-button @click="exportSummary" type="primary">导出</el-button>
             </div>
             <el-table :data="connectionList" border max-height="400" highlight-current-row @current-change="handleCurrentChange">
                 <el-table-column label="路径名称" prop="name" min-width="200"></el-table-column>
@@ -51,6 +59,7 @@
         <el-card v-if="selectedConnection" style="margin: 1rem;">
             <div style="margin-bottom: 0.5rem;">
                 <span><strong>路径：{{selectedConnection.name}}</strong></span>
+                <el-button @click="exportDetail" type="primary" style="margin-left:1rem">导出</el-button>
             </div>
             <el-table :data="filteredLogs" border max-height="300">
                 <el-table-column label="倒换时间" prop="time"></el-table-column>
@@ -105,179 +114,6 @@
 </style>
 
 <script>
-
-// This is sample of response
-var raw_data = [
-    {
-        "ack_operator": "Admin",
-        "acknowledged_i": "Acknowledged_acknowledged",
-        "acknowledged_time": "1588015585000",
-        "act": "ManageConnectionSNCPForceMain",
-        "app": "ClogApplication_OTN",
-        "client_host": "10.242.96.222",
-        "clogPriority": "ClogPriority_low",
-        "end_time": "1587968755000",
-        "host": "otneVM1",
-        "id": 3667,
-        "key": "CommandLog/3667",
-        "className": "CommandLog",
-        "involved_object": "pss32-140/OPS-1-7-SIG pss32-141/OPS-1-7-SIG OMS",
-        "operator": "alcatel",
-        "request_id": "2327456879231274",
-        "session_id": "1931b4de420a48cfb8ba8f2989e896e3",
-        "status": "CommandStatus_Fail",
-        "subsys": "SubSystem_OTN",
-        "utc_time": "1587968754000"
-    },
-    {
-        "ack_operator": "Admin",
-        "acknowledged_i": "Acknowledged_acknowledged",
-        "acknowledged_time": "1588015585000",
-        "act": "ManageConnectionSNCPLockout",
-        "app": "ClogApplication_OTN",
-        "client_host": "10.242.96.222",
-        "clogPriority": "ClogPriority_low",
-        "end_time": "1587968739000",
-        "host": "otneVM1",
-        "id": 3666,
-        "key": "CommandLog/3666",
-        "className": "CommandLog",
-        "involved_object": "pss32-140/OPS-1-7-SIG pss32-141/OPS-1-7-SIG OMS",
-        "operator": "alcatel",
-        "request_id": "2327437956434963",
-        "session_id": "1931b4de420a48cfb8ba8f2989e896e3",
-        "status": "CommandStatus_Fail",
-        "subsys": "SubSystem_OTN",
-        "utc_time": "1587968735000"
-    },
-    {
-        "ack_operator": "Admin",
-        "acknowledged_i": "Acknowledged_acknowledged",
-        "acknowledged_time": "1586390700000",
-        "act": "Clear PM Bin",
-        "app": "ClogApplication_OTN",
-        "client_host": "10.242.96.206",
-        "clogPriority": "ClogPriority_low",
-        "end_time": "1586343340000",
-        "host": "otneVM1",
-        "id": 1497,
-        "key": "CommandLog/1497",
-        "className": "CommandLog",
-        "involved_object": "pss32-140/130SCX10-1-14-L1 pss32-152/130SCX10-1-5-L1 OTU4",
-        "operator": "alcatel",
-        "request_id": "759928096172254",
-        "session_id": "c89d3b13f73c496981eaafa0c93ee941",
-        "status": "CommandStatus_Success",
-        "subsys": "SubSystem_CPM",
-        "utc_time": "1586343338000"
-    },
-    {
-        "ack_operator": "Admin",
-        "acknowledged_i": "Acknowledged_acknowledged",
-        "acknowledged_time": "1586407801000",
-        "act": "NtwConnManualEnableASAP",
-        "app": "ClogApplication_OTN",
-        "client_host": "10.242.96.206",
-        "clogPriority": "ClogPriority_low",
-        "end_time": "1586360577000",
-        "host": "otneVM1",
-        "id": 1512,
-        "key": "CommandLog/1512",
-        "className": "CommandLog",
-        "involved_object": "pss32-140/130SCX10-1-14-L1 pss32-152/130SCX10-1-5-L1 OTU4",
-        "operator": "alcatel",
-        "request_id": "777095185359959",
-        "session_id": "f14f6f1bb481474b8f2fb1d629912c13",
-        "status": "CommandStatus_Success",
-        "subsys": "SubSystem_OTN",
-        "utc_time": "1586360505000"
-    },
-    {
-        "ack_operator": "Admin",
-        "acknowledged_i": "Acknowledged_acknowledged",
-        "acknowledged_time": "1587099037000",
-        "act": "NtwConnManualEnableASAP",
-        "app": "ClogApplication_OTN",
-        "client_host": "10.242.96.222",
-        "clogPriority": "ClogPriority_low",
-        "end_time": "1587051837000",
-        "host": "otneVM1",
-        "id": 2950,
-        "key": "CommandLog/2950",
-        "className": "CommandLog",
-        "involved_object": "pss32-140/OTU-2-20-1 pss32-141/OTU-2-20-1 OTU4",
-        "operator": "alcatel",
-        "request_id": "1468355125323123",
-        "session_id": "b3c7c7dfe60e4151a4c8daea7e44559b",
-        "status": "CommandStatus_Success",
-        "subsys": "SubSystem_OTN",
-        "utc_time": "1587051765000"
-    },
-    {
-        "ack_operator": "Admin",
-        "acknowledged_i": "Acknowledged_acknowledged",
-        "acknowledged_time": "1587123339000",
-        "act": "TCMCreateSubmit",
-        "app": "ClogApplication_OTN",
-        "client_host": "10.243.140.53",
-        "clogPriority": "ClogPriority_low",
-        "end_time": "1587075905000",
-        "host": "otneVM1",
-        "id": 2967,
-        "key": "CommandLog/2967",
-        "className": "CommandLog",
-        "involved_object": "pss32-140/OCH-1-5-L1 pss32-141/OCH-1-5-L1 OTU4X2 ODU4:1",
-        "operator": "alcatel",
-        "request_id": "1492491006040104",
-        "session_id": "773798aac2ad49a9953d3a4b87f7c0fb",
-        "status": "CommandStatus_Fail",
-        "subsys": "SubSystem_OTN",
-        "utc_time": "1587075901000"
-    },
-    {
-        "ack_operator": "Admin",
-        "acknowledged_i": "Acknowledged_acknowledged",
-        "acknowledged_time": "1587336653000",
-        "act": "Compute Latency",
-        "app": "ClogApplication_OTN",
-        "client_host": "10.242.96.222",
-        "clogPriority": "ClogPriority_low",
-        "end_time": "1587289160000",
-        "host": "otneVM1",
-        "id": 2981,
-        "key": "CommandLog/2981",
-        "className": "CommandLog",
-        "involved_object": "pss32-140/130SCX10-1-14-L1 pss32-152/130SCX10-1-5-L1 OTU4 ODU4:1 ODU2E:1 DSR:1",
-        "operator": "alcatel",
-        "request_id": "1705741297293496",
-        "session_id": "0a826c01073648ceb70cbe3da40009ef",
-        "status": "CommandStatus_Fail",
-        "subsys": "SubSystem_OTN",
-        "utc_time": "1587289151000"
-    },
-    {
-        "ack_operator": "Admin",
-        "acknowledged_i": "Acknowledged_acknowledged",
-        "acknowledged_time": "1587336653000",
-        "act": "Compute Latency",
-        "app": "ClogApplication_OTN",
-        "client_host": "10.242.96.222",
-        "clogPriority": "ClogPriority_low",
-        "end_time": "1587289160000",
-        "host": "otneVM1",
-        "id": 2980,
-        "key": "CommandLog/2980",
-        "className": "CommandLog",
-        "involved_object": "pss32-140/OCH-1-5-L1 pss32-141/OCH-1-5-L1 OTU4X2 ODU4:1 ODU4:1 DSR:1",
-        "operator": "alcatel",
-        "request_id": "1705741157164554",
-        "session_id": "0a826c01073648ceb70cbe3da40009ef",
-        "status": "CommandStatus_Fail",
-        "subsys": "SubSystem_OTN",
-        "utc_time": "1587289151000"
-    }                    
-];
-
     axios.defaults.baseURL = 'https://135.251.96.98:8443';
     var app = new Vue({
         el: '#app',
@@ -309,13 +145,6 @@ var raw_data = [
             },
             getList() {
                 this.fullList = [];
-
-                // this.fullList = raw_data;
-                // this.fullList.forEach(log => {
-                //     let parts = log.involved_object.split(" ");
-                //     log.aPort = parts[0];
-                //     log.zPort = parts[1];
-                // });
                 let actionNames = {
                     "ManageConnectionSNCPLockout":     "锁定保护倒换",
                     "ManageConnectionSNCPForceMain":   "强制倒换到工作",
@@ -331,7 +160,6 @@ var raw_data = [
                     axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPManualMain"), //4
                     axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPManualSpare") //5
                 ])
-                //.then(([logs1, logs2, logs3, logs4, logs5, log6, logs7, logs8, log9, connections]) => {
                 .then( responseList => {
                     let connections = responseList[0];
                     if (connections && connections.data && connections.data.items) {
@@ -452,7 +280,61 @@ var raw_data = [
                         this.targetDate[1].getTime() + hour24 - 1
                     ]
                 }
-            }
+            },
+            exportSummary() {
+                let columns = [
+                    {label: "路径名称", prop: "name"},
+                    {label: "源端", prop: "aPort"},
+                    {label: "宿端", prop: "zPort"},
+                    {label: "倒换次数", prop: "counter"}
+                ]
+                let data = this.connectionList;
+                this.exportData2Csv('handover.csv', data, columns);
+            },
+            exportDetail() {
+                let columns = [
+                    {label: "倒换时间", prop: "time"},
+                    {label: "倒换原因", prop: "reason"}
+                ]
+                let data = this.filteredLogs;
+                this.exportData2Csv('handover_detail.csv', data, columns);
+            },            
+            exportData2Csv(filename, data, columns) {
+                let header = [];
+                let headerLabel = [];
+                let tableData = data;
+
+                for (const col of columns) {
+                header.push(col.prop);
+                headerLabel.push(col.label);
+                }
+                let lines = [headerLabel.join(",")];
+
+                for (let i = 0; i <tableData.length; i++) {
+                    let row = tableData[i];
+                    let elements = [];
+                    for (const key of header) {
+                        if (row.hasOwnProperty(key)) {
+                            const element = row[key];
+                            elements.push(`"${element}"`);
+                        } else {
+                            elements.push("");
+                        }
+                    }
+                    lines.push(elements.join(","));
+                }
+                const text = lines.join("\n");
+                this.download2(filename, text);
+            },
+            download2(filename, text) {
+                var a = document.createElement('a');
+                var url = window.URL.createObjectURL(new Blob(["\ufeff"+text],
+                    { type: ("text/plain") + ";charset=" + ('utf-8') }));
+                a.href = url;
+                a.download = filename || 'file';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }            
         },
         created() {
             this.getList();
