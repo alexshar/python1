@@ -185,13 +185,14 @@ class NspPmMonitor(threading.Thread):
             return -1
         threshold = port["threshold"]
         measure = monitor[len(monitor)-1]["pmData"]
-        if float(measure["FOFFR(GHz)"]) > threshold["t"]\
-        or float(measure["FOFFRH(GHz)"]) > threshold["th"]\
-        or float(measure["FOFFRL(GHz)"]) > threshold["tl"]:
+        if abs(float(measure["FOFFR(GHz)"])) > abs(threshold["t"])\
+        or abs(float(measure["FOFFRH(GHz)"])) > abs(threshold["th"])\
+        or abs(float(measure["FOFFRL(GHz)"])) > abs(threshold["tl"]):
             print(f'触发告警: {port["name"]}')
             insert_alarm(port)
             return 1
         return -2
+        
 
 
 if __name__ == "__main__":

@@ -331,9 +331,9 @@
                 client2.post("/shift_monitor", reqBody).then( rsp => {
                     this.currentPort.isActive = true;
                     this.currentPort.threshold = {
-                        foffr: t,
-                        foffrl: tl,
-                        foffrh: th
+                        t: t,
+                        tl: tl,
+                        th: th
                     }
                     this.inputThreshold.t = "";
                     this.inputThreshold.tl = "";
