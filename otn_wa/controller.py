@@ -5,15 +5,22 @@ from flask_cors import CORS
 import os
 import json
 
+from util.kronos import Kronos as Scheduler
+import config
 import alarm_names
 import pm_data_ftp, alarm_data_ftp
 import enms_db
 import pm_monitor
 import cutover
 import misc_data_ftp
+from loopback import Loopback
 
 app = Flask(__name__)
 CORS(app, resources=r'/*')
+
+@app.route('/', methods=['GET'])
+def root_page():
+    return (f'<html><meta http-equiv="refresh" content="0;url={config.NSP_BASE_IP}"></html>')
 
 @app.route('/ftp_upload', methods=['POST'])
 def ftp_upload():
@@ -58,7 +65,7 @@ def pm_upload():
         request.json['remote_location'],
         request.json['remote_name']
     )
-    
+
 @app.route('/alarm_upload', methods=['POST'])
 def alarm_upload():
     if not request.json:
@@ -138,7 +145,7 @@ def alarm_collection():
         or 'page_size' not in request.args:
         abort(500)
     return jsonify(enms_db.get_alarm_collection(
-        request.args['table'], 
+        request.args['table'],
         request.args['file'],
         int(request.args['page']),
         int(request.args['page_size'])
@@ -201,9 +208,8 @@ def shift_monitor():
 
 '''
 Cut Over 割接
-'''
 cutover_task_ins = cutover.CutOverManage()
-
+'''
 @app.route('/cutover_task', methods=['GET', 'POST', 'DELETE'])
 def cutover_task():
     if request.method == 'GET':
@@ -219,11 +225,14 @@ def cutover_task():
 
 @app.route('/cutover_exec', methods=['POST'])
 def cutover_exec():
-    pass
+    if not request.json:
+        abort(500)
+    return jsonify(cutover_task_ins.exec_tasks_by_id(request.json["id"], request.json["isRollback"]))
 
 '''
 其他文件ftp
 '''
+# 被动模式的模块
 misc_data_ftp.init()
 
 @app.route("/get_db_backups", methods=['GET'])
@@ -239,11 +248,33 @@ def file_upload():
         abort(501)
     return jsonify("OK")
 
+'''
+环回撤销登记
+'''
+@app.route('/loopback_release', methods=['POST'])
+def loopback_release():
+    if not request.json:
+        abort(500)
+    return jsonify(loopback_ins.add_loopback_release_task(request.json))
+
+
 if __name__ == "__main__":
     alarm_names.init()
     pm_data_ftp.init()
     alarm_data_ftp.init()
+
+    schduler_ins = Scheduler()
+    schduler_ins.start()
+
     m = pm_monitor.NspPmMonitor()
     m.start()
+
+    cutover_task_ins = cutover.CutOverManage()
+    cutover_task_ins.start()
+
+    # 为环回添加调度器服务
+    loopback_ins = Loopback(schduler_ins)
+
     # 将host设置为0.0.0.0，则外网用户也可以访问到这个服务
-    app.run(host="0.0.0.0", port=5031, debug=True, ssl_context='adhoc')
+    app.run(host="0.0.0.0", port=5031, debug=False, ssl_context='adhoc')
+    m.join()
