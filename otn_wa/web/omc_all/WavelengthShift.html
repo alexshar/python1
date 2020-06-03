@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>波长偏移</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/index.css">         
+    <!--
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    -->
 </head>
 <body>
 <div id="app">
@@ -139,26 +146,6 @@
             }
         },
         methods: {
-            // async getList(){
-            //     let _this= this;
-            //     _this.loading=true;
-            //     axios.get('/oms1350/data/cpm/monTps/43/WDM?connectionId=43&pm15min=Started&pm24hour=Started&category=CC_MANAGED_PLANE&id=43&defaultClassName=monTps')
-            //         .then(async function (response) {
-            //             let _list = response.data.items;
-            //             let arr =[];
-            //             for (let i = 0; i < _list.length; i++) {
-            //                 if(_list[i].monitoredRateStr == 'OS'){
-            //                     arr.push(_list[i])
-            //                 }
-            //             }
-            //             _this.tableData = arr;
-            //             _this.loading = false;
-            //         })
-            //         .catch(function (error) {
-            //             console.log(error);
-            //             _this.loading=false;
-            //         });
-            // },
             init() {
                 this.getList();
                 this.showThreshold = false;
@@ -229,8 +216,42 @@
                         } else {
                             filtered[i].isActive = false;
                         }
+                        this.checkFoffrValuePresent(filtered[i]);
                     }
-                    this.portsInConnectionsDetailed.push(...filtered);
+                    // this.portsInConnectionsDetailed.push(...filtered);
+                })
+            },
+            // extra step: check if the port can get foffr values
+            checkFoffrValuePresent(port) {
+                let url = "/oms1350/pm/pmdata";
+                let hookmapper = port.hookmapper.split(";").find(v=>v.includes("FOFFR"));
+                if (hookmapper == undefined) {
+                    return;
+                }
+                // "selectedEntities" 是由多个字段用'@'符号拼接而成
+                // 最后形成的字符串的例子如下：
+                // "pss32-140@pss32-140/130SCX10-1-14-L1:OTU4:preFECBER:NEND:Receive:1-DAY,130SCX10-1-14-L1||/frequency=WXYZ:230:5:2:2@129.280@10@19",
+                port.selectedEntities = [port.neLabel, hookmapper, port.bitrate, port.fectype, port.pmLayerRate].join("@");
+                let reqBody = {
+                    "clientTz":8,
+                    "granularity":"day",
+                    "selectedEntities": port.selectedEntities,
+                    "expFormat":"",
+                    "operationType":0,
+                    "neName": port.neLabel
+                }
+                axios.post(url, reqBody).then( rsp => {
+                    if (rsp && rsp.data && rsp.data.items && rsp.data.items.length > 0) {
+                        let data = rsp.data.items[rsp.data.items.length-1];
+                        if (data.pmData && data.pmData["FOFFR(GHz)"]!=undefined && data.pmData["FOFFRH(GHz)"]!=undefined && data.pmData["FOFFRL(GHz)"]!=undefined) {
+                            port.pm = {
+                                foffr:  data.pmData["FOFFR(GHz)"],
+                                foffrh: data.pmData["FOFFRH(GHz)"],
+                                foffrl: data.pmData["FOFFRL(GHz)"]
+                            }
+                            this.portsInConnectionsDetailed.push(port);
+                        }
+                    }
                 })
             },
             // step 1/2 of getting pm data
