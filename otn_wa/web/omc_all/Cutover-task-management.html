@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>割接任务管理</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <!-- 
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script> 
+    -->
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/index.css">      
+</head>
+<body>
+<div id="app" class="Cutover-task-management">
+    <div class="header">
+        <span class="header-icon"></span>
+        <span class="word">割接任务管理</span>
+    </div>
+    <div class="main-content" v-loading="loading"
+              element-loading-text="加载中"
+              element-loading-spinner="el-icon-loading"
+              element-loading-background="rgba(0, 0, 0, 0.8)">
+        <div class="flex-1">
+            <div class="row-1">
+                <el-button type="primary"  @click="addMission" >新增任务</el-button>
+            </div>
+            <div class="row-1">
+                <el-button type="primary"  @click="exportData2Csv" >导出列表</el-button>
+            </div>
+
+        </div>
+
+        <el-dialog
+                :title=missionType
+                :visible.sync="dialogVisible"
+                width="60%"
+                :before-close="handleClose">
+            <el-input style="margin-bottom: 10px" v-model="addName" placeholder="请输入任务名称"></el-input>
+            <div class="full-select">
+                <el-select @change="chooseAdd" v-model="value1" multiple placeholder="请选择连接">
+                    <el-option
+                        v-for="item in options"
+                        :key="item.id"
+                        :label="item.guiLabel"
+                        :value="item.id">
+                    </el-option>
+                </el-select>
+            </div>
+
+            <el-row v-for="item in addArr" style="margin:0.5rem">
+                <span><strong>{{item.linkName}} 割接配置</strong></span><br><br>
+                <el-form  label-width="150px">
+
+                    <el-form-item label="波道">
+                        <span>当前值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" disabled size="small"
+                        v-model="item.frequency"></el-input>
+                        <span>目标值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" clearable size="small"
+                        v-model="item.new_frequency"></el-input>
+                    </el-form-item>                
+                    <el-form-item label="线路端口">
+                        <span>源网元</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" disabled size="small"
+                        v-model="item.a.lPortLabel"></el-input>
+                        <span>宿网元</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" disabled size="small"
+                        v-model="item.z.lPortLabel"></el-input>                        
+                    </el-form-item>                
+                    <el-form-item label="源网元SFD">
+                        <span>当前值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" disabled size="small"
+                        v-model="item.a.sfdPortLabel"></el-input>
+                        <span>目标值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" clearable size="small"
+                        v-model="item.a.new_sfdPortLabel"></el-input>
+                    </el-form-item>                
+                    <el-form-item label="源网元LINE">
+                        <span>当前值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" disabled size="small"
+                        v-model="item.a.linePortLabel"></el-input>
+                        <span>目标值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" clearable size="small"
+                        v-model="item.a.new_linePortLabel"></el-input>
+                    </el-form-item>                
+                    <el-form-item v-if="item.a.linePortLabel2" label="源网元LINE2">
+                        <span>当前值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" disabled size="small"
+                        v-model="item.a.linePortLabel2"></el-input>
+                        <span>目标值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" clearable size="small"
+                        v-model="item.a.new_linePortLabel2"></el-input>
+                    </el-form-item>                
+                    <el-form-item label="宿网元SFD">
+                        <span>当前值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" disabled size="small"
+                        v-model="item.z.sfdPortLabel"></el-input>
+                        <span>目标值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" clearable size="small"
+                        v-model="item.z.new_sfdPortLabel"></el-input>
+                    </el-form-item>                
+                    <el-form-item label="宿网元LINE">
+                        <span>当前值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" disabled size="small"
+                        v-model="item.z.linePortLabel"></el-input>
+                        <span>目标值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" clearable size="small"
+                        v-model="item.z.new_linePortLabel"></el-input>
+                    </el-form-item>                
+                    <el-form-item v-if="item.z.linePortLabel2" label="宿网元LINE2">
+                        <span>当前值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" disabled size="small"
+                        v-model="item.z.linePortLabel2"></el-input>
+                        <span>目标值</span>
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:12rem" clearable size="small"
+                        v-model="item.z.new_linePortLabel2"></el-input>
+                    </el-form-item>
+                    <el-form-item label="割接后连接名称">
+                        <el-input style="margin-right:2rem;margin-left:0.3rem;width:28rem" clearable size="small"
+                        v-model="item.new_linkName"></el-input>
+                    </el-form-item>        
+                </el-form>
+            </el-row>
+
+            <el-row style="margin: 0.5rem">
+                <el-radio v-model="radio" :label= '1'>手动执行</el-radio>
+                <el-radio v-model="radio" :label= '0'>
+                    <span>自动执行</span>
+                    <el-date-picker
+                        v-model="dataTime"
+                        type="datetime"
+                        value-format="timestamp"
+                        :disabled="radio==1"
+                        placeholder="选择割接执行时间">
+                    </el-date-picker>
+                </el-radio>
+            </el-row>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="submitAdd">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-table
+                :data="tableData"
+                style="width: 100%">
+            <el-table-column
+                    label="任务名称"
+                    prop="name">
+            </el-table-column>
+            <el-table-column
+                    label="执行时间"
+                    :formatter="timestampToTime"
+                    prop="execTime">
+            </el-table-column>
+            <el-table-column
+                    label="状态"
+                    :formatter="formatStatus"
+                    prop="status">
+            </el-table-column>
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+                    <el-button v-if="scope.row.status==0 && scope.row.isManual" size="mini" type="primary" @click="onCut(scope.row)">割接</el-button>
+                    <el-button v-if="Math.abs(scope.row.status)==1" size="mini" type="primary" @click="onRollback(scope.row)">回滚</el-button>
+                    <el-button size="mini" type="danger" slot="reference" @click="open(scope.row)">删除</el-button>
+                </template>
+            </el-table-column>
+
+        </el-table>
+    </div>
+
+
+</div>
+</body>
+</html>
+<style>
+    body{margin: 0;height: 100%}
+    html,#app{height: 100%}
+    #app{height: calc(100% - 68px)}
+    .header{
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+    .main-content{
+        min-height: 100%;
+    }
+    .header .header-icon{
+        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+    .header .word{
+        color: rgba(255,255,255,0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+    .flex-1{
+        display: flex;
+        flex: 1;
+        margin-left: 10px;
+        padding-top: 20px;
+    }
+    .row-1{
+        margin-right: 10px;
+    }
+    .row-1 select{
+        display: block;
+    }
+    .table-div{
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #EBEEF5;
+        border-bottom: 0;
+        margin: 10px;
+    }
+    .table-div .table-row{
+        display: flex;
+        flex-direction: row;
+    }
+    .table-div .table-row div{
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        height: 30px;
+        padding: 5px 0;
+        border: 1px solid #EBEEF5;
+        border-right:0 ;
+        border-top:0 ;
+    }
+    .table-div .table-row .input{
+        padding: 5px!important;
+        width: 90%;
+        /*border: 1px solid #DCDFE6;*/
+    }
+
+    .Cutover-task-management .full-select .el-select{
+        display: block;
+    }
+</style>
+
+<script>
+    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                tableData: [],
+                optionsContent: [],
+                addArr: [],
+                connectionMap: [],
+                Route: {},
+                totalData: {},
+                options: [],
+                value1: [],
+                loading: false,
+                dialogVisible: false,
+                visible: false,
+                deltvisible: false,
+                renderColumn: [
+                    { label: '任务名称', prop: 'name' },
+                    { label: '执行时间', prop: 'execTime' },
+                    { label: '状态', prop: 'status' },
+                ],
+                dataTime: '',
+                addName: '',
+                radio: 0,
+                missionType: '新增任务',
+                id: '',
+                isEditable: false
+            }
+        },
+        methods: {
+            open(index){
+                this.$alert('确定删除改条任务吗？', '', {
+                    confirmButtonText: '确定',
+                    callback: action => {
+                        if(action=='confirm'){
+                            this.handleDelete(index)
+                        }
+                    }
+                });
+            },
+            timestampToTime(row) {
+                if (row.isManual) return ("手动执行");
+                let timestamp = row.execTime;
+                var date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+                var Y = date.getFullYear() + '-';
+                var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+                var D = date.getDate() + ' ';
+                var h = date.getHours()<10?'0'+date.getHours()+ ':':date.getHours() + ':';
+                var m = date.getMinutes()<10?'0'+date.getMinutes()+ ':':date.getMinutes() + ':';
+                var s = date.getSeconds()<10?'0'+date.getSeconds():date.getSeconds();
+                return Y + M + D + h + m + s;
+            },
+            formatStatus(row) {
+                let status = row.status;
+                if (status == 0) {
+                    return '未执行'
+                } else if (status == 1) {
+                    return '割接完成'
+                } else if (status == -1) {
+                    return '割接失败'
+                } else if (status == -2) {
+                    return '回滚失败'
+                } else if (status == 2) {
+                    return '回滚完成'
+                } else {
+                    return '已经完成'
+                }
+            },
+            addMission(){
+                this.missionType = '新增任务';
+                this.isEditable = true;
+                
+                this.id = '';
+                this.addName = '';
+                this.dataTime = '';
+                this.addArr = [];
+                this.value1 = [];
+                this.radio = 1;
+
+                this.dialogVisible = true;
+            },
+            handleEdit(item){
+                if (item.status == 0) {
+                    this.isEditable = true;
+                } else {
+                    this.isEditable = false;
+                }
+                this.missionType = '修改任务';
+                this.id = item.id;
+                this.addName = item.name;
+                this.dataTime = item.execTime;
+                this.addArr = item.items;
+                this.value1 = item.chooseContent;
+                this.radio = item.isManual;
+                this.dialogVisible = true;
+            },
+            handleDelete(index){
+                axios.defaults.baseURL = 'https://135.251.96.98:5031';
+                axios.delete('/cutover_task?id='+index.id)
+                .then( (response)=> {
+                    this.getList();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    this.loading=false;
+                });
+            },
+            chooseAdd(selected) {
+                this.addArr = [];
+                for (let i = 0; i < selected.length; i++) {
+                    let arr = [];
+                    let _id = selected[i];
+                    let connection = this.connectionMap[_id];
+                    console.log(connection);
+                    let obj = {
+                        "linkName": connection.guiLabel,
+                        "layerRate": connection.layerRate,
+                        "new_linkName": connection.guiLabel,
+                        "id": _id,
+                        "frequency": Number(connection.frequency).toFixed(0),
+                        "new_frequency": "",
+	                    "result": 0,    // 0=未执行 1=成功 -1=失败 2=回滚成功 -2=回滚失败
+                        "a": {
+                            "neName": connection.a1NeName,
+                            "ip": connection.a1NeIp,
+                            "lPortLabel": connection.a_l_port,
+                            "sfdPortLabel": connection.a_sfd_port,
+                            "linePortLabel": connection.a_line_port,
+                            "linePortLabel2": connection.a_line_port2,
+                            "new_lPortLabel": connection.a_l_port,
+                            "new_sfdPortLabel": connection.a_sfd_port,
+                            "new_linePortLabel": connection.a_line_port,
+                            "new_linePortLabel2": connection.a_line_port2
+                        },
+                        "z": {
+                            "neName": connection.z1NeName,
+                            "ip": connection.z1NeIp,
+                            "lPortLabel": connection.z_l_port,
+                            "sfdPortLabel": connection.z_sfd_port,
+                            "linePortLabel": connection.z_line_port,
+                            "linePortLabel2": connection.z_line_port2,
+                            "new_lPortLabel": connection.z_l_port,
+                            "new_sfdPortLabel": connection.z_sfd_port,
+                            "new_linePortLabel": connection.z_line_port,
+                            "new_linePortLabel2": connection.z_line_port2
+                        },
+                    }
+                    this.addArr.push(obj)
+                }
+            },
+            submitAdd(){
+                if (!this.isEditable) {
+                    this.$message.warning("已经执行过的割接任务无法修改");
+                    return;
+                }
+                let obj = {
+                    id: this.id,
+                    items: [ { } ],  // 一个割接组group里,有多个item,也就是多个割接任务
+                    "name": this.addName,
+                    "execTime": this.dataTime,
+                    "isManual": this.radio,  // 0=自动   1=手动
+                    "status": 0,    // 0=未执行 1=执行中 2=已经完成
+                    chooseContent:this.value1
+                };
+                obj.items=this.addArr;
+                console.log(obj)
+                axios.defaults.baseURL = 'https://135.251.96.98:5031';
+                axios.post('/cutover_task',obj)
+                .then( (response)=> {
+                    this.addName ='';
+                    this.value1='';
+                    this.dataTime='';
+                    this.addArr=[];
+                    this.id='';
+                    this.getList();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    this.loading=false;
+                })
+                .then(() => {
+                    this.dialogVisible=false;
+                })
+            },
+            handleClose(done) {
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        done();
+                    })
+                    .catch(_ => {});
+            },
+            async getContent() {
+                await Promise.all([
+                    axios.get('/oms1350/data/otn/connections/trails'),
+                    axios.get('/oms1350/data/npr/nes')  // read NE information just for getting its IP
+                ])
+                    .then(([response, neList]) => {
+                        let rtn = response.data.items;
+                        this.options = [];
+                        this.connectionMap = {}
+                        for (let i = 0; i < rtn.length; i++) {
+                            if (rtn[i].effectiveRate.indexOf('OTU') > -1) {
+                                let connection = rtn[i];
+                                let id = connection.id;
+                                this.options.push({
+                                    id: id,
+                                    guiLabel: connection.guiLabel
+                                });
+                                a1NeName = connection.a1NeName;
+                                z1NeName = connection.z1NeName;
+                                for (const ne of neList.data) {
+                                    if (ne.guiLabel == a1NeName) {
+                                        connection.a1NeIp = ne.ipAddress;
+                                    }
+                                    if (ne.guiLabel == z1NeName) {
+                                        connection.z1NeIp = ne.ipAddress;
+                                    }
+                                }
+                                // connection.frequency is very important
+                                this.connectionMap[id] = connection;
+                                // {
+                                //     id: connection.id,
+                                //     frequency: connection.frequency,
+                                // };
+                            }
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        this.loading = false;
+                    });
+                for (let i = 0; i < this.options.length; i++) {
+                    await this.gete2ePhysicalRoute(this.options[i].id);
+                }
+                await console.log(this.connectionMap)
+            },
+            gete2ePhysicalRoute(id) {
+                axios.defaults.baseURL = 'https://135.251.96.98:8443';
+                axios.get('/oms1350/data/otn/connection/' + id + '/e2ePhysicalRoute/')
+                    .then((response) => {
+                        if (response.data == null || response.data.data == null) {
+                            console.error("data is null when connection-id=", id);
+                            return;
+                        }
+                        let rtnData = response.data.data;
+                        let connection = this.connectionMap[id]
+                        for (let i = 0; i < rtnData.length; i++) {
+                            let physicalLink = rtnData[i];
+                            if (rtnData[i].className == 'physicalLink' && rtnData[i].containerType == 'os') {
+
+                                if (physicalLink.a1NeName == connection.a1NeName) {
+                                    if (physicalLink.a1PortName.indexOf("SFD") > -1) {
+                                        connection.a_sfd_port = physicalLink.a1PortName;
+                                    } else {
+                                        connection.a_l_port = physicalLink.a1PortName;
+                                    }
+                                }
+                                if (physicalLink.a1NeName == connection.z1NeName) {
+                                    if (physicalLink.a1PortName.indexOf("SFD") > -1) {
+                                        connection.z_sfd_port = physicalLink.a1PortName;
+                                    } else {
+                                        connection.z_l_port = physicalLink.a1PortName;
+                                    }
+                                }
+                                if (physicalLink.z1NeName == connection.a1NeName) {
+                                    if (physicalLink.z1PortName.indexOf("SFD") > -1) {
+                                        connection.a_sfd_port = physicalLink.z1PortName;
+                                    } else {
+                                        connection.a_l_port = physicalLink.z1PortName;
+                                    }
+                                }
+                                if (physicalLink.z1NeName == connection.z1NeName) {
+                                    if (physicalLink.z1PortName.indexOf("SFD") > -1) {
+                                        connection.z_sfd_port = physicalLink.z1PortName;
+                                    } else {
+                                        connection.z_l_port = physicalLink.z1PortName;
+                                    }
+                                }
+                            }
+                            if ((rtnData[i].className == 'physicalLink')
+                            && (rtnData[i].containerType == 'ots' || rtnData[i].containerType == 'oms')) {
+                                if (connection.a1NeName == physicalLink.a1NeName) {
+                                    connection.a_line_port = physicalLink.a1PortName;
+                                }
+                                if (connection.a1NeName == physicalLink.z1NeName) {
+                                    connection.a_line_port = physicalLink.z1PortName;
+                                }
+                                if (connection.z1NeName == physicalLink.a1NeName) {
+                                    connection.z_line_port = physicalLink.a1PortName;
+                                }
+                                if (connection.z1NeName == physicalLink.z1NeName) {
+                                    connection.z_line_port = physicalLink.z1PortName;
+                                }
+                                if (connection.a1NeName == physicalLink.a2NeName) {
+                                    connection.a_line_port2 = physicalLink.a2PortName;
+                                }
+                                if (connection.a1NeName == physicalLink.z2NeName) {
+                                    connection.a_line_port2 = physicalLink.z2PortName;
+                                }
+                                if (connection.z1NeName == physicalLink.a2NeName) {
+                                    connection.z_line_port2 = physicalLink.a2PortName;
+                                }
+                                if (connection.z1NeName == physicalLink.z2NeName) {
+                                    connection.z_line_port2 = physicalLink.z2PortName;
+                                }                                
+                            }
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        this.loading = false;
+                    });
+            },
+            getList() {
+                axios.defaults.baseURL = 'https://135.251.96.98:5031';
+                axios.get('/cutover_task')
+                    .then((response) => {
+                        this.tableData = response.data;
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    })
+                    .then(() => {
+                        this.loading = false;
+                    })
+            },
+            onCut(task) {
+                console.log(task);
+                let id = task.id;
+                let isRollback = false;
+                axios.defaults.baseURL = 'https://135.251.96.98:5031';
+                axios.post('/cutover_exec', {id, isRollback})
+                    .then(rsp => {
+                        this.getList()
+                    })
+            },
+            onRollback(task) {
+                console.log(task);
+                let id = task.id;
+                let isRollback = true;
+                axios.defaults.baseURL = 'https://135.251.96.98:5031';
+                axios.post('/cutover_exec', {id, isRollback})
+                    .then(rsp => {
+                        this.getList()
+                    })
+            },
+            exportData2Csv() {
+                let header=[];
+                let headerLabel= [];
+                let tableData = this.tableData;
+                let columns = this.renderColumn;
+                for (const col of columns) {
+                    header.push(col.prop);
+                    headerLabel.push(col.label);
+                }
+                let lines = [headerLabel.join(",")];
+                for (let i = 0; i <tableData.length; i++) {
+                    let row = tableData[i];
+                    let elements = [];
+                    for (const key of header) {
+                        if (row.hasOwnProperty(key)) {
+                            const element = row[key];
+                            elements.push(`"${element}"`);
+                        } else {
+                            elements.push("");
+                        }
+                    }
+                    lines.push(elements.join(","));
+                }
+                const text = lines.join("\n");
+                this.download2('数据导出.csv', text);
+            },
+            download2(filename, text) {
+                var a = document.createElement('a');
+                var url = window.URL.createObjectURL(new Blob(["\ufeff"+text],
+                    { type: ("text/plain") + ";charset=" + ('utf-8') }));
+                a.href = url;
+                a.download = filename || 'file';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+        },
+        created() {
+            this.getContent();
+            this.getList();
+            let arr = [];
+            for (let i = 9170; i < 9610; i += 5) {
+                arr.push({
+                    key: i,
+                    value: i
+                })
+            }
+            this.optionsContent = arr;//波段从9170到9605
+        }
+    })
+
+</script>
+
+<!-- 老的名字
+原有的L口
+原有的SFD
+原有光放口
+原有的波长
+
+
+新的L口
+新的光放线路口
+新的波长
+新的SFD
+
+新的名字,全程一致
+
+
+
+pss32-141# config xc 1/5/L1 1/3/Line 9210 state down
+pss32-141# config xc 1/5/L1 1/3/Line 9210 delete yes
+pss32-141# config interface top 1/5/L1 delete
+pss32-141#
+pss32-141# config interface 1/5/L1 out4x2 channeltx 9220
+Error: command not found: out4x2
+
+pss32-141# config interface 260scx2 1/5/L1 otu4x2 channeltx 9220
+pss32-141# config interface 260scx2 1/5/L1 otu4x2 channelrx 9220
+pss32-141# config interface topo 1/5/L1 internal 25/1/9220 bi
+pss32-141# config xc 1/5/L1 1/3/Line 9220 create "alex-xia 9220" bi none auto
+pss32-141# config xc 1/5/L1 1/3/Line 9220 state up
+pss32-141# logout
+Logging out....
+[root@pss32-141 ~]# exit
+logout
+
+pss32-140# config xc 1/5/L1 1/3/Line 9210 state down
+pss32-140# config xc 1/5/L1 1/3/Line 9210 delete yes
+pss32-140# config interface topo 1/5/L1 delete
+pss32-140#
+pss32-140# config interface 1/5/L1 otu4x2 channeltx 9220
+pss32-140# config interface 1/5/L1 otu4x2 channelrx 9220
+pss32-140# config interface topo 1/5/L1 internal 25/1/9220 bi
+pss32-140# config xc 1/5/L1 1/3/Line 9220 create "alex-xia 9220" bi none auto
+pss32-140# config xc 1/5/L1 1/3/Line 9220 state up
+pss32-140# -->

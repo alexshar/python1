@@ -278,3 +278,4 @@ if __name__ == "__main__":
     # 将host设置为0.0.0.0，则外网用户也可以访问到这个服务
     app.run(host="0.0.0.0", port=5031, debug=False, ssl_context='adhoc')
     m.join()
+    schduler_ins.join()
