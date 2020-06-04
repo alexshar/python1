@@ -251,11 +251,14 @@ def file_upload():
 '''
 环回撤销登记
 '''
-@app.route('/loopback_release', methods=['POST'])
+@app.route('/loopback_release', methods=['GET', 'POST'])
 def loopback_release():
-    if not request.json:
-        abort(500)
-    return jsonify(loopback_ins.add_loopback_release_task(request.json))
+    if request.method == 'GET':
+        return jsonify(loopback_ins.get_all_tasks())
+    if request.method == 'POST':
+        if not request.json:
+            abort(500)
+        return jsonify(loopback_ins.add_loopback_release_task(request.json))
 
 
 if __name__ == "__main__":

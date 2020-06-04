@@ -89,3 +89,6 @@ class Loopback:
         
     def add_loopback_release_task(self, task):
         return self.db_ins.add_item(task)
+
+    def get_all_tasks(self):
+        return self.db_ins.get_all_items()
