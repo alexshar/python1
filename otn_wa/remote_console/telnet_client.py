@@ -1,5 +1,6 @@
-import telnetlib
 import time
+import re
+import telnetlib
 
 class TelnetClient(object):
     def __init__(self, hostname, username, password, port=21):
@@ -32,6 +33,13 @@ class TelnetClient(object):
         self.tl.close()
 
     def exec(self, command, expected=None, error_message="这是全宇宙不可能出现的字符串"):
+        re_delay = "#DELAY@(\d+)s"
+        r = re.search(re_delay, command, flags=re.I)
+        # 执行内部命令
+        if r is not None:
+            delay = int(r.group(1))
+            time.sleep(delay)
+            return 1
         self.tl.write(command)
         if expected is None:
             time.sleep(2)
