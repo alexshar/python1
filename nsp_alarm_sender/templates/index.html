@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>告警抛抛乐</title>
+    <script src="/static/vue.js"></script>
+    <script src="/static/element.js"></script>
+    <script src="/static/axios.min.js"></script>
+    <link rel="stylesheet" href="/static/index.css">
+
+</head>
+<body>
+<div id="app" class="Cutover-task-management">
+    <div class="header">
+        <span class="header-icon"></span>
+        <span class="word">告警抛抛乐</span>
+    </div>
+
+    <div style="margin:1rem;">
+        <div style="margin-bottom: 1rem;">
+            <el-button @click="refresh" type="primary">刷新</el-button>
+            <el-button @click="onNew" type="primary">新增</el-button>
+        </div>
+        <el-card>
+            <el-table :data="taskList" border>
+                <el-table-column
+                    label="id"
+                    prop="id">
+                </el-table-column>
+                <el-table-column
+                    label="告警类型"
+                    prop="category"
+                    :formatter="categoryFormatter">
+                </el-table-column>
+                <el-table-column
+                    label="告警名"
+                    prop="name">
+                </el-table-column>
+                <el-table-column
+                    label="告警级别"
+                    prop="severity">
+                </el-table-column>
+                <el-table-column
+                    label="告警对象"
+                    prop="object">
+                </el-table-column>
+                <el-table-column
+                    label="执行时间"
+                    prop="execTime"
+                    :formatter="timeFormatter">
+                </el-table-column>
+                <el-table-column
+                    label="状态"
+                    prop="status"
+                    :formatter="statusFormatter">
+                </el-table-column>
+
+                <el-table-column label="操作" fixed="right" width="200">
+                    <template slot-scope="scope">
+                        <el-button size="mini" type="success" @click="onExec(scope.row)">直接整一把</el-button>
+                        <el-button size="mini" type="danger"  @click="onDelete(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>                
+            </el-table>
+        </el-card>
+    </div>
+
+    <el-dialog title = "抛射什么样的告警?"
+        :visible.sync="dialogVisible"
+        width="50%">
+        <el-form label-width="200px" :model="form" ref="form" :rules="rules">
+            <el-form-item label="告警类型" prop="category">
+                <el-select style="margin-right:2rem;margin-left:0.3rem;width:13rem" size="small"  v-model="form.category">
+                    <el-option v-for="item in categoryTypes" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="告警条目" prop="name">
+                <el-input style="margin-right:2rem;margin-left:0.3rem;width:13rem" size="small"  v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="告警级别" prop="severity">
+                <el-select style="margin-right:2rem;margin-left:0.3rem;width:13rem" size="small"  v-model="form.severity">
+                    <el-option v-for="item in severityTypes" :key="item" :label="item" :value="item"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="告警对象" prop="object">
+                <el-input style="margin-right:2rem;margin-left:0.3rem;width:13rem" size="small"  v-model="form.object"></el-input>
+            </el-form-item>
+            <el-form-item label="抛射延迟(单位秒,可以是0)" prop="delay">
+                <el-input style="margin-right:2rem;margin-left:0.3rem;width:13rem" size="small"  v-model="form.delay"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button type="info" @click="dialogVisible=false">取 消</el-button>
+            <el-button type="success" @click="onSubmit" :loading="isAdding">确 定</el-button>
+        </span>        
+    </el-dialog>
+
+</div>
+
+</body>
+</html>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                dialogVisible: false,
+                form: {},
+                rules: {
+                    category: [{ required: true, message: "不可以是空", trigger: 'blur'}],
+                    name: [{ required: true, message: "不可以是空", trigger: 'blur'}],
+                    severity: [{ required: true, message: "不可以是空", trigger: 'change'}],
+                    object: [{ required: true, message: "不可以是空", trigger: 'blur'}],
+                    delay: [
+                        { required: true, message: "不可以是空", trigger: 'blur'}
+                    ]
+                },
+                severityTypes: [ "critical", "major", "minor", "warning", "indeterminate", "cleared" ],
+                categoryTypes: [
+                    {label: "quality of service", value: "qualityofservicealarm"},
+                    {label: "equipment", value: "equipmentalarm"},
+                    {label: "environmental", value: "environmentalalarm"},
+                    {label: "communication", value: "communicationalarm"},
+                    {label: "processing error", value: "processingerroralarm"},
+                ],
+                isAdding: false,
+                taskList: []
+            }
+        },
+        methods: {
+            add() {
+                
+            },
+            refresh(){
+                this.getList();
+                this.clearForm();
+            },
+            getList(){
+                this.loading=true;
+                axios.get('/get_alarms')
+                .then( (response)=> {
+                    this.taskList = response.data;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
+            clearForm() {
+                this.form = {
+                    category: "", // COMMUNICATIONS, QUALITY OF SERVICE, EQUIPMENT
+                    name: "",
+                    severity: "",
+                    object: "",
+                    delay: 0
+                }
+            },
+            onSubmit() {
+                this.$refs["form"].validate((valid) => {
+                    if (valid) {
+                        let reqBody = {...this.form};
+                        reqBody.id = "";
+                        reqBody.status = 0;
+                        this.isAdding = true;
+                        axios.post("/alarm", reqBody)
+                            .then( rsp => {
+                                this.clearForm();
+                                this.dialogVisible = false;
+                                this.getList();
+                            })
+                            .catch( err => {
+
+                            })
+                            .then(() => {
+                                this.isAdding = false;
+                            })
+                    } else {
+                        console.log("再康康")
+                    }
+                })
+            },
+            onNew() {
+                this.dialogVisible = true;
+            },
+            onExec(task) {
+                axios.post('/alarm_exec', task)
+            },
+            onDelete(task) {
+                axios.delete(`/alarm?id=${task.id}`)
+                    .then(() => {
+                        this.getList();
+                    })
+            },
+            statusFormatter(row) {
+                if (row.status == 0) {
+                    return "等待时机"
+                } else if (row.status < 0) {
+                    return "执行失败"
+                }
+                return "抛完"
+            },
+            timeFormatter(row) {
+                let t = +row.execTime;
+                let timeObj = new Date(t);
+                return `${timeObj.toLocaleDateString()} ${timeObj.toLocaleTimeString()}`
+            },
+            categoryFormatter(row) {
+                let category = row.category;
+                let found = this.categoryTypes.find(v => v.value == category)
+                if (found) {
+                    return found.label;
+                } else {
+                    return "神秘类型";
+                }
+            }
+        },
+        created(){
+            this.refresh()
+        }
+    })
+
+</script>
+
+<style>
+    body{margin: 0;height: 100%}
+    html,#app{height: 100%}
+    #app{height: calc(100% - 68px)}
+    .header{
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+    .main-content{
+        min-height: 100%;
+    }
+    .header .header-icon{
+        background: url("/static/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+    .header .word{
+        color: rgba(255,255,255,0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+    .flex-1{
+        display: flex;
+        flex: 1;
+        margin-left: 10px;
+        padding-top: 20px;
+    }
+    .row-1{
+        margin-right: 10px;
+    }
+    .row-1 select{
+        display: block;
+    }
+    .table-div{
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #EBEEF5;
+        border-bottom: 0;
+        margin: 10px;
+    }
+    .table-div .table-row{
+        display: flex;
+        flex-direction: row;
+    }
+    .table-div .table-row div{
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        height: 30px;
+        padding: 5px 0;
+        border: 1px solid #EBEEF5;
+        border-right:0 ;
+        border-top:0 ;
+    }
+    .table-div .table-row .input{
+        padding: 5px!important;
+        width: 90%;
+        /*border: 1px solid #DCDFE6;*/
+    }
+
+    .Cutover-task-management .full-select .el-select{
+        display: block;
+    }
+</style>
