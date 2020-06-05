@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>性能实时上报</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="js/axios.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="js/element.js"></script>
+    <script src="js/echarts.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="header">
+            <span class="header-icon"></span>
+            <span class="word">性能实时上报</span>
+        </div>
+
+        <div style="margin:1rem;">
+            <span>FEC性能检测端口</span>
+            <el-table :data="portsInConnectionsDetailed" border max-height="400">
+                <el-table-column label="网元名称" prop="neLabel" sortable min-width="100"></el-table-column>
+                <el-table-column label="网元类型" prop="nodeType" sortable min-width="100"></el-table-column>
+                <el-table-column label="接口标签" prop="tpLabel" sortable min-width="100"></el-table-column>
+                <el-table-column label="所属链路" prop="connectionName" sortable min-width="200"></el-table-column>
+                <el-table-column label="链路告警状态" prop="alarmState" sortable min-width="100"></el-table-column>
+                <el-table-column label="链路业务状态" prop="serviceState" sortable min-width="100"></el-table-column>
+                <el-table-column label="速率" prop="monitoredRateStr" sortable min-width="100"></el-table-column>
+                <el-table-column label="操作" width="180">
+                    <template slot-scope="scope">
+                        <!-- <el-button @click="goBack" type="text" size="small">返回</el-button> -->
+                        <el-switch v-model="scope.row.active" active-text="开启性能上报" @change="switchChange($event, scope.row)"></el-switch>
+                    </template>
+                </el-table-column>                
+            </el-table>
+        </div>
+
+        <el-row>
+            <div style="margin: 1rem;">
+                <span>选中的端口：</span>
+                <el-tag v-for="port in activePort" :key="port.id" closable @close="closePort(port)" style="margin-left: 0.5rem;">
+                    {{port.tpLabel}}
+                </el-tag>
+            </div>
+        </el-row>
+        <div id="chart" style="width: 100%; height: 400px;"></div>
+
+    </div>
+</body>
+
+</html>
+<style>
+    body {
+        margin: 0;
+        height: 100%
+    }
+
+    html,
+    #app {
+        height: 100%
+    }
+
+    #app {
+        height: calc(100% - 68px)
+    }
+
+    .header {
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+
+    .main-content {
+        min-height: 100%;
+    }
+
+    .header .header-icon {
+        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+
+    .header .word {
+        color: rgba(255, 255, 255, 0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+</style>
+<script>
+    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+    var pmData = [];
+    var myChart = null; 
+    var option = {
+        title: { text: 'PRE-FEC', left: '20%' },
+        tooltip: { trigger: 'axis' },
+        toolbox: {
+            feature: { saveAsImage: {} }
+        },
+        xAxis: {
+            type: 'time',
+            splitLine: {
+                show: false
+            }
+        },
+        yAxis: { type: 'value' },
+        series: []
+    };
+
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                tableData: [],
+                tableData2: [],
+                nes: [],
+                activePort: [],
+                connections: [],
+                nesInConnections: [],
+                portsInConnections: [],
+                portsInConnectionsDetailed: [],
+                show: true,
+                loading: false,
+                pmData: []
+            }
+        },
+        methods: {
+            getList() {
+                this.loading = true;
+                Promise.all([
+                    axios.get("/oms1350/data/npr/nes"),
+                    //基础架构连接
+                    axios.get("/oms1350/data/otn/connections/trails")
+                ])
+                .then(([response1, response2]) => {
+                    // 得到NE
+                    if (!response1 || !response1.data) {
+                        console.error("GET:/oms1350/data/npr/nes: error")
+                        this.loading = false;
+                    }
+                    this.nes = response1.data;
+                    // 得到链接，并过滤
+                    if (!response2 || !response2.data || !response2.data.items) {
+                        console.error("GET:/oms1350/data/otn/connections/trails: error");
+                        this.loading = false;
+                    }
+                    this.connections = response2.data.items.filter(v => 
+                        v.effectiveRate.includes("OTU")
+                        //&& v.alarmState == "Cleared"
+                    );
+                    // 采集连接中的NE和端口
+                    this.portsInConnectionsDetailed = [];
+                    this.activePort = [];
+                    this.connections.forEach(v => {
+                        // 采集性能点 
+                        this.getPmPointsByConnection(v);
+                    })
+                    this.loading = false;
+                })
+                .catch(errors => {
+                    console.log(errors);
+                    this.loading = false;
+                })
+            },
+            getPmPointsByConnection(connection) {
+                let id = connection.id;
+                let url = `https://135.251.96.98:8443/oms1350/data/cpm/monTps/${id}/WDM`;
+                axios.get(url).then( rsp => {
+                    // console.log("getPmPointsByConnectionId", id, rsp)
+                    let filtered = rsp.data.items.filter( v => (v.direction=="RCV" && v.technology=="Digital" && v.granularity==0 && v.monitoredRateStr.trim()=="OCH"))
+                    for (let i = 0; i < filtered.length; i++) {
+                        filtered[i].connectionId = id;
+                        filtered[i].connectionName = connection.guiLabel;
+                        filtered[i].alarmState = connection.alarmState;
+                        filtered[i].serviceState = connection.serviceState;
+                        let ne = this.nes.find(v => (v.guiLabel == filtered[i].neName))
+                        if (ne) {
+                            filtered[i].nodeType = ne.nodeType;
+                        }
+                    }
+                    this.portsInConnectionsDetailed.push(...filtered)
+                })
+            },
+            getPmDate(port) {
+                let url = "/oms1350/pm/pmdata"
+                let reqBody = {
+                    "clientTz":0,
+                    "granularity":"day",
+                    // "selectedEntities" 是由多个字段用'@'符号拼接而成，但是观察发现，其中hookmapper这个字段要去掉末尾的分号。
+                    // 最后形成的字符串的例子如下：
+                    // "pss32-140@pss32-140/130SCX10-1-14-L1:OTU4:preFECBER:NEND:Receive:1-DAY,130SCX10-1-14-L1||/frequency=WXYZ:230:5:2:2@129.280@SDFEC@19",
+                    "selectedEntities": [port.neLabel, port.hookmapper.substr(0, port.hookmapper.length - 1), port.bitrate, port.fectype, port.pmLayerRate].join("@"),
+                    "expFormat":"",
+                    "operationType":0,
+                    "neName": port.neLabel
+                }
+                axios.post(url, reqBody).then( rsp => {
+                    console.log(rsp)
+                    if (rsp && rsp.data && rsp.data.items && rsp.data.items.length > 0) {
+                        let data = rsp.data.items[rsp.data.items.length-1];
+                        if (data.pmData && data.pmData["PRE-FEC"]) {
+                            let found = pmData.find(v => v.id == port.id)
+                            if (found) found.data.push({
+                                time: Date.now(),
+                                value: Number(data.pmData["PRE-FEC"])
+                            });
+                            else pmData.push({
+                                id: port.id,
+                                name: port.tpLabel,
+                                data: [{
+                                    time: Date.now(),
+                                    value: Number(data.pmData["PRE-FEC"])
+                                }]
+                            })
+                        }
+                    }
+                    console.log(pmData)
+                })
+                
+            },
+            closePort(port) {
+                for (let i = 0; i < this.activePort.length; i++) {
+                    if (this.activePort[i].id == port.id) {
+                        this.activePort;
+                        this.activePort.splice(i, 1);
+                        break;
+                    }
+                }
+            },
+            switchChange(isActive, port) {
+                // update active list
+                isExisting = false;
+                for (let i = 0; i < this.activePort.length; i++) {
+                    if (this.activePort[i].id == port.id) {
+                        if (!isActive) this.activePort.splice(i, 1);
+                        isExisting = true;
+                        break;
+                    }
+                }
+                if (isActive && !isExisting) {
+                    this.activePort.push(port)
+                }
+            }
+        },
+        created() {
+            this.getList();
+            setInterval(()=>{
+                this.activePort.forEach(v=>{
+                    this.getPmDate(v)
+                })
+            }, 5000);
+        },
+        mounted() {
+            myChart = echarts.init(document.getElementById('chart'));
+            myChart.setOption(option);
+        }
+
+    })
+
+</script>

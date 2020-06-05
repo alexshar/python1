@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>不可用及开通未用Client业务报表</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="app">
+    <div class="header">
+        <span class="header-icon"></span>
+        <span class="word">不可用及开通未用Client业务报表</span>
+    </div>
+    <div class="main-content" v-loading="loading"
+              element-loading-text="加载中"
+              element-loading-spinner="el-icon-loading"
+              element-loading-background="rgba(0, 0, 0, 0.8)">
+<!--        <i class="el-icon-refresh-right"></i>-->
+        <el-button @click="getList" style="margin: 10px" type="primary" size="mini" icon="el-icon-refresh-right">刷新</el-button>
+        <span>长时间不可用：</span>
+        <el-input style="width: 80px" v-model="overTime" placeholder="请输入整数"></el-input>
+        <span>小时</span>
+        <el-button @click="filterTime" style="margin-left: 10px" type="primary" size="mini">确认</el-button>
+        <el-button icon="el-icon-download" size="mini" type="primary" @click="exportData2Csv">下载</el-button>
+        <div style="margin: 10px">
+            <span>可用数：{{num1}}</span>
+            <span style="margin: 0 20px">不可用数：{{num2}}</span>
+            <span>长期不可用数：{{num3}}</span>
+            <span style="margin: 0 20px">开通未用端到端电路：{{num4}}</span>
+            <span>长时间开通未用端到端电路：{{num5}}</span>
+        </div>
+        <el-table
+            :data="tableData"
+            :row-class-name="tableRowClassName"
+            style="width: 100%">
+        <el-table-column
+                label="连接名称"
+                prop="guiLabel">
+        </el-table-column>
+        <el-table-column
+                label="业务速率"
+                prop="effectiveRate">
+        </el-table-column>
+        <el-table-column
+                label="源节点"
+                prop="a1NodeName">
+        </el-table-column>
+            </el-table-column>
+            <el-table-column
+                label="源端口#1"
+                prop="a1PortName">
+        </el-table-column>
+            <el-table-column
+                label="宿节点"
+                prop="z1NodeName">
+        </el-table-column>
+        </el-table-column>
+        <el-table-column
+                label="宿端口#1"
+                prop="z1PortName">
+        </el-table-column>
+            <el-table-column
+                label="业务状态"
+                prop="typeStatus">
+        </el-table-column>
+        </el-table>
+    </div>
+
+
+</div>
+</body>
+</html>
+<style>
+    body{margin: 0;height: 100%}
+    html,#app{height: 100%}
+    #app{height: calc(100% - 68px)}
+    .header{
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+    .main-content{
+        min-height: 100%;
+    }
+    .header .header-icon{
+        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+    .header .word{
+        color: rgba(255,255,255,0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+    .el-table .warning-row {
+        background: #F56C6C;
+    }
+</style>
+<script>
+    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                tableData: [],
+                loading:false,
+                overTime:24,
+                num1:0,
+                num2:0,
+                num3:0,
+                num4:0,
+                num5:0,
+                renderColumn:[
+                    {label:'连接名称', prop:'guiLabel'},
+                    {label:'业务速率', prop:'effectiveRate'},
+                    {label:'源节点', prop:'a1NodeName'},
+                    {label:'源端口#1', prop:'a1PortName'},
+                    {label:'宿节点', prop:'z1NodeName'},
+                    {label:'宿端口#1', prop:'z1PortName'},
+                    {label:'业务状态', prop:'typeStatus'},
+                ],
+            }
+        },
+        methods: {
+            tableRowClassName({row, rowIndex}) {
+                console.log(row)
+                if (row.typeStatus === '可用') {
+                    return '';
+                }else {
+                    return 'warning-row';
+                }
+
+            },
+            async getList(){
+                let _this= this;
+                _this.loading=true;
+                axios.get('/oms1350/data/otn/connections/paths')
+                    .then(async function (response) {
+                        let _list = response.data.items;
+                        for (let i = 0; i < _list.length; i++) {
+                            let id = _list[i].id;
+                            _list[i].typeStatus = await _this.getDetail(id);
+                        }
+                        _this.tableData = _list;
+                        _this.loading = false;
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        _this.loading=false;
+                    });
+            },
+            async getDetail(id){
+                let _this= this;
+                let rtnWord = '可用';
+                await axios.get('/oms1350/data/otn/connections/'+id+'/alarms')
+                .then(function (response) {
+                    /*
+                    * 光路中断：
+                        L口
+                        Loss of Signal - OTU ，LOS，Loss of Signal ，Loss of input signal
+                        FEC：包含Threshold Crossing detection 就是不可用
+
+                        C口：Loss of Signal - OTU ，LOS，Loss of Signal ，Loss of input signal，就是开通未用
+
+                        超过定义参数，例如24小时内，L口不可用/C口不再用，  超过24小时， L口-长时间不可用/C口-开通未用端到端电路，
+                        同时出现以L为准
+                    * */
+                    let list = response.data.items;
+                    let flag = false;
+                    for (let i=0;i<list.length;i++){
+                        let status = list[i].eAlmDetails;
+                        //判断是不是L口 C口
+                        let tpNativeName = list[i].tpNativeName;
+                        let pattC = /-C[0-9]/;
+                        let pattL = /-L[0-9]/;
+                        if(id==385){
+                            console.log(status,tpNativeName)
+                        }
+                        if(tpNativeName.match(pattC)){
+                            if(status=='Loss of Signal - OTU'||status=='LOS'||status=='Loss of Signal'||status=='Loss of input signal'){
+                                let _almRaiseTime = parseInt(list[i].almRaiseTime);
+                                if(_this.compareDate(_almRaiseTime)){
+                                    flag = true;
+                                    rtnWord = '开通未用端到端电路';
+                                    _this.num4++;
+                                    break;
+                                }else{
+                                    flag = true;
+                                    rtnWord = '长时间开通未用端到端电路';
+                                    _this.num5++;
+                                }
+                            }
+                        }else if(tpNativeName.match(pattL)){
+                            if(status=='Loss of Signal - OTU'||status=='LOS'||status=='Loss of Signal'||status=='Loss of input signal'){
+                                let _almRaiseTime = parseInt(list[i].almRaiseTime);
+                                if(_this.compareDate(_almRaiseTime)){
+                                    flag = true;
+                                    rtnWord = '长时间不可用';
+                                    _this.num3++;
+                                    break;
+                                }else{
+                                    flag = true;
+                                    rtnWord = '不可用';
+                                    _this.num2++;
+                                }
+                            }else if(status == 'Threshold Crossing detection'){
+                                flag = true;
+                                rtnWord = '不可用';
+                                _this.num2++;
+                            }
+                        }
+                    }
+                    if(rtnWord == '可用'){
+                        _this.num1++;
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+                return rtnWord;
+            },
+            compareDate(value){
+                let now = Date.now();
+                if((now-value)>60*60*this.overTime){
+                    return true
+                }else{
+                    return false
+                }
+            },
+            filterTime(){
+                if(this.overTime%1 !== 0){
+                    this.$message.error('请输入正整数');
+                }else{
+                    this.num1=0;
+                    this.num2=0;
+                    this.num3=0;
+                    this.num4=0;
+                    this.num5=0;
+                    this.getList();
+                }
+            },
+            exportData2Csv() {
+                let header=[];
+                let headerLabel= [];
+                let tableData = this.tableData;
+                let columns = this.renderColumn;
+                for (const col of columns) {
+                    header.push(col.prop);
+                    headerLabel.push(col.label);
+                }
+                let lines = [headerLabel.join(",")];
+                for (let i = 0; i <tableData.length; i++) {
+                    let row = tableData[i];
+                    let elements = [];
+                    for (const key of header) {
+                        if (row.hasOwnProperty(key)) {
+                            const element = row[key];
+                            elements.push(`"${element}"`);
+                        } else {
+                            elements.push("");
+                        }
+                    }
+                    lines.push(elements.join(","));
+                }
+                const text = lines.join("\n");
+                this.download2('不可用及开通未用Client业务报表.csv', text);
+            },
+            download2(filename, text) {
+                var a = document.createElement('a');
+                var url = window.URL.createObjectURL(new Blob(["\ufeff"+text],
+                    { type: ("text/plain") + ";charset=" + ('utf-8') }));
+                a.href = url;
+                a.download = filename || 'file';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            },
+        },
+        created(){
+            this.getList();
+        }
+    })
+
+
+
+
+
+
+
+
+</script>

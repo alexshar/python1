@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Loop-Back-Points-Condition</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            margin: 0px;
+        }
+
+        .header {
+            background-color: rgb(18, 65, 145);
+            z-index: 12000;
+            height: 48px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .header .app-logo {
+            margin-left: 24px !important;
+            width: 100%;
+            max-width: 85px;
+            padding: 14px 0;
+        }
+
+        #app-banner-productFamily {
+            font-family: Nokia Pure Text Regular;
+            color: hsla(0, 0%, 100%, .75);
+            font-size: 17px;
+            flex: auto 0 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-left: 16px;
+            font-weight: 400;
+        }
+
+        #app-banner-productName {
+            margin-left: auto;
+            opacity: 1;
+            color: #fff;
+            font-family: Nokia Pure Text Regular, Arial, sans-serif;
+            font-size: 17px;
+            flex: auto 0 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 400;
+        }
+
+        #user-account-summary-btn-wrapper {
+            margin-left: 0;
+            margin-top: 2px;
+            margin-right: 12px;
+            max-width: 33%;
+        }
+
+        #button-text {
+            color: #fff;
+            font-size: 13px;
+            text-transform: none;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-family: Nokia Pure Text Regular, Arial, sans-serif;
+            max-width: 200px;
+            max-height: 24px;
+            display: inline-block;
+            position: relative;
+            top: -1px;
+        }
+
+        #button-icon-wrapper {
+            pointer-events: none;
+            max-height: 24px;
+            color: #fff;
+        }
+
+        #user-account-summary-btn-Icons {
+            padding: 0;
+            margin: 0;
+            display: inline;
+            opacity: 1;
+            pointer-events: none;
+            max-height: 24px;
+            position: relative;
+            top: 3px;
+        }
+
+        .el-tooltip-item {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+
+<body>
+    <!-- 页面头部样式 -->
+    <div class="header">
+        <div class="app-logo">
+            <img style="height: 14px;"
+                src="data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!-- Generator: Adobe Illustrator 19.2.1%2C SVG Export Plug-In . SVG Version: 6.00 Build 0)  --%3E%3Csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px'%09 width='313px' height='53px' viewBox='0 0 313 53' style='enable-background:new 0 0 313 53%3B' xml:space='preserve'%3E%3Cstyle type='text/css'%3E%09.st0%7Bfill:%23FFFFFF%3B%7D%3C/style%3E%3Cpath class='st0' d='M15.1%2C52.2H0V1h26.1L56%2C39.2V1H71v51.3H45.5L15.1%2C13.3V52.2 M143.1%2C36.4c0%2C7.1-1.3%2C9.6-3.3%2C11.9%09c-3.2%2C3.5-7.8%2C4.6-16.8%2C4.6H97.3c-9%2C0-13.6-1.1-16.8-4.6c-2.1-2.4-3.3-4.8-3.3-11.9V16.6c0-7.1%2C1.3-9.6%2C3.3-11.9%09c3.2-3.5%2C7.9-4.6%2C16.8-4.6H123c9%2C0%2C13.6%2C1.1%2C16.8%2C4.6c2.1%2C2.4%2C3.3%2C4.8%2C3.3%2C11.9V36.4 M122.4%2C39.9c3.4%2C0%2C4.7-0.2%2C5.5-1%09c0.8-0.7%2C1.1-1.6%2C1.1-4.6V18.7c0-3-0.3-3.9-1.1-4.6c-0.8-0.8-2-1-5.5-1H97.9c-3.4%2C0-4.7%2C0.2-5.5%2C1c-0.8%2C0.7-1.1%2C1.6-1.1%2C4.6v15.6%09c0%2C3%2C0.3%2C3.9%2C1.1%2C4.6c0.8%2C0.8%2C2%2C1%2C5.5%2C1H122.4L122.4%2C39.9 M165%2C1v51.3h-15.7V1H165 M191.7%2C1h20.8l-28.1%2C24L216%2C52.2h-22.2L165%2C25.5%09L191.7%2C1 M218.9%2C1h15.8v51.3h-15.8 M294.7%2C52.2l-4.7-8.9h-30.5l-4.6%2C8.9h-17.4L265.5%2C1h19.6L313%2C52.2H294.7 M265.1%2C32.2h19.6%09l-9.8-18.6L265.1%2C32.2'/%3E%3C/svg%3E">
+        </div>
+        <h1 id="app-banner-productFamily">Network Functions Manager - Transport</h1>
+        <h1 id="app-banner-productName">
+            <span style="font-size: 13px;">
+                <span style="font-size: 13px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span style="font-size: 13px;">User: </span>
+                <span style="font-size: 13px;">&nbsp;</span>
+            </span>
+        </h1>
+        <div id="user-account-summary-btn-wrapper">
+            <div>
+                <span id="button-text">alcatel</span>
+                <span id="button-icon-wrapper">
+                    <svg id="user-account-summary-btn-Icons" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24">
+                        <path d="M7,9.5l5,5,5-5Z" style="fill: #FFFFFF !important;"></path>
+                    </svg>
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- 页面body样式 -->
+    <div id="app">
+        <div style="margin: 30px;">
+            <el-table :data="connectionList" style="width: 100%;margin-bottom: 20px;" row-key="id" border
+                default-expand-all :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+                row-style="{height:50px}">
+                <el-table-column prop="stepState" label="Complation Status">
+                    <template slot-scope="scope">
+                        <el-tooltip class="item el-tooltip-item" effect="dark" :content="scope.row.stepState">
+                            <div>{{scope.row.stepState}}</div>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="effectiveRate" label="Service Rate" width="80">
+                    <template slot-scope="scope">
+                        <el-tooltip class="item el-tooltip-item" effect="dark" :content="scope.row.effectiveRate">
+                            <div>{{scope.row.effectiveRate}}</div>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="connectionAlias" label="Connection Name">
+                    <template slot-scope="scope">
+                        <el-tooltip class="item el-tooltip-item" effect="dark" :content="scope.row.connectionAlias">
+                            <div>{{scope.row.connectionAlias}}</div>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="displayProtectionType" label="Protection">
+                    <template slot-scope="scope">
+                        <el-tooltip class="item el-tooltip-item" effect="dark"
+                            :content="scope.row.displayProtectionType">
+                            <div>{{scope.row.displayProtectionType}}</div>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="a1NeName" label="From Node #1">
+                    <template slot-scope="scope">
+                        <el-tooltip class="item el-tooltip-item" effect="dark" :content="scope.row.a1NeName">
+                            <div>{{scope.row.a1NeName}}</div>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="a1PortName" label="From Port #1">
+                    <template slot-scope="scope">
+                        <el-tooltip class="item el-tooltip-item" effect="dark" :content="scope.row.a1PortName">
+                            <div>{{scope.row.a1PortName}}</div>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="z1NeName" label="To Node #1">
+                    <template slot-scope="scope">
+                        <el-tooltip class="item el-tooltip-item" effect="dark" :content="scope.row.z1NeName">
+                            <div>{{scope.row.z1NeName}}</div>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="z1PortName" label="To Port #1">
+                    <template slot-scope="scope">
+                        <el-tooltip class="item el-tooltip-item" effect="dark" :content="scope.row.z1PortName">
+                            <div>{{scope.row.z1PortName}}</div>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="category" label="Category">
+                    <template slot-scope="scope">
+                        <el-tooltip class="item el-tooltip-item" effect="dark" :content="scope.row.category">
+                            <div>{{scope.row.category}}</div>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+    </div>
+</body>
+
+<script>
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            connectionList: []
+        },
+        created: function () {
+            /*
+                获取所有连接
+            */
+            axios.get('https://135.251.96.98:8443/oms1350/data/otn/connection/loopbackConnection')
+                .then(function (response) {
+                    console.log("数据传输成功！");
+                })
+                .catch(function (error) {
+                    console.log("数据传输失败！");
+                });
+            this.connectionList = this.getPaths();
+        },
+        methods: {
+            getPaths: function () {
+                return [
+                    {
+                        stepState: "SSTATE_COMPLETED",
+                        effectiveRate: "10GbE",
+                        connectionAlias: "pss32-140/130SCX10-1-14-L1 pss32-152/130SCX10-1-5-L1 OTU4 ODU4:1 ODU2:1 DSR:1",
+                        displayProtectionType: "DPT_UN_PROTECTED",
+                        a1NeName: "pss32-152",
+                        a1PortName: "130SCX10-1-5-C1",
+                        z1NeName: "pss32-140",
+                        z1PortName: "130SCX10-1-14-C1",
+                        category: "CC_MANAGED_PLANE",
+                        children: []
+                    },
+                    {
+                        stepState: "SSTATE_GOING",
+                        effectiveRate: "6GbE",
+                        connectionAlias: "pss32-140/11QPA4-1-17-L1 pss32-152/11QPA4-1-14-L1 OTU2 ODU2:1 DSR:1",
+                        displayProtectionType: "DPT_UN_PROTECTED",
+                        a1NeName: "pss32-152",
+                        a1PortName: "11QPA4-1-14-C1",
+                        z1NeName: "pss32-140",
+                        z1PortName: "11QPA4-1-17-C1",
+                        category: "CC_MANAGED_PLANE",
+                        children: []
+                    }
+                ]
+            }
+        }
+    })
+</script>
+
+</html>

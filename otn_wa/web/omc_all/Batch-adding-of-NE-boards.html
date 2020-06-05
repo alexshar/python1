@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>网元板卡批量添加</title>
+<!--    <script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+<!--    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
+<!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+<!--    <script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
+
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/index.css">
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+<div id="app">
+    <div class="header">
+        <span class="header-icon"></span>
+        <span class="word">网元板卡批量添加</span>
+    </div>
+    <div class="main-content"
+         style="padding: 20px"
+         v-loading="loading"
+         element-loading-text="加载中"
+         element-loading-spinner="el-icon-loading"
+         element-loading-background="rgba(0, 0, 0, 0.8)">
+
+        <template>
+            <el-select v-if="neList.length>0" @change="changeSelect" multiple v-model="chooseId" placeholder="请选择网元">
+                <el-option
+                        v-for="item in neList"
+                        :key="item.id"
+                        :label="item.guiLabel"
+                        :value="item.id+'-'+item.emlDomId+'-'+item.guiLabel">
+                </el-option>
+            </el-select>
+            <span>批量可配槽位:</span>
+        </template>
+        <br>
+
+        <el-collapse v-model="activeNames" style="margin-top: 10px">
+
+            <el-collapse-item v-for="index in shelfList" :title="index.id" :name="index.id">
+                <span v-if="soltindex._chooseDisable == true" style="width: 550px;display: flex;justify-content: space-between;margin-bottom: 10px" v-for="soltindex in soltList[index.id]">
+                    <span>{{soltindex.id}}:</span>
+                    <el-select @change="soltindexClick" clearable v-if="soltindex._chooseDisable == true" v-model="soltindex.chooseValue" placeholder="请选择类型">
+                    <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.value"
+                            :value="item.value">
+                    </el-option>
+                    </el-select>
+<!--                    <span v-if="soltindex._chooseDisable == false">{{soltindex._chooseLable}}</span>-->
+                </span>
+
+            </el-collapse-item>
+
+        </el-collapse>
+        <el-button :disabled="canSubmit" style="margin-top: 10px" type="primary" @click="submit">确认添加</el-button>
+
+    </div>
+
+
+</div>
+</body>
+</html>
+<style>
+    body{margin: 0;height: 100%}
+    html,#app{height: 100%}
+    #app{height: calc(100% - 68px)}
+    .header{
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+    .main-content{
+        min-height: 100%;
+    }
+    .header .header-icon{
+        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+    .header .word{
+        color: rgba(255,255,255,0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+    .el-loading-mask{z-index: 20000}
+</style>
+<script>
+    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                neList: [],
+                shelfList: [],
+                loading:false,
+                canSubmit:true,
+                options: [
+                    {value: 'AM2125B'},
+                    {value: 'AHPLG'},
+                    {value: 'S13X100R'},
+                    {value: '2UC400'},
+                    {value: '10AN1T'},
+                    {value: '4UC400'},
+                    {value: '4AN400'},
+                    {value: '30AN300'},
+                    {value: '20AN80'},
+                    {value: 'ASWG'},
+                    {value: '1UX100'},
+                    {value: '20AX200'},
+                    {value: '20MX80'},
+                    {value: '2UX200'},
+                    {value: '11QPA4'},
+                    {value: 'D5X500'},
+                    {value: 'S4X400H'},
+                ],
+                value1: '',
+                chooseId:'',
+                activeNames: [],
+                soltList:{
+
+                },
+                portid:'',
+                portid2:'',
+                guiLabel:'',
+
+            }
+        },
+        methods: {
+            soltindexClick(e){
+                this.canSubmit=false;
+                console.log(this.shelfList)
+            },
+            getNe(){
+                this.neList=[];
+                this.shelfList=[];
+                this.soltList={};
+                this.chooseId='';
+                 axios.get('/oms1350/data/npr/nes', {})
+                 .then( (response)=> {
+                    this.neList=response.data;
+                     this.loading=false;
+                 })
+                .catch(function (error) {
+                    console.log(error);
+                    this.loading=false;
+                 });
+
+            },
+            async changeSelect(e){
+                console.log(e)
+                this.loading=true;
+                this.shelfList=[];
+                this.soltList = {};
+                for (let i=0;i<e.length;i++){
+                    let _item =e[i].split('-');
+                    this.portid =_item[1];
+                    this.portid2 =_item[0];
+                    for(let k=2;k<_item.length;k++){
+                        this.guiLabel +=_item[k]+'-';
+                    }
+                    this.guiLabel=this.guiLabel.substring(0,this.guiLabel.length-1);
+                    let flag=false;
+                    if(i==e.length-1){
+                        flag=true;
+                    }
+                    await this.getsoltList(_item[1],_item[0],flag);
+                    console.log(this.guiLabel)
+                }
+
+            },
+            getsoltList(id,id2,flag){
+                axios.get('/oms1350/eqm/Equipment/NodeSummary/'+id+'/'+id2, {})
+                    .then( (response)=> {
+                        let arr=[];
+                        //处理shelf
+                        for (let i = 0; i<response.data.length;i++){
+                            if(response.data[i].eType=='SHELF'&&response.data[i].shelfType.indexOf('UNV')>-1){
+                                this.shelfList.push(response.data[i]);
+                            }
+                            if(response.data[i].eType=='SLOT'){
+                                arr.push(response.data[i])
+                            }
+                            // console.log(response.data[i].eType)
+                        }
+                        //处理shelf上对应的solt
+                        let newSoltList = {};
+                        for (let i=0;i<arr.length;i++){
+                            arr[i].chooseValue='';
+                            for (let k=0;k<this.shelfList.length;k++){
+                                if(arr[i].pId == this.shelfList[k].id){
+                                    if(arr[i].id.indexOf('SLOT-')>-1){
+                                        arr[i]._chooseDisable = true;
+                                    }else {
+                                        arr[i]._chooseDisable = false;
+                                        let _split =[];
+                                        _split = arr[i].id.split('/');
+                                        arr[i]._chooseLable = _split[_split.length-1];
+                                    }
+                                    if(!newSoltList[arr[i].pId]){
+                                        newSoltList[arr[i].pId]=[];
+
+                                        newSoltList[arr[i].pId].push(arr[i])
+
+                                    }else {
+                                        newSoltList[arr[i].pId].push(arr[i])
+                                    }
+                                }
+                            }
+                        }
+                        // this.soltList = this.soltList.concat(newSoltList);
+                        for(let obj in this.soltList){
+                            newSoltList[obj] = this.soltList[obj];
+                        }
+                        this.soltList = newSoltList;
+                        console.log(this.soltList)
+                        if(flag){
+                            this.loading=false;
+                        }
+                    })
+                    .catch(function (error) {
+                        if(flag){
+                            this.loading=false;
+                        }
+                        console.log(error);
+                        // this.loading=false;
+                    });
+
+            },
+            async submit(){
+                console.log(this.soltList)
+                axios.defaults.headers.post['Content-Type'] = 'application/xml';
+                axios.defaults.headers.post['Accept'] = 'application/xml';
+                this.loading=true;
+                for (let obj in this.soltList) {
+                    for (let i=0;i<this.soltList[obj].length;i++){
+                        if (this.soltList[obj][i].chooseValue) {
+                            let _id = this.soltList[obj][i].aid;
+                            let arr = _id.split('-');
+                            let str=`
+                                <CLIRequestCommand><neName>${this.guiLabel}</neName><ncName>100_SNA</ncName><cliCommandText>Config slot ${arr[1]}/${arr[2]} type ${this.soltList[obj][i].chooseValue}</cliCommandText></CLIRequestCommand>
+                            `;
+
+                            axios.post('/oms1350/eqm/cliRequest/processCLIRequest/'+this.portid+'/'+this.portid2, str)
+                                .then( (response)=> {
+                                    // this.$message({
+                                    //     message: '修改成功',
+                                    //     type: 'success'
+                                    // });
+                                    // this.getNe();
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                    // this.loading=false;
+                                });
+                        }
+                    }
+                }
+               await this.show();
+            },
+            show(){
+                let time1 = Math.random(5,10)*10*1000;
+                setTimeout(()=>{
+                    this.loading=false;
+                    this.$message('配置完毕');
+                    this.getNe();
+                },time1)
+            }
+        },
+        created(){
+            this.getNe();
+        }
+    })
+
+
+
+
+
+
+
+
+</script>

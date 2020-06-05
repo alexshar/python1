@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>环回管理</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/index.css">
+
+<!--    <script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+<!--    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
+<!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+<!--    <script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
+</head>
+<body>
+<div id="app" class="Cutover-task-management">
+    <div class="header">
+        <span class="header-icon"></span>
+        <span class="word">环回管理</span>
+    </div>
+    <div class="main-content" v-loading="loading"
+         element-loading-text="加载中"
+         element-loading-spinner="el-icon-loading"
+         element-loading-background="rgba(0, 0, 0, 0.8)">
+    <div style="padding-top: 20px;padding-left: 10px">
+        <template>
+            <el-radio v-model="subType" label= 'Cmd_Facility_Loopback'>开启外环回</el-radio>
+            <el-radio v-model="subType" label= 'Cmd_Terminal_Loopback'>开启内环回</el-radio>
+        </template>
+        <span class="block">
+            <span>选择环回自动结束时间：</span>
+            <el-date-picker
+                    v-model="chooseTime"
+                    type="datetime"
+                    value-format="timestamp"
+                    :picker-options="pickerOptions0"
+                    placeholder="选择日期时间">
+            </el-date-picker>
+        </span>
+        <el-button type="primary" @click="submit">提交</el-button>
+    </div>
+
+    <el-table
+            :data="tableData"
+            @selection-change="handleSelectionChange"
+            style="width: 100%">
+        <el-table-column
+                type="selection"
+                width="55">
+        </el-table-column>
+        <el-table-column
+                label="端口名称"
+                prop="guiLabel" sortable>
+        </el-table-column>
+        <el-table-column
+                label="网元名称"
+                prop="neName">
+        </el-table-column>
+        <el-table-column
+                label="id"
+                prop="id">
+        </el-table-column>
+        <el-table-column
+                label="是否支持内环回"
+                width="120">
+            <template slot-scope="scope">
+                <span>{{fileter(scope.row.supportsTerminalLoopback)}}</span>
+            </template>
+        </el-table-column>
+        <el-table-column
+                label="是否支持外环回"
+                width="120">
+            <template slot-scope="scope">
+                <span>{{fileter(scope.row.supportsFacilityLoopback)}}</span>
+            </template>
+        </el-table-column>
+        <el-table-column
+                label="环回状态"
+                prop="portLoopbackType" sortable>
+        </el-table-column>
+        <el-table-column
+                label="自动释放时间"
+                prop="execTime" sortable>
+        </el-table-column>
+        <el-table-column label="操作">
+            <template slot-scope="scope">
+                <el-button
+                        v-if="scope.row.portLoopbackType !='RELEASE'"
+                        type="primary"
+                        size="mini"
+                        @click="handleRelease(scope.row)">释放</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    </div>
+</div>
+</body>
+</html>
+<style>
+    body{margin: 0;height: 100%}
+    html,#app{height: 100%}
+    #app{height: calc(100% - 68px)}
+    .header{
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+    .main-content{
+        min-height: 100%;
+    }
+    .header .header-icon{
+        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+    .header .word{
+        color: rgba(255,255,255,0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+    .flex-1{
+        display: flex;
+        flex: 1;
+        margin-left: 10px;
+        padding-top: 20px;
+    }
+    .row-1{
+        margin-right: 10px;
+    }
+    .row-1 select{
+        display: block;
+    }
+    .table-div{
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #EBEEF5;
+        border-bottom: 0;
+        margin: 10px;
+    }
+    .table-div .table-row{
+        display: flex;
+        flex-direction: row;
+    }
+    .table-div .table-row div{
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        height: 30px;
+        padding: 5px 0;
+        border: 1px solid #EBEEF5;
+        border-right:0 ;
+        border-top:0 ;
+    }
+    .table-div .table-row .input{
+        padding: 5px!important;
+        width: 90%;
+        /*border: 1px solid #DCDFE6;*/
+    }
+
+    .Cutover-task-management .full-select .el-select{
+        display: block;
+    }
+</style>
+<script>
+    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                nes: [],
+                input: '',
+                min:5,
+                radio:'1',
+                tableData:[],
+                loading:false,
+                obj:{},
+                multipleSelection:[],
+                subType:'Cmd_Facility_Loopback',
+                chooseTime:new Date().getTime() + (3600 * 1000 * 1),//默认设置一个小时后
+                pickerOptions0: {
+                    disabledDate(time) {
+                        return time.getTime() <= Date.now() - 8.64e7;
+                    }
+                },
+            }
+        },
+        methods: {
+            fileter(name){
+                return name==='true'?'是':'否';
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+            handleRelease(row){
+                this.loading=true;
+                axios.defaults.baseURL = 'https://135.251.96.98:8443';
+                axios.post(`/oms1350/data/otn/ports/${row.portId}/loopback?loopbackCommandName=PerformRelease&portLoopbackType=FACILITY&layerRateId=${row.layerRateId}&neId=${row.neId}&tpDisplayLabel=${row.tpDisplayLabel}&portId=${row.portId}&neName=${row.neName}`,
+                    {Tag: 'Cmd_Release_Loopback'}
+                )
+                .then( (response)=> {
+                    this.$message({
+                        message: '释放成功',
+                        type: 'success'
+                    });
+                    this.getNes();
+                })
+                .catch(function (error) {
+                    this.loading=false;
+                    console.log(error);
+                });
+            },
+            submit(){
+                console.log(this.multipleSelection)
+                // this.$message({
+                //     message: '修改成功',
+                //     type: 'success'
+                // });
+                this.loading=true;
+                let list=[];
+                for (let i=0;i<this.multipleSelection.length;i++){
+                    let obj={};
+                    let layerRateId = this.multipleSelection[i].layerRateId;
+                    let neId = this.multipleSelection[i].neId;
+                    let tpDisplayLabel = this.multipleSelection[i].tpDisplayLabel;
+                    let portId = this.multipleSelection[i].portId;
+                    let neName = this.multipleSelection[i].neName;
+                    obj.layerRateId=layerRateId;
+                    obj.neId=neId;
+                    obj.tpDisplayLabel=tpDisplayLabel;
+                    obj.portId=portId;
+                    obj.neName=neName;
+                    obj.type=this.subType
+                    obj.neIp = ""
+                    let found = this.nes.find( v => v.guiLabel == neName)
+                    if (found) {
+                        obj.neIp = found.ipAddress;
+                    }
+                    list.push(obj);
+                    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+                    let _subType = '';
+                    this.subType=='Cmd_Facility_Loopback'?_subType='PerformFacilityLoopback':_subType='PerformTerminalLoopback';
+                    console.log(this.subType)
+                    console.log(_subType)
+                    axios.post(`/oms1350/data/otn/ports/${portId}/loopback?loopbackCommandName=${_subType}&portLoopbackType=RELEASE&layerRateId=${layerRateId}&neId=${neId}&tpDisplayLabel=${tpDisplayLabel}&portId=${portId}&neName=${neName}`                   ,{Tag: this.subType}
+                    )
+                    .then( (response)=> {
+
+                    })
+                    .catch(function (error) {
+                        this.loading=false;
+                        console.log(error);
+                    });
+                }
+                console.log(this.chooseTime,list)
+                axios.defaults.baseURL= 'https://135.251.96.98:5031'
+                axios.post(`/loopback_release`,
+                    {
+                        execTime: this.chooseTime,
+                        status:0,
+                        items:list,
+                    }
+                )
+                .then( (response)=> {
+                    this.$message('已开启环回,请到设备管理器确认配置情况');
+                    this.getNes();
+                })
+                .catch(function (error) {
+                    this.loading=false;
+                    console.log(error);
+                });
+
+            },
+            getTrails(){
+                this.loading=true;
+                axios.defaults.baseURL = 'https://135.251.96.98:8443';
+                axios.get('/oms1350/data/otn/connections/trails')
+                .then( (response)=> {
+                    let flag = false;
+                    this.tableData=[];
+                    for (let i= 0;i<response.data.items.length;i++){
+                        if(i==response.data.items.length-1){
+                            flag=true;
+                        }
+                        this.gete2ePhysicalRoute(response.data.items[i].id,flag);
+                        // console.log(arr[i].id)
+                    }
+                })
+                .catch(function (error) {
+                    this.loading=false;
+                    console.log(error);
+                });
+            },
+            async getReleseTime(){
+                axios.defaults.baseURL= 'https://135.251.96.98:5031'
+                axios.get(`/loopback_release`)
+                    .then( (response)=> {
+                        // this.loading=false;
+                        let arr = this.tableData;
+                        for (let i=0;i<response.data.length;i++){
+                            // console.log(response.data[i].items[0].portId)
+                            for (let k=0;k<arr.length;k++){
+                                if((response.data[i].items[0].portId == arr[k].id)&&arr[k].portLoopbackType!='RELEASE'){
+                                    let _time = response.data[i].execTime;
+                                    _time = new Date(_time);
+                                    let time = _time.toLocaleDateString() + " " + _time.toLocaleTimeString()
+                                    arr[k].execTime= time;
+                                }
+                            }
+                        }
+                        this.tableData = arr;
+                    })
+                    .catch(function (error) {
+                        this.loading=false;
+                        console.log(error);
+                    });
+            },
+            gete2ePhysicalRoute(id,flag){
+                // console.log(flag)
+                axios.defaults.baseURL = 'https://135.251.96.98:8443';
+                axios.get(`/oms1350/data/otn/connection/${id}/e2ePhysicalRoute/`)
+                .then( (response)=> {
+                    let arr =[];
+                    let _data = response.data.data;
+                    if(!_data){_data=[]};
+                    for (let i=0;i<_data.length;i++){
+                        //supportsFacilityLoopback 外环  ，supportsTerminalLoopback内环
+                        if (_data[i].className=='port'&&(_data[i].supportsTerminalLoopback=='true'||_data[i].supportsFacilityLoopback == "true")&&_data[i].portRate=='Wdm_LayerRate_OS'){
+                        // if ((_data[i].className=='port'||_data[i].className=='trail')&&(_data[i].supportsTerminalLoopback=='true'||_data[i].supportsFacilityLoopback == "true")){
+                            if(!this.obj[_data[i].id]){//去重
+                                this.obj[_data[i].id] = 1;
+                                // _data[i].execTime='N/A';
+                                arr.push(_data[i])
+                            }
+                        }
+                    }
+                    this.tableData = this.tableData.concat(arr);
+                    if(flag===true){
+                        this.loading=false;
+                        this.getReleseTime();
+                    }
+                    // console.log(response
+                })
+                .catch(function (error) {
+                    this.loading=false;
+                    console.log(error);
+                });
+
+                // if(flag==true){
+                //     this.loading=false;
+                // }
+            },
+            async getNes() {
+                axios.defaults.baseURL = 'https://135.251.96.98:8443';
+                axios.get('/oms1350/data/npr/nes').then(rsp => {
+                    this.nes = rsp.data;
+                    this.obj={};
+                    this.getTrails();
+                })
+            }
+        },
+        async created(){
+            await this.getNes();
+        }
+    })
+
+</script>

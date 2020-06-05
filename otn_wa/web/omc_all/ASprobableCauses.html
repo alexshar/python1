@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>告警重定义</title>
+    <!-- 引入样式 -->
+    <!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+    <!-- 引入组件库 -->
+    <!--    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>-->
+    <!--    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>-->
+    <!--    <script src="js/element.js"></script>-->
+    <!--    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>-->
+    <!--    <script src="js/axios.min.js"></script>-->
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="app">
+    <div class="header">
+        <span class="header-icon"></span>
+        <span class="word">告警重定义</span>
+    </div>
+    <div class="main-content" v-loading="loading"
+         element-loading-text="加载中"
+         element-loading-spinner="el-icon-loading"
+         element-loading-background="rgba(0, 0, 0, 0.8)">
+        <div class="flex-1">
+            <div class="row-1">
+                <el-select  @change="getList" v-model="value" placeholder="请选择">
+                    <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
+            </div>
+            <div class="row-1">
+                <el-input
+                        style="width:180px"
+                        v-model="search2"
+                        placeholder="输入告警标识搜索"/>
+            </div>
+            <div class="row-1">
+                <el-input
+                        style="width:180px"
+                        v-model="search"
+                        placeholder="输入告警类型搜索"/>
+            </div>
+            <div class="row-1">
+                <el-button type="primary"  @click="submit" >提交修改</el-button>
+                <el-button icon="el-icon-download" type="primary" @click="exportData2Csv">下载</el-button>
+            </div>
+
+        </div>
+
+        <div class="table-div">
+            <div class="table-row">
+                <div>告警标识</div>
+                <div>警告类型</div>
+            </div>
+            <div class="table-row" v-show="index<500" v-for="(item, index) in tableData.filter(data => (!search&&!search2) || (data.value.toLowerCase().includes(search.toLowerCase())&&data.key.toLowerCase().includes(search2.toLowerCase())))">
+                <div>{{item.key}}</div>
+                <div><input class="input" v-model="item.value"></div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</body>
+</html>
+<style>
+    body{margin: 0;height: 100%}
+    html,#app{height: 100%}
+    #app{height: calc(100% - 68px)}
+    .header{
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+    .main-content{
+        min-height: 100%;
+    }
+    .header .header-icon{
+        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+    .header .word{
+        color: rgba(255,255,255,0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+    .flex-1{
+        display: flex;
+        flex: 1;
+        margin-left: 10px;
+        padding-top: 20px;
+    }
+    .row-1{
+        margin-right: 10px;
+    }
+    .row-1 select{
+        display: block;
+    }
+    .table-div{
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #EBEEF5;
+        border-bottom: 0;
+        margin: 10px;
+    }
+    .table-div .table-row{
+        display: flex;
+        flex-direction: row;
+    }
+    .table-div .table-row div{
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        height: 30px;
+        padding: 5px 0;
+        border: 1px solid #EBEEF5;
+        border-right:0 ;
+        border-top:0 ;
+    }
+    .table-div .table-row .input{
+        padding: 5px!important;
+        width: 90%;
+        /*border: 1px solid #DCDFE6;*/
+    }
+</style>
+<script>
+    axios.defaults.baseURL = 'https://135.251.96.98:5031';
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                tableData: [],
+                search: '',
+                search2: '',
+                options: [{
+                    value: 'cn',
+                    label: '中文'
+                }, {
+                    value: 'en',
+                    label: '英文'
+                }],
+                value:'cn',
+                loading:false,
+                renderColumn:[
+                    {label:'告警标识', prop:'key'},
+                    {label:'告警类型', prop:'value'},
+                ],
+            }
+        },
+        methods: {
+            submit(){
+                axios.put('/alarm_names',{
+                    data:this.tableData,
+                    lang:this.value
+                })
+                    .then(function (response) {
+                        console.log(response);
+                        alert('修改成功')
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+
+
+            },
+            getList(){
+                let _this= this;
+                _this.loading=true;
+                axios.get('/alarm_names', {
+                    params: {
+                        lang:_this.value
+                    }
+                })
+                    .then(function (response) {
+                        console.log(response.data.length);
+                        _this.tableData = response.data;
+                        _this.loading=false;
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        _this.loading=false;
+                    });
+            },
+            exportData2Csv() {
+                let header=[];
+                let headerLabel= [];
+                let tableData = this.tableData;
+                let columns = this.renderColumn;
+                for (const col of columns) {
+                    header.push(col.prop);
+                    headerLabel.push(col.label);
+                }
+                let lines = [headerLabel.join(",")];
+                for (let i = 0; i <tableData.length; i++) {
+                    let row = tableData[i];
+                    let elements = [];
+                    for (const key of header) {
+                        if (row.hasOwnProperty(key)) {
+                            const element = row[key];
+                            elements.push(`"${element}"`);
+                        } else {
+                            elements.push("");
+                        }
+                    }
+                    lines.push(elements.join(","));
+                }
+                const text = lines.join("\n");
+                this.download2('告警过滤修改.csv', text);
+            },
+            download2(filename, text) {
+                var a = document.createElement('a');
+                var url = window.URL.createObjectURL(new Blob(["\ufeff"+text],
+                    { type: ("text/plain") + ";charset=" + ('utf-8') }));
+                a.href = url;
+                a.download = filename || 'file';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+        },
+
+        created(){
+            this.getList();
+        }
+    })
+
+
+
+
+
+
+
+
+</script>

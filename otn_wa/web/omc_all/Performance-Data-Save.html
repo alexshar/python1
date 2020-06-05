@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>性能数据存储</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            margin: 0px;
+        }
+
+        .layout_style {
+            margin: 80px;
+        }
+
+        .ivu-row {
+            height: auto;
+            zoom: 1;
+            display: block;
+            width: 50%;
+        }
+
+        .ivu-col {
+            color: #fff;
+            padding: 10px 8px;
+            text-align: center;
+            display: block;
+        }
+
+        .attr-form {
+            margin-bottom: 24px;
+            vertical-align: top;
+            zoom: 1;
+        }
+
+        .attr-label {
+            display: inline-block;
+            width: 80px;
+            text-align: right;
+            vertical-align: middle;
+            float: left;
+            font-size: 14px;
+            color: #515a6e;
+            line-height: 1;
+            padding: 10px 12px 10px 0;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        #app .ivu-col .attr-form .attr-input {
+            display: inline-block;
+            width: 200px;
+            height: 32px ! important;
+            line-height: 32px ! important;
+            padding: 4px 7px ! important;
+            font-size: 14px ! important;
+            border: 1px solid #dcdee2;
+            border-radius: 4px;
+            color: #515a6e;
+            background-color: #fff;
+            background-image: none;
+            position: relative;
+            cursor: text ! important;
+            transition: border .2s ease-in-out, background .2s ease-in-out, box-shadow .2s ease-in-out;
+            box-sizing: border-box;
+            font: 400 13.3333px Arial;
+            position: relative;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #app .ivu-col .attr-form .attr-input:hover {
+            border-color: #57a3f3;
+        }
+
+        .ivu-btn-primary {
+            -webkit-appearance: button;
+            outline: 0;
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: 400;
+            text-align: center;
+            vertical-align: middle;
+            touch-action: manipulation;
+            cursor: pointer;
+            background-image: none;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            line-height: 1.5;
+            user-select: none;
+            height: 32px;
+            padding: 0 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: color .2s linear, background-color .2s linear, border .2s linear, box-shadow .2s linear, -webkit-box-shadow .2s linear;
+            color: #fff;
+            background-color: #2d8cf0;
+            border-color: #2d8cf0;
+        }
+
+        .ivu-btn-primary:active {
+            background-color: #2d8cf0;
+            border-color: #2d8cf0;
+        }
+
+        .ivu-btn-primary:hover {
+            background-color: #57a3f3;
+            border-color: #57a3f3;
+        }
+
+        .ivu-btn>span {
+            display: inline-block;
+        }
+
+        .ivu-popper {
+            position: absolute;
+            will-change: top, left;
+            top: 150px;
+            left: 80px;
+            display: none;
+        }
+
+        .ivu-popper .ivu-popper-narrow {
+            color: #515a6e;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.5;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-color: transparent;
+            border-style: solid;
+            top: 3px;
+            border-width: 0 5px 5px;
+            border-bottom-color: rgba(70, 76, 91, .9);
+            left: 50%;
+            margin-left: -5px;
+        }
+
+        .ivu-popper .ivu-popper-content {
+            visibility: visible;
+            font-size: 14px;
+            line-height: 1.5;
+            box-sizing: border-box;
+            min-height: 34px;
+            padding: 8px 12px;
+            color: #fff;
+            text-align: left;
+            text-decoration: none;
+            background-color: rgba(70, 76, 91, .9);
+            border-radius: 4px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, .2);
+            white-space: nowrap;
+            position: relative;
+            top: 8px;
+        }
+
+        /*
+            性能数据弹出框
+        */
+
+        .header {
+            background-color: rgb(18, 65, 145);
+            z-index: 12000;
+            height: 48px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .header .app-logo {
+            margin-left: 24px !important;
+            width: 100%;
+            max-width: 85px;
+            padding: 14px 0;
+        }
+
+        #app-banner-productFamily {
+            font-family: Nokia Pure Text Regular;
+            color: hsla(0, 0%, 100%, .75);
+            font-size: 17px;
+            flex: auto 0 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-left: 16px;
+            font-weight: 400;
+        }
+
+        #app-banner-productName {
+            margin-left: auto;
+            opacity: 1;
+            color: #fff;
+            font-family: Nokia Pure Text Regular, Arial, sans-serif;
+            font-size: 17px;
+            flex: auto 0 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 400;
+        }
+
+        #user-account-summary-btn-wrapper {
+            margin-left: 0;
+            margin-top: 2px;
+            margin-right: 12px;
+            max-width: 33%;
+        }
+
+        #button-text {
+            color: #fff;
+            font-size: 13px;
+            text-transform: none;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-family: Nokia Pure Text Regular, Arial, sans-serif;
+            max-width: 200px;
+            max-height: 24px;
+            display: inline-block;
+            position: relative;
+            top: -1px;
+        }
+
+        #button-icon-wrapper {
+            pointer-events: none;
+            max-height: 24px;
+            color: #fff;
+        }
+
+        #user-account-summary-btn-Icons {
+            padding: 0;
+            margin: 0;
+            display: inline;
+            opacity: 1;
+            pointer-events: none;
+            max-height: 24px;
+            position: relative;
+            top: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="app-logo">
+            <img style="height: 14px;"
+                src="data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!-- Generator: Adobe Illustrator 19.2.1%2C SVG Export Plug-In . SVG Version: 6.00 Build 0)  --%3E%3Csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px'%09 width='313px' height='53px' viewBox='0 0 313 53' style='enable-background:new 0 0 313 53%3B' xml:space='preserve'%3E%3Cstyle type='text/css'%3E%09.st0%7Bfill:%23FFFFFF%3B%7D%3C/style%3E%3Cpath class='st0' d='M15.1%2C52.2H0V1h26.1L56%2C39.2V1H71v51.3H45.5L15.1%2C13.3V52.2 M143.1%2C36.4c0%2C7.1-1.3%2C9.6-3.3%2C11.9%09c-3.2%2C3.5-7.8%2C4.6-16.8%2C4.6H97.3c-9%2C0-13.6-1.1-16.8-4.6c-2.1-2.4-3.3-4.8-3.3-11.9V16.6c0-7.1%2C1.3-9.6%2C3.3-11.9%09c3.2-3.5%2C7.9-4.6%2C16.8-4.6H123c9%2C0%2C13.6%2C1.1%2C16.8%2C4.6c2.1%2C2.4%2C3.3%2C4.8%2C3.3%2C11.9V36.4 M122.4%2C39.9c3.4%2C0%2C4.7-0.2%2C5.5-1%09c0.8-0.7%2C1.1-1.6%2C1.1-4.6V18.7c0-3-0.3-3.9-1.1-4.6c-0.8-0.8-2-1-5.5-1H97.9c-3.4%2C0-4.7%2C0.2-5.5%2C1c-0.8%2C0.7-1.1%2C1.6-1.1%2C4.6v15.6%09c0%2C3%2C0.3%2C3.9%2C1.1%2C4.6c0.8%2C0.8%2C2%2C1%2C5.5%2C1H122.4L122.4%2C39.9 M165%2C1v51.3h-15.7V1H165 M191.7%2C1h20.8l-28.1%2C24L216%2C52.2h-22.2L165%2C25.5%09L191.7%2C1 M218.9%2C1h15.8v51.3h-15.8 M294.7%2C52.2l-4.7-8.9h-30.5l-4.6%2C8.9h-17.4L265.5%2C1h19.6L313%2C52.2H294.7 M265.1%2C32.2h19.6%09l-9.8-18.6L265.1%2C32.2'/%3E%3C/svg%3E">
+        </div>
+        <h1 id="app-banner-productFamily">性能数据存储</h1>
+        <h1 id="app-banner-productName">
+            <span style="font-size: 13px;">
+                <span style="font-size: 13px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span style="font-size: 13px;">User: </span>
+                <span style="font-size: 13px;">&nbsp;</span>
+            </span>
+        </h1>
+        <div id="user-account-summary-btn-wrapper">
+            <div>
+                <span id="button-text">alcatel</span>
+                <span id="button-icon-wrapper">
+                    <svg id="user-account-summary-btn-Icons" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24">
+                        <path d="M7,9.5l5,5,5-5Z" style="fill: #FFFFFF !important;"></path>
+                    </svg>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div id="app">
+        <div class="layout_style">
+            <div class="ivu-row">
+                <div class="ivu-col">
+                    <el-table :data="tableData" highlight-current-row @cell-click="selectItemEvent" style="width: 100%"
+                        max-height="430" border>
+                        <el-table-column property="filename" label="本地文件">
+                        </el-table-column>
+                        <el-table-column property="remote_location" label="远端路径">
+                        </el-table-column>
+                        <el-table-column property="remote_name" label="远端文件名">
+                        </el-table-column>
+                        <el-table-column label="" width="120" align="center" type="index">
+                            <template slot-scope="scope">
+                                <el-button type="primary" size="mini">性能数据</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
+            <div class="ivu-row">
+                <div class="ivu-col" style="border: 1px solid #dcdee2; margin: 0px 8px;">
+                    <div style="display: flex;justify-content: space-around;">
+                        <div style="display: inline-block;position: relative;">
+                            <div class="attr-form">
+                                <lable class="attr-label">IP</lable>
+                                <input class="attr-input" v-model="ip">
+                            </div>
+                            <div class="attr-form">
+                                <lable class="attr-label">用户名</lable>
+                                <input class="attr-input" v-model="user">
+                            </div>
+                            <div class="attr-form">
+                                <lable class="attr-label">选择文件</lable>
+                                <input class="attr-input" v-model="fileName" readonly="readonly"
+                                    @mouseover="showEntireFileName" @mouseleave="hiddenEntireFileName">
+                            </div>
+                            <div class="ivu-popper" :style="{ display: mouseOverFlag ? 'block' : 'none' }">
+                                <div class="ivu-popper-narrow"></div>
+                                <div class="ivu-popper-content">{{entireFileName}}</div>
+                            </div>
+                        </div>
+                        <div style="display: inline-block;">
+                            <div class="attr-form">
+                                <lable class="attr-label">端口</lable>
+                                <input class="attr-input" v-model="port" readonly="readonly">
+                            </div>
+                            <div class="attr-form">
+                                <lable class="attr-label">密码</lable>
+                                <input class="attr-input" v-model="password">
+                            </div>
+                            <div class="attr-form">
+                                <lable class="attr-label">远程路径</lable>
+                                <input class="attr-input" v-model="remote_location">
+                            </div>
+                            <div class="attr-form">
+                                <lable class="attr-label">远程名称</lable>
+                                <input class="attr-input" v-model="remote_name">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="ivu-btn-primary" @click="sendItem"><span>传输</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <el-dialog :title="dialog_title" :visible.sync="dialogVisible" :width="dialog_width">
+            <el-dialog width="80%" title="表中数据" :visible.sync="innerVisible" append-to-body>
+                <!-- 每个表中所有的属性 -->
+                <el-table :data="tableDetailData" style="width: 100%" max-height="500" border>
+                    <el-table-column label="neUserLabel" align="center" prop="neUserLabel" width="120">
+                    </el-table-column>
+                    <el-table-column label="tpUserLabel" align="center" prop="tpUserLabel" width="120">
+                    </el-table-column>
+                    <el-table-column v-for="item in attrTitleArr" v-if="item!='neUserLabel'&&item!='tpUserLabel'" :label="item" align="center" :prop="item" width="120">
+                    </el-table-column>
+                </el-table>
+                <div class="block">
+                    <el-pagination layout="prev, pager, next" :total="totalTableDetailNum" @prev-click="prev_click"
+                        @next-click="next_click" @current-change="current_change">
+                    </el-pagination>
+                </div>
+            </el-dialog>
+            <!-- 数据库中的表 -->
+            <el-table :data="fileDetailTableData" style="width: 100%" max-height="600" @cell-click="clickTableItem">
+                <el-table-column label="表" align="center">
+                    <template slot-scope="scope">
+                        {{scope.row}}
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-dialog>
+    </div>
+</body>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            localData: [],
+            uploadedData: [],
+            tableData: [],
+            ajax_pm_files: false,
+            ajax_pm_upload_logs: false,
+            selectedItem: "",
+            mouseOverFlag: false,
+            entireFileName: "",
+            ip: "",
+            port: "21",
+            user: "",
+            password: "",
+            fileName: "",
+            remote_location: "",
+            remote_name: "",
+            alert_content: "",    // 告警信息
+            /*
+                性能数据弹出框
+            */
+            currentFileName: "",
+            dialog_title: "",
+            dialog_width: "",
+            dialogVisible: false,
+            fileDetailTableData: [],
+            integrityObject: {},
+            attrTitleArr: [],
+            innerVisible: false,
+            tableDetailData: [],
+            tableName: "",
+            prevOrNextClick: false,
+            totalTableDetailNum: 0
+        },
+        created: function () {
+            this.renderData();
+        },
+        methods: {
+            compareData: function () {
+                if (this.ajax_pm_files && this.ajax_pm_upload_logs) {
+                    for (var n = 0; n < this.localData.length; n++) {
+                        for (var m = 0; m < this.uploadedData.length; m++) {
+                            if (this.localData[n] == this.uploadedData[m].local_file) {
+                                this.tableData.push(
+                                    {
+                                        "filename": this.localData[n],
+                                        "remote_location": this.uploadedData[m].host + ':' + this.uploadedData[m].remote_location,
+                                        "remote_name": this.uploadedData[m].remote_name
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    console.log("this.tableData: " + this.tableData);
+                }
+            },
+            resetData() {
+                this.localData = [];
+                this.uploadedData = [];
+                this.tableData = [];
+                this.ajax_pm_files = false,
+                    this.ajax_pm_upload_logs = false,
+                    this.selectedItem = "",
+                    this.entireFileName = "",
+                    this.ip = "",
+                    this.user = "",
+                    this.password = "",
+                    this.fileName = "",
+                    this.remote_location = "",
+                    this.remote_name = ""
+            },
+            renderData: function () {
+                var _this = this;
+                this.resetData()
+                /*
+                    获取本地文件
+                */
+
+                axios.get('https://135.251.96.98:5031/pm_files')
+                    .then(function (response) {
+                        console.log("pm_files 成功：" + response);
+                        _this.localData = response.data;
+                        _this.ajax_pm_files = true;
+                        _this.compareData();
+                    })
+                    .catch(function (error) {
+                        console.log("pm_files 错误：" + error);
+                    });
+
+                /*
+                    远端文件日志
+                */
+
+                axios.get('https://135.251.96.98:5031/pm_upload_logs')
+                    .then(function (response) {
+                        console.log("pm_upload_logs 成功：" + response);
+                        _this.uploadedData = response.data;
+                        _this.ajax_pm_upload_logs = true;
+                        _this.compareData();
+                    })
+                    .catch(function (error) {
+                        console.log("pm_upload_logs 错误：" + error);
+                    });
+            },
+            sendItem: function () {
+                var _this = this;
+
+                /*
+                    组合数据
+                */
+                var prepareData = {
+                    "ip": this.ip,
+                    "port": this.port,
+                    "user": this.user,
+                    "password": this.password,
+                    "file": this.fileName,
+                    "remote_location": this.remote_location,
+                    "remote_name": this.remote_name
+                }
+
+                console.log("数据传输：" + prepareData);
+
+                if (this.ip && this.user && this.password && this.fileName && this.remote_location && this.remote_name) {
+                    /*
+                        传输文件
+                    */
+                    axios.post('https://135.251.96.98:5031/pm_upload', prepareData)
+                        .then(function (response) {
+                            console.log("成功：" + response);
+                            _this.renderData();
+                        })
+                        .catch(function (error) {
+                            alert("数据传输错误！");
+                        });
+                } else {
+                    alert("请完善所有信息！");
+                }
+
+                // axios.post('https://135.251.96.98:5031/pm_download', {
+                //     "ip": "10.242.111.231",
+                //     "port": "21",
+                //     "user": "root",
+                //     "password": "root",
+                //     "file": "samples\\download.txt",
+                //     "remote_location": "/root",
+                //     "remote_name": "test.txt"
+                // })
+                // .then(function (response) {
+                //     console.log("成功：" + response);
+                // })
+                // .catch(function (error) {
+                //     console.log("错误：" + error);
+                // });
+            },
+            selectItemEvent(row, column, cell, event) {
+                if (cell.cellIndex == 3) {
+                    var _this = this;
+                    this.currentFileName = row.filename;
+                    /*
+                        获取数据库表
+                    */
+
+                    axios.get('https://135.251.96.98:5031/pm_tables', {
+                        params: {
+                            file: row.filename
+                        }
+                    })
+                        .then(function (response) {
+                            console.log("pm_tables: " + response.data);
+                            _this.dialogVisible = true;
+                            _this.dialog_title = "数据库表列表";
+                            _this.dialog_width = "25%";
+                            _this.fileDetailTableData = response.data;
+                        })
+                        .catch(function (error) {
+                            _this.alert_content = "获取数据表失败";
+                        });
+                } else {
+                    this.fileName = row.filename;
+                }
+            },
+            showEntireFileName() {
+                if (this.fileName) {
+                    this.entireFileName = this.fileName;
+                    this.mouseOverFlag = true;
+                }
+            },
+            hiddenEntireFileName() {
+                this.mouseOverFlag = false;
+            },
+            clickTableItem(tablename, column, cell, event) {
+                this.tableName = tablename;
+                this.getSingleTableDetails(tablename, 1);
+            },
+            getSingleTableDetails(tablename, pageIndex) {
+                var _this = this;
+                axios.get('https://135.251.96.98:5031/pm_table', {
+                    params: {
+                        file: this.currentFileName,
+                        table: tablename,
+                        page: pageIndex,
+                        page_size: 10
+                    }
+                })
+                    .then(function (response) {
+                        var attrTitleArr = [];
+                        _this.totalTableDetailNum = response.data.count;
+                        _this.tableDetailData = response.data.data;
+                        for (let i=0;i<_this.tableDetailData.length;i++){
+                            let time =new Date(_this.tableDetailData[i].endTimeEpoch);
+                            _this.tableDetailData[i].endTimeEpoch = time.toLocaleDateString() + " " + time.toLocaleTimeString();
+                            _this.tableDetailData[i].endTime = _this.tableDetailData[i].endTime.slice(0,10);
+                        }
+                        _this.integrityObject = Object.assign(response.data.data[0], response.data.data[1], response.data.data[2], response.data.data[3], response.data.data[4], response.data.data[5]);
+                        Object.getOwnPropertyNames(_this.integrityObject).forEach(function (p) {
+                            attrTitleArr.push(p);
+                        });
+                        _this.attrTitleArr = attrTitleArr;
+                        _this.innerVisible = true;
+                    })
+                    .catch(function (error) {
+                        _this.alert_content = "获取表中数据失败";
+                    });
+            },
+            prev_click(currentPage) {
+                this.prevOrNextClick = true;
+                this.getSingleTableDetails(this.tableName, currentPage);
+            },
+            next_click(currentPage) {
+                this.prevOrNextClick = true;
+                this.getSingleTableDetails(this.tableName, currentPage);
+            },
+            current_change(currentPage) {
+                if (this.prevOrNextClick) {
+                    this.prevOrNextClick = false;
+                } else {
+                    this.getSingleTableDetails(this.tableName, currentPage);
+                }
+            }
+        }
+    })
+</script>
+
+</html>
