@@ -42,6 +42,28 @@ class RemoteConsoleClient():
         self.protocal = 0
         return -1
 
+    def connect_otn(self, expected='# '):
+        logging.info(f"Connecting... host={self.hostname} username={self.username} password={self.password}")
+        # test ssh
+        logging.debug("Testing SSH...")
+        self.client = ssh_client.SSHClient(self.hostname, self.username, self.password, self.port)
+        r = self.client.connect_otn(expected)
+        if r > 0:
+            logging.debug("SSH connected")
+            return 1
+        # test telent
+        logging.debug("Testing Telnet...")
+        self.client = telnet_client.TelnetClient(self.hostname, self.username, self.password, self.port)
+        r = self.client.connect_otn(expected)
+        if r > 0:
+            logging.debug("Telnet connected")
+            self.protocal = 2
+            return 1
+        # 都不对
+        self.client = None
+        self.protocal = 0
+        return -1
+
     def close(self):
         self.client.close()
     
@@ -67,18 +89,15 @@ class RemoteConsoleClient():
                 error_message = 'impossible kakdikKSI39328ss'
             return self.client.exec(command, expected, error_message=error_message)
         elif self.protocal == 2:
-            if "vsim cli" in command:
-                telnet_command = b'cli\n'
-            else:
-                telnet_command = bytes(command, encoding='ascii')
+            telnet_command = bytes(command, encoding='ascii')
             if expected is not None:
                 telnet_expected = bytes(expected, encoding='ascii')
             else:
                 telnet_expected = None
             if error_message is not None:
-                telnet_error_message = bytes(error_message, encoding='ascii')
+                telnet_error_message = error_message
             else:
-                telnet_error_message = b'impossible kakdikKSI39328ss'
+                telnet_error_message = 'impossible kakdikKSI39328ss'
             return self.client.exec(telnet_command, telnet_expected, error_message=telnet_error_message)
         else:
             return -2

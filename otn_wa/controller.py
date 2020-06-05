@@ -1,9 +1,10 @@
 #! /usr/bin/env python3
+import os
+import json
+import logging
 
 from flask import Flask, abort, request, jsonify
 from flask_cors import CORS
-import os
-import json
 
 from util.kronos import Kronos as Scheduler
 import config
@@ -260,8 +261,11 @@ def loopback_release():
             abort(500)
         return jsonify(loopback_ins.add_loopback_release_task(request.json))
 
-
 if __name__ == "__main__":
+    # init logger
+    logging_format = "[%(asctime)s] %(filename)s[:%(lineno)d] %(message)s"
+    logging.basicConfig(level=logging.DEBUG, format=logging_format)
+    
     alarm_names.init()
     pm_data_ftp.init()
     alarm_data_ftp.init()
@@ -269,8 +273,8 @@ if __name__ == "__main__":
     schduler_ins = Scheduler()
     schduler_ins.start()
 
-    m = pm_monitor.NspPmMonitor()
-    m.start()
+    waveshift_ins = pm_monitor.NspPmMonitor()
+    waveshift_ins.start()
 
     cutover_task_ins = cutover.CutOverManage()
     cutover_task_ins.start()
@@ -280,5 +284,5 @@ if __name__ == "__main__":
 
     # 将host设置为0.0.0.0，则外网用户也可以访问到这个服务
     app.run(host="0.0.0.0", port=5031, debug=False, ssl_context='adhoc')
-    m.join()
+    waveshift_ins.join()
     schduler_ins.join()

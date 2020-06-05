@@ -6,7 +6,7 @@ import json
 
 history_file = 'ftp_history.json'
 db_file_base_path = '/alu/DEPOT/BackupJobs'
-db_file_base_path = 'C:\\Temp\\dbbackup'
+
 clean_log = {
         "Alarm": {},
         "PM": {},

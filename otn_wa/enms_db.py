@@ -2,6 +2,7 @@
 import pymongo
 import json
 import datetime
+import time
 
 import config
 
@@ -117,6 +118,7 @@ def get_pm_collection(collection_name, time_symbol=0, page=1, page_size=100):
     pass
     # close DB
     client.close()
+    time.sleep(4)
     return result
 
 # Alarm_20200419_110606@OTNE_1-19
@@ -141,6 +143,7 @@ def get_alarm_collection(table_name, time_symbol=0, page=1, page_size=20):
     pass
     # close DB
     client.close()
+    time.sleep(4)
     return result    
 
 if __name__ == "__main__":

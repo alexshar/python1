@@ -1,4 +1,5 @@
 import re, time
+import logging
 import paramiko
 
 class SSHClient(object):
@@ -12,21 +13,19 @@ class SSHClient(object):
             self.client = paramiko.SSHClient()
             self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         except Exception as e:
-            print("Create SSH client exception: %s: %s" % (e.__class__, e))
+            logging.warning("Create SSH client exception: %s: %s" % (e.__class__, e))
             self.client = None
     
-    def connect(self, expected='# '):
+    def connect_otn(self, expected='# '):
         """
-        连接开始.
-        这里的expected是登录成功之后的提示符. 
-        强烈建议不要用默认值, 而是根据登录的系统的实际情况, 输入实当的参数.
+        OTN
         """
         try:
-            print(f"Connecting... host={self.hostname} username={self.username} password={self.password}")
+            logging.info(f"Connecting... host={self.hostname} username={self.username} password={self.password}")
             self.client.connect(self.hostname, username=self.username, password=self.password)
             self.chan = self.client.invoke_shell()
         except Exception as e:
-            print("SSH connection exception: %s: %s" % (e.__class__, e))
+            logging.warning("SSH connection exception: %s: %s" % (e.__class__, e))
             self.close()
             self.client = None
             return -1
@@ -35,11 +34,41 @@ class SSHClient(object):
         while not buff.endswith(expected):
             resp = self.chan.recv(9999)
             buff += resp.decode()
-        print(buff)
+        logging.info(buff)
+        r = self.exec_batch([
+            ('vsim cli\n', 'Username: '),
+            ('admin\n', 'Password: '),
+            ('admin\n', '(Y/N)?'),
+            ('Y\n', "# ")
+        ])
+        return 1
+
+    def connect(self, expected='# '):
+        """
+        连接开始.
+        这里的expected是登录成功之后的提示符. 
+        强烈建议不要用默认值, 而是根据登录的系统的实际情况, 输入实当的参数.
+        """
+        try:
+            logging.info(f"Connecting... host={self.hostname} username={self.username} password={self.password}")
+            self.client.connect(self.hostname, username=self.username, password=self.password)
+            self.chan = self.client.invoke_shell()
+        except Exception as e:
+            logging.warning("SSH connection exception: %s: %s" % (e.__class__, e))
+            self.close()
+            self.client = None
+            return -1
+        
+        buff = ''
+        while not buff.endswith(expected):
+            resp = self.chan.recv(9999)
+            buff += resp.decode()
+        logging.info(buff)
         return 1
 
     def close(self):
         self.client.close()
+        logging.info("SSH closed")
 
     def exec_batch(self, command_list):
         """
@@ -77,25 +106,24 @@ class SSHClient(object):
             buff += resp.decode()
             i = i + 1
             if error_message in buff:
-                print(buff)
+                logging.info(buff)
                 return -1
             if i > 5:
-                print(buff)
+                logging.info(buff)
                 return -2
            
-        print(buff)
+        logging.info(buff)
         return 1
 
 if __name__ == "__main__":
+    logging_format = "[%(asctime)s] %(filename)s[:%(lineno)d] %(message)s"
+    logging.basicConfig(level=logging.DEBUG, format=logging_format)    
     client = SSHClient("172.24.166.141", 'root', 'ALu12#')
     if client is None: exit()
-    client.connect()
+    client.connect_otn()
     # 小心空格千万不能省略
     r = client.exec_batch([
-        ('vsim cli\n', 'Username: '),
-        ('admin\n', 'Password: '),
-        ('admin\n', '(Y/N)?'),
-        ('Y\n', "# ")
+        ('help\n', "# ")
     ])
     client.close()
 

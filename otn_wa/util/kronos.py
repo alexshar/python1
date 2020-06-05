@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 import threading
 import time
+import logging
 
 class Kronos(threading.Thread):
     '''
@@ -16,7 +17,7 @@ class Kronos(threading.Thread):
         self.locker = threading.Lock()
 
     def run(self):
-        print('Starting new scheduler thread ...')
+        logging.info('Starting new scheduler thread ...')
         time.sleep(2)
         while self.isRunning:
             # get copy of watching database list
@@ -33,11 +34,11 @@ class Kronos(threading.Thread):
                         continue
                     exec_time = int(item['execTime'])
                     if current > exec_time:
-                        print(f"Scheduler executing [{db['name']}]: task-id={item['id']}")
+                        logging.info(f"Scheduler executing [{db['name']}]: task-id={item['id']}")
                         db["callback"](item)
             # delay
             time.sleep(self.step)
-        print('Stopping scheduler thread ...')
+        logging.info('Stopping scheduler thread ...')
 
     def register(self, db_name, db_instance, callback_fn):
         self.locker.acquire()

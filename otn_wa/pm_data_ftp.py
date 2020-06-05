@@ -38,10 +38,14 @@ def ftp_download(ip, port, user, password, file, remote_location, remote_name):
     return 'OK'
 
 def pm_upload(ip, port, user, password, file, remote_location, remote_name):
+    existing = get_log()
+    for item in existing:
+        if item['key'] == file:
+            file_path = item["abspath"]
+            break
     [file_date, domain] = file.split('@')
-    file_path = f"/alu/DEPOT/BackupJobs/{file_date}/{domain}/PM/SSotneVM1/PMDomain/"
     file_name = os.listdir(file_path)[0]
-    result = ftp_upload(ip, port, user, password, file_path+file_name, remote_location, remote_name)
+    result = ftp_upload(ip, port, user, password, file_path+os.sep+file_name, remote_location, remote_name)
     update_log(file, remote_location, remote_name, ip, port)
     return result
 

@@ -12,6 +12,7 @@ import re
 import util.litchi
 from remote_console.ssh_client import SSHClient 
 from remote_console.telnet_client import TelnetClient
+import remote_console.remote_console
 
 class CutOverManage(threading.Thread):
     
@@ -106,7 +107,8 @@ class CutOverManage(threading.Thread):
         # 源端操作
         client = SSHClient(aIP, 'root', 'ALu12#')
         if client is None: return -101
-        client.connect()
+        r = client.connect()
+        if r < 0: return -102
         if isRollback:
             r = client.exec_batch([
                 ('vsim cli\n', 'Username: '),
@@ -116,9 +118,11 @@ class CutOverManage(threading.Thread):
                 (f'config xc {aL} {aLine_new} {new_freq} state down\n', "# "),
                 (f'config xc {aL} {aLine_new} {new_freq} delete yes\n', "# "),
                 (f'config interface topo {aL} delete\n', "# "),
+                ('#DELAY@10s', ""),
                 (f'config interface {aL} {rate} channeltx {old_freq}\n', "# "),
                 (f'config interface {aL} {rate} channelrx {old_freq}\n', "# "),
                 (f'config interface topo {aL} internal {aSfd} bi\n', "# "),
+                ('#DELAY@10s', ""),
                 (f'config xc {aL} {aLine} {old_freq} create "{old_name}" bi none unkey\n', "# "),
                 (f'config xc {aL} {aLine} {old_freq} state up\n', "# "),
                 ('logout\n', ']# ')
@@ -132,9 +136,11 @@ class CutOverManage(threading.Thread):
                 (f'config xc {aL} {aLine} {old_freq} state down\n', "# ", "Error"),
                 (f'config xc {aL} {aLine} {old_freq} delete yes\n', "# ", "Error"),
                 (f'config interface topo {aL} delete\n', "# ", "Error"),
+                ('#DELAY@10s', ""),
                 (f'config interface {aL} {rate} channeltx {new_freq}\n', "# ", "Error"),
                 (f'config interface {aL} {rate} channelrx {new_freq}\n', "# ", "Error"),
                 (f'config interface topo {aL} internal {aSfd_new} bi\n', "# ", "Error"),
+                ('#DELAY@10s', ""),
                 (f'config xc {aL} {aLine_new} {new_freq} create "{new_name}" bi none unkey\n', "# ", "Error"),
                 (f'config xc {aL} {aLine_new} {new_freq} state up\n', "# ", "Error"),
                 ('logout\n', ']# ')
@@ -160,9 +166,11 @@ class CutOverManage(threading.Thread):
                 (f'config xc {zL} {zLine_new} {new_freq} state down\n', "# "),
                 (f'config xc {zL} {zLine_new} {new_freq} delete yes\n', "# "),
                 (f'config interface topo {zL} delete\n', "# "),
+                ('#DELAY@10s', ""),
                 (f'config interface {zL} {rate} channeltx {old_freq}\n', "# "),
                 (f'config interface {zL} {rate} channelrx {old_freq}\n', "# "),
                 (f'config interface topo {zL} internal {zSfd} bi\n', "# "),
+                ('#DELAY@10s', ""),
                 (f'config xc {zL} {zLine} {old_freq} create "{old_name}" bi none unkey\n', "# ",),
                 (f'config xc {zL} {zLine} {old_freq} state up\n', "# "),
                 ('logout\n', ']# ')
@@ -176,9 +184,11 @@ class CutOverManage(threading.Thread):
                 (f'config xc {zL} {zLine} {old_freq} state down\n', "# ", "Error"),
                 (f'config xc {zL} {zLine} {old_freq} delete yes\n', "# ", "Error"),
                 (f'config interface topo {zL} delete\n', "# ", "Error"),
+                ('#DELAY@10s', ""),
                 (f'config interface {zL} {rate} channeltx {new_freq}\n', "# ", "Error"),
                 (f'config interface {zL} {rate} channelrx {new_freq}\n', "# ", "Error"),
                 (f'config interface topo {zL} internal {zSfd_new} bi\n', "# ", "Error"),
+                ('#DELAY@10s', ""),
                 (f'config xc {zL} {zLine_new} {new_freq} create "{new_name}" bi none unkey\n', "# ", "Error"),
                 (f'config xc {zL} {zLine_new} {new_freq} state up\n', "# ", "Error"),
                 ('logout\n', ']# ')

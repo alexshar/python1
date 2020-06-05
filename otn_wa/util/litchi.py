@@ -2,6 +2,7 @@
 import threading
 import json
 import os
+import logging
 
 '''
 This is a class to store objects to file, like MongoDB. 
@@ -17,11 +18,11 @@ class Litchi():
     def __init__(self, db_name):
         self.db_file_name = db_name + ".ldb"
         if not os.path.exists(self.db_file_name):
-            print('Creating new data file ...', end = ' ')
+            logging.info('Creating new data file ...', end = ' ')
             f = open(self.db_file_name, 'w', encoding='utf-8')
             f.write("[]")
             f.close()
-            print(' done')
+            logging.info(' done')
         else:
             f = open(self.db_file_name, 'r', encoding='utf-8')
             self.items = json.loads(f.read())

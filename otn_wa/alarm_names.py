@@ -15,7 +15,7 @@ alarm_names_obj_en = {}
 # we take the assumption that the file do exist
 def read_name_file():
     try:
-        f = open(alarm_names_file_cn, 'r', encoding='utf-8')
+        f = open(alarm_names_file_cn, 'r', encoding='gb18030')
         is_end = False
         index = 0
         while not is_end:
@@ -29,7 +29,10 @@ def read_name_file():
                 index = index + 1
                 alarm_names_obj_cn[key] = value
         f.close()
+    except Exception as e:
+        print("open Chinese alarm name file failed. ", e)
 
+    try:
         f = open(alarm_names_file_en, 'r', encoding='utf-8')
         is_end = False
         index = 0
@@ -45,18 +48,20 @@ def read_name_file():
                 alarm_names_obj_en[key] = value
         f.close()
     except Exception as e:
-        print("alarm name file is not found", e)
+        print("open English alarm name file failed. ", e)
 
 def write_name_file(lang):
     if lang == 'en':
         file_name = alarm_names_file_en
         objs = alarm_names_obj_en
         spliter = '\t\t'
+        code = 'utf-8'
     else:
         file_name = alarm_names_file_cn
         objs = alarm_names_obj_cn
         spliter = '   '
-    f = open(file_name, 'w', encoding='utf-8')
+        code = 'gb18030'
+    f = open(file_name, 'w', encoding=code)
     for key in objs:
         f.write(key+spliter+objs[key]+'\n')
     f.close()
@@ -108,6 +113,11 @@ def restart_service():
     print('starting service 4')
     os.system('/usr/Systems/OTNE_1_19_Master/AS/script/StartFmCurUsmServ')
     print('[done]')
+
+# 如果是改的英文文,执行
+#     卸载告警中文包脚本
+#     os.system(/aldsjflajdflakjdfl)
+
 
 if __name__ == "__main__":
     init()
