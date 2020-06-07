@@ -4,15 +4,10 @@ import json
 import os
 import threading
 import re
-
-#import telnetlib
-#http://docs.paramiko.org/en/stable/api/client.html
-#import paramiko
+import logging
 
 import util.litchi
-from remote_console.ssh_client import SSHClient 
-from remote_console.telnet_client import TelnetClient
-import remote_console.remote_console
+from remote_console.remote_console import RemoteConsoleClient
 
 class CutOverManage(threading.Thread):
     
@@ -36,7 +31,8 @@ class CutOverManage(threading.Thread):
         '''
         # 参数生成
         # re_l = '-(\d+-\d+-L\d+)$'
-        re_l = '-(\d+-\d+-.*)$'
+        # re_l = '-(\d+-\d+-.*)$'
+        re_l = '^(.*)-(\d+-\d+-.*)$'
         re_sfd = 'SFD-(\d+-\d+-\d+)$'
         re_line = '-(\d+-\d+-Line.*)$'
         old_freq = task["frequency"]
@@ -51,7 +47,8 @@ class CutOverManage(threading.Thread):
         if r is None: 
             return -1
         else:
-            aL = r.group(1).replace('-', '/')
+            aL_type = r.group(1).lower()
+            aL = r.group(2).replace('-', '/')
         # a端合分波端口
         r = re.search(re_sfd, task["a"]["sfdPortLabel"], flags=re.I)
         if r is None: 
@@ -81,7 +78,8 @@ class CutOverManage(threading.Thread):
         if r is None: 
             return -7
         else:
-            zL = r.group(1).replace('-', '/')
+            zL_type = r.group(1).lower()
+            zL = r.group(2).replace('-', '/')
         # z端合分波端口
         r = re.search(re_sfd, task["z"]["sfdPortLabel"], flags=re.I)
         if r is None: 
@@ -105,100 +103,98 @@ class CutOverManage(threading.Thread):
         else:
             zLine_new = r.group(1).replace('-', '/')
         # 源端操作
-        client = SSHClient(aIP, 'root', 'ALu12#')
+        client = RemoteConsoleClient(aIP, username='root', password='ALu12#')
         if client is None: return -101
-        r = client.connect()
+        r = client.connect_otn()
         if r < 0: return -102
         if isRollback:
             r = client.exec_batch([
-                ('vsim cli\n', 'Username: '),
-                ('admin\n', 'Password: '),
-                ('admin\n', '(Y/N)?'),
-                ('Y\n', "# "),
                 (f'config xc {aL} {aLine_new} {new_freq} state down\n', "# "),
                 (f'config xc {aL} {aLine_new} {new_freq} delete yes\n', "# "),
                 (f'config interface topo {aL} delete\n', "# "),
-                ('#DELAY@10s', ""),
+                ('#DELAY@5s', ""),
+                (f'config interface {aL_type} {aL} state down\n', "# "),
+                ('#DELAY@5s', ""),
                 (f'config interface {aL} {rate} channeltx {old_freq}\n', "# "),
                 (f'config interface {aL} {rate} channelrx {old_freq}\n', "# "),
+                ('#DELAY@5s', ""),
+                (f'config interface {aL_type} {aL} state up\n', "# "),
                 (f'config interface topo {aL} internal {aSfd} bi\n', "# "),
-                ('#DELAY@10s', ""),
+                ('#DELAY@5s', ""),
                 (f'config xc {aL} {aLine} {old_freq} create "{old_name}" bi none unkey\n', "# "),
-                (f'config xc {aL} {aLine} {old_freq} state up\n', "# "),
-                ('logout\n', ']# ')
+                (f'config xc {aL} {aLine} {old_freq} state up\n', "# ")
             ])
         else:
             r = client.exec_batch([
-                ('vsim cli\n', 'Username: '),
-                ('admin\n', 'Password: '),
-                ('admin\n', '(Y/N)?'),
-                ('Y\n', "# "),
+                # ('help\n', "# ", "Error")
                 (f'config xc {aL} {aLine} {old_freq} state down\n', "# ", "Error"),
                 (f'config xc {aL} {aLine} {old_freq} delete yes\n', "# ", "Error"),
                 (f'config interface topo {aL} delete\n', "# ", "Error"),
-                ('#DELAY@10s', ""),
+                ('#DELAY@5s', ""),
+                (f'config interface {aL_type} {aL} state down\n', "# "),
+                ('#DELAY@5s', ""),
                 (f'config interface {aL} {rate} channeltx {new_freq}\n', "# ", "Error"),
                 (f'config interface {aL} {rate} channelrx {new_freq}\n', "# ", "Error"),
+                ('#DELAY@5s', ""),
+                (f'config interface {aL_type} {aL} state up\n', "# "),
                 (f'config interface topo {aL} internal {aSfd_new} bi\n', "# ", "Error"),
-                ('#DELAY@10s', ""),
+                ('#DELAY@5s', ""),
                 (f'config xc {aL} {aLine_new} {new_freq} create "{new_name}" bi none unkey\n', "# ", "Error"),
-                (f'config xc {aL} {aLine_new} {new_freq} state up\n', "# ", "Error"),
-                ('logout\n', ']# ')
+                (f'config xc {aL} {aLine_new} {new_freq} state up\n', "# ", "Error")
             ])
         client.close()
         if r < 0:
-            print("源端操作失败了")
+            logging.warning("源端操作失败了")
             return r-200
         else:
-            print("源端操作完成了")
+            logging.info("源端操作完成了")
         
         
         # 宿端操作
-        client = SSHClient(zIP, 'root', 'ALu12#')
+        client = RemoteConsoleClient(zIP, username='root', password='ALu12#')
         if client is None: return -102
-        client.connect()
+        client.connect_otn()
         if isRollback:
             r = client.exec_batch([
-                ('vsim cli\n', 'Username: '),
-                ('admin\n', 'Password: '),
-                ('admin\n', '(Y/N)?'),
-                ('Y\n', "# "),
                 (f'config xc {zL} {zLine_new} {new_freq} state down\n', "# "),
                 (f'config xc {zL} {zLine_new} {new_freq} delete yes\n', "# "),
                 (f'config interface topo {zL} delete\n', "# "),
-                ('#DELAY@10s', ""),
+                ('#DELAY@5s', ""),
+                (f'config interface {zL_type} {zL} state down\n', "# "),
+                ('#DELAY@5s', ""),
                 (f'config interface {zL} {rate} channeltx {old_freq}\n', "# "),
                 (f'config interface {zL} {rate} channelrx {old_freq}\n', "# "),
+                ('#DELAY@5s', ""),
+                (f'config interface {zL_type} {zL} state up\n', "# "),
                 (f'config interface topo {zL} internal {zSfd} bi\n', "# "),
-                ('#DELAY@10s', ""),
+                ('#DELAY@5s', ""),
                 (f'config xc {zL} {zLine} {old_freq} create "{old_name}" bi none unkey\n', "# ",),
-                (f'config xc {zL} {zLine} {old_freq} state up\n', "# "),
-                ('logout\n', ']# ')
+                (f'config xc {zL} {zLine} {old_freq} state up\n', "# ")
             ])
         else:
             r = client.exec_batch([
-                ('vsim cli\n', 'Username: '),
-                ('admin\n', 'Password: '),
-                ('admin\n', '(Y/N)?'),
-                ('Y\n', "# "),
+                # ('help\n', "# ", "Error")
                 (f'config xc {zL} {zLine} {old_freq} state down\n', "# ", "Error"),
                 (f'config xc {zL} {zLine} {old_freq} delete yes\n', "# ", "Error"),
                 (f'config interface topo {zL} delete\n', "# ", "Error"),
-                ('#DELAY@10s', ""),
+                ('#DELAY@5s', ""),
+                (f'config interface {zL_type} {zL} state down\n', "# "),
+                ('#DELAY@5s', ""),
                 (f'config interface {zL} {rate} channeltx {new_freq}\n', "# ", "Error"),
                 (f'config interface {zL} {rate} channelrx {new_freq}\n', "# ", "Error"),
+                ('#DELAY@5s', ""),
+                (f'config interface {zL_type} {zL} state up\n', "# "),
                 (f'config interface topo {zL} internal {zSfd_new} bi\n', "# ", "Error"),
-                ('#DELAY@10s', ""),
+                ('#DELAY@5s', ""),
                 (f'config xc {zL} {zLine_new} {new_freq} create "{new_name}" bi none unkey\n', "# ", "Error"),
-                (f'config xc {zL} {zLine_new} {new_freq} state up\n', "# ", "Error"),
-                ('logout\n', ']# ')
+                (f'config xc {zL} {zLine_new} {new_freq} state up\n', "# ", "Error")
             ])
         client.close()
         if r < 0:
-            print("宿端操作失败了")
+            logging.warning("宿端操作失败了")
             return r-300
         else:
-            print("宿端操作完成了")
+            logging.info("宿端操作完成了")
 
         return 1
 
@@ -212,7 +208,7 @@ class CutOverManage(threading.Thread):
                 break
         else:
             warning_message = f"exec task_group[id={id}]: not found"
-            print(warning_message)
+            logging.warning(warning_message)
             return warning_message
         # step2: 无视执行规则,强行执行
         all_success = True
