@@ -18,11 +18,11 @@ class Litchi():
     def __init__(self, db_name):
         self.db_file_name = db_name + ".ldb"
         if not os.path.exists(self.db_file_name):
-            logging.info('Creating new data file ...', end = ' ')
+            logging.info('Creating new data file ...')
             f = open(self.db_file_name, 'w', encoding='utf-8')
             f.write("[]")
             f.close()
-            logging.info(' done')
+            logging.info('Done')
         else:
             f = open(self.db_file_name, 'r', encoding='utf-8')
             self.items = json.loads(f.read())
@@ -61,6 +61,12 @@ class Litchi():
     def get_all_items(self):
         return self.items
 
+    def get_item_by_id(self, id):
+        for item in self.items:
+            if id == str(item["id"]):
+                return item
+        return None
+
     def delete_item_by_id(self, id):
         self.write_look.acquire()
         for index in range(len(self.items)):
@@ -74,7 +80,7 @@ class Litchi():
         return -1
 
     def update_item(self, item):
-        if item["id"] is None or item["id"] == "":
+        if "id" not in item or item["id"] is None or item["id"] == "":
             return self.add_item(item)
         for index in range(len(self.items)):
             if item["id"] == self.items[index]["id"]:
