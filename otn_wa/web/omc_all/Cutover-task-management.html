@@ -583,6 +583,7 @@
                 let id = task.id;
                 let isRollback = false;
                 axios.defaults.baseURL = 'https://135.251.96.98:5031';
+                axios.defaults.timeout = 300000;
                 axios.post('/cutover_exec', {id, isRollback})
                     .then(rsp => {
                         this.getList()
@@ -593,6 +594,7 @@
                 let id = task.id;
                 let isRollback = true;
                 axios.defaults.baseURL = 'https://135.251.96.98:5031';
+                axios.defaults.timeout = 300000;
                 axios.post('/cutover_exec', {id, isRollback})
                     .then(rsp => {
                         this.getList()
