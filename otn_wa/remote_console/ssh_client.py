@@ -58,7 +58,7 @@ class SSHClient(object):
             self.close()
             self.client = None
             return -1
-        
+
         buff = ''
         while not buff.endswith(expected):
             resp = self.chan.recv(9999)
@@ -76,11 +76,12 @@ class SSHClient(object):
         """
         for command in command_list:
             if len(command) == 2:
-                r = self.exec(command[0], command[1])
+                r, msg = self.exec(command[0], command[1])
             elif len(command) == 3:
-                r = self.exec(command[0], command[1], error_message=command[2])
+                r, msg = self.exec(command[0], command[1], error_message=command[2])
             else:
                 r = -2
+                msg = "command error"
             if r < 0:
                 return r
         return 1
@@ -96,7 +97,7 @@ class SSHClient(object):
         if r is not None:
             delay = int(r.group(1))
             time.sleep(delay)
-            return 1
+            return 1, ""
         # 下发命令
         self.chan.send(command)
         buff = ''
@@ -107,20 +108,20 @@ class SSHClient(object):
             i = i + 1
             if error_message in buff:
                 logging.info(buff)
-                return -1
-            if i > 5:
+                return -1, buff
+            if i > 20:
                 logging.info(buff)
-                return -2
+                return -2, buff
            
         logging.info(buff)
-        return 1
+        return 1, buff
 
 if __name__ == "__main__":
     logging_format = "[%(asctime)s] %(filename)s[:%(lineno)d] %(message)s"
     logging.basicConfig(level=logging.DEBUG, format=logging_format)    
     client = SSHClient("172.24.166.141", 'root', 'ALu12#')
     if client is None: exit()
-    client.connect_otn()
+    if client.connect_otn() < 0: exit()
     # 小心空格千万不能省略
     r = client.exec_batch([
         ('help\n', "# ")

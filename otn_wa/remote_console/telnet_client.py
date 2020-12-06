@@ -83,25 +83,25 @@ class TelnetClient(object):
         if r is not None:
             delay = int(r.group(1))
             time.sleep(delay)
-            return 1
+            return 1, ""
         # 执行控制台命令
         self.tl.write(command)
         if expected is None:
             time.sleep(2)
             logging.info(self.tl.read_all().decode('ascii'))
-            return 1
+            return 1, ""
         else:
             try:
                 r = self.tl.read_until(expected, timeout=10)
                 buff = r.decode("ascii")
                 logging.info(buff)
                 if error_message in buff:
-                    return -1
+                    return -1, buff
             except Exception as e:
                 logging.warning("Exception: %s: %s" % (e.__class__, e))
-                return -1
+                return -1, ""
 
-            return 1
+            return 1, buff
 
     def exec_batch(self, command_list):
         """
@@ -110,11 +110,11 @@ class TelnetClient(object):
         for command in command_list:
             logging.info(command)
             if len(command) == 2:
-                r = self.exec(command[0], command[1])
+                r, msg = self.exec(command[0], command[1])
             elif len(command) > 2:
-                r = self.exec(command[0], command[1], error_message=command[2])
+                r, msg = self.exec(command[0], command[1], error_message=command[2])
             elif len(command) == 1:
-                r = self.exec(command[0])
+                r, msg = self.exec(command[0])
             else:
                 r = -2
             if r < 0:
@@ -123,7 +123,7 @@ class TelnetClient(object):
 
 if __name__ == "__main__":
     logging_format = "[%(asctime)s] %(filename)s[:%(lineno)d] %(message)s"
-    logging.basicConfig(level=logging.DEBUG, format=logging_format)    
+    logging.basicConfig(level=logging.DEBUG, format=logging_format)
     client = TelnetClient('135.251.97.201', 'root', 'ALu12#')
     r = client.connect_otn()
     if r < 0:

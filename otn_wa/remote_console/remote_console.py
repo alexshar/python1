@@ -73,9 +73,9 @@ class RemoteConsoleClient():
         """
         for command in command_list:
             if len(command) == 2:
-                r = self.exec(command[0], command[1])
+                r, msg = self.exec(command[0], command[1])
             elif len(command) == 3:
-                r = self.exec(command[0], command[1], error_message=command[2])
+                r, msg = self.exec(command[0], command[1], error_message=command[2])
             else:
                 r = -2
             if r < 0:
@@ -100,7 +100,7 @@ class RemoteConsoleClient():
                 telnet_error_message = 'impossible kakdikKSI39328ss'
             return self.client.exec(telnet_command, telnet_expected, error_message=telnet_error_message)
         else:
-            return -2
+            return -2, ""
 
 if __name__ == "__main__":
     logging_format = "[%(asctime)s] %(filename)s[:%(lineno)d] %(message)s"
