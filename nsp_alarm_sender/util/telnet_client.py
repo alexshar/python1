@@ -34,8 +34,8 @@ class TelnetClient(object):
     def exec(self, command, expected=None, error_message="这是全宇宙不可能出现的字符串"):
         self.tl.write(command)
         if expected is None:
-            time.sleep(2)
-            print(self.tl.read_all().decode('ascii'))
+            time.sleep(1)
+            # print(self.tl.read_all().decode('ascii'))
             return 1
         else:
             try:

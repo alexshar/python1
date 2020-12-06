@@ -13,7 +13,7 @@
 <div id="app" class="Cutover-task-management">
     <div class="header">
         <span class="header-icon"></span>
-        <span class="word">告警抛抛乐</span>
+        <span class="word">[2.0]请勿同步，否则故障易出</span>
     </div>
 
     <div style="margin:1rem;">
@@ -33,7 +33,7 @@
                     :formatter="categoryFormatter">
                 </el-table-column>
                 <el-table-column
-                    label="告警名"
+                    label="告警码"
                     prop="name">
                 </el-table-column>
                 <el-table-column
@@ -41,7 +41,7 @@
                     prop="severity">
                 </el-table-column>
                 <el-table-column
-                    label="告警对象"
+                    label="告警源"
                     prop="object">
                 </el-table-column>
                 <el-table-column
@@ -55,9 +55,10 @@
                     :formatter="statusFormatter">
                 </el-table-column>
 
-                <el-table-column label="操作" fixed="right" width="200">
+                <el-table-column label="操作" fixed="right" width="300">
                     <template slot-scope="scope">
-                        <el-button size="mini" type="success" @click="onExec(scope.row)">直接整一把</el-button>
+                        <el-button size="mini" type="primary" @click="onExec(scope.row)">直接整一把</el-button>
+                        <el-button size="mini" type="success" @click="onClear(scope.row)">消除</el-button>
                         <el-button size="mini" type="danger"  @click="onDelete(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>                
@@ -74,7 +75,7 @@
                     <el-option v-for="item in categoryTypes" :key="item.value" :label="item.label" :value="item.value"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="告警条目" prop="name">
+            <el-form-item label="告警码" prop="name">
                 <el-input style="margin-right:2rem;margin-left:0.3rem;width:13rem" size="small"  v-model="form.name"></el-input>
             </el-form-item>
             <el-form-item label="告警级别" prop="severity">
@@ -82,7 +83,7 @@
                     <el-option v-for="item in severityTypes" :key="item" :label="item" :value="item"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="告警对象" prop="object">
+            <el-form-item label="告警源" prop="object">
                 <el-input style="margin-right:2rem;margin-left:0.3rem;width:13rem" size="small"  v-model="form.object"></el-input>
             </el-form-item>
             <el-form-item label="抛射延迟(单位秒,可以是0)" prop="delay">
@@ -116,7 +117,7 @@
                         { required: true, message: "不可以是空", trigger: 'blur'}
                     ]
                 },
-                severityTypes: [ "critical", "major", "minor", "warning", "indeterminate", "cleared" ],
+                severityTypes: [ "critical", "major", "minor", "warning", "indeterminate"],
                 categoryTypes: [
                     {label: "quality of service", value: "qualityofservicealarm"},
                     {label: "equipment", value: "equipmentalarm"},
@@ -184,6 +185,9 @@
             },
             onExec(task) {
                 axios.post('/alarm_exec', task)
+            },
+            onClear(task) {
+                axios.post('/alarm_clear', task)
             },
             onDelete(task) {
                 axios.delete(`/alarm?id=${task.id}`)

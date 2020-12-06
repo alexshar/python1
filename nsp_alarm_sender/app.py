@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+import logging
 from flask import Flask, abort, request, jsonify, render_template
 from alarm_handler import AlarmInsert
 from util.kronos import Kronos
@@ -32,7 +33,17 @@ def alarm_exec():
         abort(500)
     return jsonify(alarm_handler_ins.insert_alarm(request.json))
 
+@app.route('/alarm_clear', methods=['POST'])
+def alarm_clear():
+    if not request.json:
+        abort(500)
+    return jsonify(alarm_handler_ins.clear_alarm(request.json))
+
 if __name__ == '__main__':
+    # init logger
+    logging_format = "[%(asctime)s] %(filename)s[:%(lineno)d] %(message)s"
+    logging.basicConfig(level=logging.DEBUG, format=logging_format)
+    
     scheduler_ins = Kronos()
     scheduler_ins.start()
     alarm_handler_ins = AlarmInsert(scheduler_ins)
