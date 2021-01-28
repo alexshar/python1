@@ -1,0 +1,116 @@
+.connCard{
+    overflow: hidden;
+    height:200px;
+}
+.conshow{
+    float:left;
+    margin-left:12%;
+    position: relative;
+}
+.morePort1{
+	width:100px;
+    position: absolute;
+    top:-65px;
+}
+.morePort2{
+	width:100px;
+    position: absolute;
+    top:-3px;
+}
+.morePort3{
+	width:100px;
+    position: absolute;
+    top:60px;
+}
+.morePort4{
+	width:100px;
+    position: absolute;
+    top:-50px;
+}
+.morePort5{
+	width:100px;
+    position: absolute;
+    top:30px;
+}
+#onewayCard,#bothwayCard,#multipointCard,#loopbackCard,#loopbackCard1{
+	position:relative;
+    display: none;
+}
+#onewayConn,#bothwayConn,#multipointConn,#loopbackConn,#loopbackConn1{
+    display: none;
+	width: 80%;
+    margin: 20px 0 20px 10%;
+	border: 1px solid #ccc
+
+}
+.odukTitle{
+	text-align:center;
+}
+
+.submitBtn{
+	position:absolute;
+	top: 108px;
+    right: 51%;
+}
+.portMar{
+	margin-top:20px;
+}
+.odukSelect{
+	width:200px!important;
+	display:inline-block;
+	margin-left:24px
+}
+.odukCard{
+	text-align:center;
+	padding-top: 20px
+}
+.odukTable{
+	background-color: #124191;
+    text-align: left;
+    color: white;
+    padding: 3px 0 3px 2%;
+    font-weight: bold;
+	font-size:14px;
+}
+.cardTitle{
+	color: #124191;
+    margin-left: 2%;
+    font-weight: bold;
+}
+.odukBtnStyle{
+	background-color: #124191;
+    border: 1px solid #124191; 
+    border-radius: 5%;
+    color: white;
+}
+.odukFilterSpan{
+	color:gary;
+	margin-left: 18px;
+}
+#tip,#deltip{
+	position:absolute;
+	width: 25%;
+    border: 1px solid #ccc;
+	bottom:0px;
+	right:0px;
+}
+.gouxuanImg{
+	width: 5%;
+	margin-left:1%;
+}
+.tipTitle{
+	font-size: 12px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ccc;
+}
+.tipTitle span{
+	padding-left: 4%;
+}
+.tipContent{
+	padding: 10px 0 10px 10%;
+}
+body{
+	position:relative;
+	overflow:hidden;
+}
+

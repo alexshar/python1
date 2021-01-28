@@ -3,6 +3,7 @@
 from ftplib import FTP
 import os
 import json
+import logging
 
 history_file = 'ftp_history.json'
 db_file_base_path = '/alu/DEPOT/BackupJobs'
@@ -50,7 +51,12 @@ def ftp_download(ip, port, user, password, file, remote_location, remote_name):
 
 def file_list():
     local_files = clean_log
-    for item in os.listdir(db_file_base_path):
+    try:
+        base_path_items = os.listdir(db_file_base_path)
+    except:
+        logging.warning("数据库备份文件路径设置有误")
+        return get_history()
+    for item in base_path_items:
         # read folder name as item
         try:
             [category, bk_date, bk_time] = item.split("_")
@@ -113,7 +119,12 @@ def get_history():
 def put_history(logs):
     f = open(history_file, 'w', encoding='utf-8')
     f.write(json.dumps(logs, ensure_ascii=False, indent=4, separators=(',', ': ')))
-    f.close()    
+    f.close()
+
+def refresh():
+    log = file_list()
+    put_history(log)
+    return log
 
 def file_upload(input):
     if 'host' not in input: return -1

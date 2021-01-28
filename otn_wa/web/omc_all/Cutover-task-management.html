@@ -293,7 +293,7 @@
                 });
             },
             timestampToTime(row) {
-                if (row.isManual) return ("手动执行");
+                if (row.isManual && row.execTime=="") return ("手动执行");
                 let timestamp = row.execTime;
                 var date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
                 var Y = date.getFullYear() + '-';

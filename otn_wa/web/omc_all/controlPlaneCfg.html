@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .control-label{
+            display: inline-block;
+            width: 150px;
+        }
+        .actives{
+            width: 100px;
+            background-color: gray;
+        }
+        .Config{
+            position: relative;
+            margin-top: 10px;
+        }
+        .Config li{
+            list-style: none;
+            float: left;
+            width: 100px;
+            text-align: center;
+            border-bottom: 1px solid gainsboro;
+            cursor: pointer;
+        }
+        .Config li div{
+            border-top: 1px solid #c3bdbd;
+            width: 100%;
+            display: none;
+            position: absolute;
+            left: 0px;
+        }
+        .tabUL{
+            margin-top: 20px;
+            margin-left: 20px;
+            padding: 5px;
+            border-top: 1px solid #a59b9b;
+            height: 500px;
+        }
+        *{
+            padding: 0px;
+            margin: 0px;
+        }
+        .route{
+            position: relative;
+        }
+        select{
+            display: block;
+        }
+        .control-label{
+            display: inline-block;
+            width: 150px;
+        }
+        .w-selelct{
+            display: inline-block;
+            width: 200px !important;
+        }
+
+        #Cofings div{
+            margin-top: 10px;
+        }
+        .PGBtnStyle{
+            background-color: #124191;
+            border: 1px solid #124191;
+            border-radius: 5%;
+            color: white;
+            margin-top: 4px;
+            padding: 5px;
+        }
+        table th{
+            border: 1px solid gray;
+            text-align: center;
+            padding: 3px 0;
+            background-color: #ccc;
+            color: white;
+        }
+        table td{
+            border: 1px solid gray;
+            text-align: center;
+            padding: 3px 0;
+        }
+
+        .odukTable{
+            background-color: #124191;
+            text-align: left;
+            color: white;
+            padding: 3px 0 3px 2%;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        #handSetTab{
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 20px;
+        }
+        #handSetTab:after{
+            content: "";
+            display: block;
+            clear: both;
+            zoom: 1;
+        }
+        #handSetTab>li {
+            list-style: none;
+            float: left;
+            width: 24%;
+            text-align: center;
+            border: 1px solid #cccccc;
+            cursor: pointer;
+        }
+        .activeTab{
+            background: #ccc;
+        }
+        .defaultTab{
+            background-color: #fff;
+        }
+        div#revp_state {
+            margin-top: 10px;
+        }
+        #rsvpTool,#ospfTool,#lmpfTool{
+            text-align:center;
+            margin-top:20px;
+        }
+        #LMP,#OSPF,#RSVP{
+            text-align:center;
+        }
+        #LMP [type="checkbox"]:not(:checked){
+            opacity: 1 ! important;
+        }
+       .leftTable{
+           text-align: left;
+       }
+    </style>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+    <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+</head>
+<body>
+
+
+
+<div id="NEconfigDlg" style="text-align: center">
+    <from id="Cofings">
+        <input style="display: none" id="ids" value=""/>
+        <div class="">
+            <label class="control-label" for="neName">网元名称:</label>
+            <input type="text" class="form-control NEconfigname"  style="width: 200px" disabled="disabled">
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">IP:</label>
+            <input type="text" class="NEcofigIP userlabel"  style="width: 200px">
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">自动发现:</label>
+            <select name="" id="" class="parsmers w-selelct">
+                <option value="关闭">关闭</option>
+                <option value="全局">全局</option>
+                <option value="部分">部分</option>
+            </select>
+        </div>
+    </from>
+    <div style="text-align: center;margin-top: 20px">
+        <button class="btnConfrim btn" >应用</button>
+    </div>
+</div>
+
+<div id="NEconfigDlgs" style="text-align: center">
+    <from id="Cofings">
+        <input style="display: none" id="ssdd" value=""/>
+        <div class="" style="margin-top: 10px">
+            <label class="control-label" for="neName">网元名称:</label>
+            <select name="" id="" class="NEconfignames w-selelct">
+            </select>
+        </div>
+        <div class="" style="margin-top: 10px">
+            <label class="control-label" for="neName">IP:</label>
+            <input type="text" class="NEcofigIPs userlabel"  style="width: 200px">
+        </div>
+        <div class="" style="margin-top: 10px">
+            <label class="control-label" for="neName">自动发现:</label>
+            <select name="" id="" class="parsmerss w-selelct">
+                <option value="关闭">关闭</option>
+                <option value="全局">全局</option>
+                <option value="部分">部分</option>
+            </select>
+        </div>
+    </from>
+    <div style="text-align: center;margin-top: 20px">
+        <button class="btnConfrim btn" >应用</button>
+    </div>
+</div>
+
+<button class="creatCofig PGBtnStyle" style="margin-left: 20px;">自动配置</button>
+<button class="configBTN PGBtnStyle" >手动配置</button>
+<div class="PmList redundancyProtect" style="padding-left: 20px">
+    <p class="odukTable">已配置网元</p>
+    <table style="margin-top: -21px" >
+        <thead>
+        <!-- <th><input type="checkbox" class="thcheck" style='position: inherit;opacity: 1;left: 0px' onclick="" ></th>-->
+        <th>节点</th>
+        <th>IP</th>
+        <th>自动发现</th>
+        <th>操作</th>
+        </thead>
+        <tbody class="ProList">
+        <tr >
+            <!--   <td><input type="checkbox"></td>-->
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td><button>配置</button></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="tabUL" id="tabULs">
+    <ul class="tab Config">
+        <li class="1">rsvp协议
+            <div>
+                <table >
+                    <thead>
+                    <th>名称</th>
+                    <th>链路号</th>
+                    <th>带宽</th>
+                    <th>类型</th>
+                    <th>本节点</th>
+                    <th>远节点</th>
+                    <th>RSVP状态</th>
+                    <th>地址</th>
+                    <th>协议ID</th>
+                    <th>封装方式</th>
+                    </thead>
+                    <tbody class="psvp"></tbody>
+                </table>
+
+            </div>
+        </li>
+        <li class="cur">OSPF协议
+            <div>
+                <table>
+                    <thead>
+                    <th>名称</th>
+                    <th>链路号</th>
+                    <th>带宽</th>
+                    <th>类型</th>
+                    <th>本节点</th>
+                    <th>远节点</th>
+                    <th>OSPF状态</th>
+                    <th>地址</th>
+                    <th>协议ID</th>
+                    <th>封装方式</th>
+                    <th>约束条件</th>
+                    </thead>
+                    <tbody class="OSPF"></tbody>
+                </table>
+                <p style="text-align: left">邻居表:</p>
+                <table class="lbelerTbake">
+                    <thead>
+                    <th>名称</th>
+                    <th>IP</th>
+                    <!-- <th>状态</th>-->
+                    </thead>
+                    <tbody id="lbelerBody">
+                    </tbody>
+                </table>
+            </div>
+        </li>
+        <li>TE链路信息
+            <div>
+                <table class="TE">
+                </table>
+
+           <!--     <div class="rsvpLabel" style="margin-top: 10px">
+                    <label class="control-label" for="lmp_treaty">TE状态:</label>
+                    <select name="neName" id="TEStauscheck" class="neconfig-select  w-selelct" >
+                        <option value="">激活</option>
+                        <option value="">禁止</option>
+                    </select>
+                </div>
+-->
+                <p style="text-align: left" >链路列表:</p>
+                <table class="TEConnlist">
+                    <thead>
+                    <th >名称</th>
+                    <th>链路号</th>
+                    <th>带宽</th>
+                    <th>类型</th>
+                    <th>本节点</th>
+                    <th>远节点</th>
+                    <th>端口</th>
+                    <th>波长</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                    </thead>
+                    <tbody id="TEcheck">
+                    </tbody>
+                </table>
+
+          </div>
+      </li>
+      <li>自动发现
+          <div>
+              <table class="tabdiscovery">
+              </table>
+          </div>
+      </li>
+      <li>LMP
+          <div>
+              <table >
+                  <table>
+                      <thead>
+                      <th>名称</th>
+                      <th>链路号</th>
+                      <th>带宽</th>
+                      <th>类型</th>
+                      <th>本节点</th>
+                      <th>远节点</th>
+                      <th>协议ID</th>
+                      <th>UDP端口</th>
+                      <th>发现方式</th>
+                      </thead>
+                      <tbody class="LMP"></tbody>
+                  </table>
+              </table>
+          </div>
+      </li>
+  </ul>
+</div>
+
+
+<div class="PmLists redundancyProtect" style="padding-left: 20px">
+  <hr style="margin-top: 20px"/>
+  <p class="odukTable">网元列表</p>
+  <table style="margin-top: -21px">
+      <thead>
+      <!-- <th><input type="checkbox" class="thcheck" style='position: inherit;opacity: 1;left: 0px' onclick="" ></th>-->
+        <th>节点</th>
+        <th>IP</th>
+        <th>自动发现</th>
+        </thead>
+        <tbody class="ProLists">
+        <tr >
+            <!--   <td><input type="checkbox"></td>-->
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td><button>配置</button></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="ConfrimDlg">
+    <div>
+        <h1 style="margin-top: 0px">是否应用?</h1>
+    </div>
+
+    <div style="
+    text-align: center;
+   ">
+        <button class="sure" style="width: 50px">是</button>
+        <button class="no" style="width: 50px">否</button>
+    </div>
+
+</div>
+
+<div id="operation">
+    <h3><span class="contion">操作执行中.....</span></h3>
+</div>
+
+<div id="DLGsuccess">
+    <h3><span >成功</span></h3>
+</div>
+
+
+
+<!--config html-->
+
+<div id="handSet">
+    <ul class="tab" id="handSetTab">
+        <li>RSVP</li>
+        <li>OSPF</li>
+        <li>LMP</li>
+        <li>TE</li>
+    </ul>
+    <div id="RSVP" class="tabCount">
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="neName">网元:</label>
+            <select name="neName" id="" class="RSVPneList neconfig-select  w-selelct">
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="neName">链路:</label>
+            <select name="neName" id="" class="reoustr neconfig-select  w-selelct">
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="rsvp_address">地址:</label>
+            <input type="text" id="rsvp_address" class="IPtest"  style="width: 200px">
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="rsvp_treaty">协议ID:</label>
+            <input type="text" id="rsvp_treaty" style="width: 200px"/>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="rsvp_encapsulation">封装方式:</label>
+            <select name="neName" id="rsvp_encapsulation" class="neconfig-select  w-selelct" style="width:200px!important">
+                <option value="noen">noen</option>
+                <option value="en">en</option>
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="revp_state">RSVP状态:</label>
+            <select name="state" id="revp_state" class="neconfig-select  w-selelct" style="width:200px!important">
+                <option value="rsvpActivate">RSVP激活</option>
+                <option value="rsvpStart">RSVP停止</option>
+                <option value="rsvpStop">RSVP重启</option>
+            </select>
+        </div>
+        <div id="rsvpTool" style="margin-top: 20px">
+            <button class="use">应用</button>
+  <!--          <button class="deit">修改</button>-->
+        </div>
+    </div>
+    <div id="OSPF" class="tabCount">
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="neName">网元:</label>
+            <select name="neName" id="" class="OSPFneList neconfig-select  w-selelct">
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="neName">链路:</label>
+            <select name="neName" id="" class="OSPFreoustr neconfig-select  w-selelct">
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="ospf_address">地址:</label>
+            <input type="text" id="ospf_address" class="IPtest"  style="width: 200px">
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="ospf_treaty">协议ID:</label>
+            <input type="text" id="ospf_treaty" style="width: 200px"/>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="ospf_encapsulation">封装方式:</label>
+            <select name="encapsulation" id="ospf_encapsulation" class="neconfig-select  w-selelct" style="width:200px!important">
+                <option value="noen">noen</option>
+                <option value="en">en</option>
+            </select>
+        </div>
+
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="ospf_constraint">约束条件:</label>
+            <select  class="neconfig-select  w-selelct" style="width:200px!important;" id="ospf_constraint">
+                <option value="代价最小">代价最小</option>
+                <option value="条数最小">条数最小</option>
+                <option value="代价/条数最小">代价/条数最小</option>
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="ospf_state">OSPF状态:</label>
+            <select name="state" id="ospf_state" class="neconfig-select  w-selelct" style="width:200px!important">
+                <option value="OSPF激活">OSPF激活</option>
+                <option value="OSPF停止">OSPF停止</option>
+                <option value="OSPF重启">OSPF重启</option>
+            </select>
+        </div>
+        <div id="ospfTool" style="margin-top: 20px">
+            <button class="use">应用</button>
+          <!--  <button class="deit">修改</button>-->
+        </div>
+    </div>
+    <div id="LMP" class="tabCount">
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="neName">网元:</label>
+            <select name="neName" id="" class="LMPneList neconfig-select  w-selelct">
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="neName">链路:</label>
+            <select name="neName" id="" class="LMPFreoustr neconfig-select  w-selelct">
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="lmp_treaty">协议ID:</label>
+            <input type="text" id="lmp_treaty" style="width: 200px"/>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="lmp_port">UDP端口:</label>
+            <input type="text" id="lmp_port" style="width: 200px"/>
+        </div>
+        <div class="rsvpLabel" id="lmp_auto" style="margin-top: 10px">
+            <label class="control-label" for="autoFind">发现方式:</label>
+            <select  class="neconfig-select  w-selelct" id="autoFind"style="width:200px!important;" >
+                <option value="自动发现激活">自动发现激活</option>
+                <option value="自动发现停止">自动发现停止</option>
+            </select>
+        </div>
+        <div id="lmpfTool" style="margin-top: 10px">
+            <button class="use">应用</button>
+<!--            <button class="deit">修改</button>-->
+        </div>
+    </div>
+    <div id="TE" class="tabCount" style="text-align: center">
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="neName">网元:</label>
+            <select name="neName" id="TENe" class="TENe neconfig-select  w-selelct">
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="lmp_treaty">端口:</label>
+            <select name="neName" id="TEPROT" class="neconfig-select  w-selelct"></select>
+        </div>
+
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="lmp_treaty">TE状态:</label>
+            <select name="neName" id="TEStaus" class="neconfig-select   w-selelct">
+                <option value="激活">激活</option>
+                <option value="禁止">禁止</option>
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="lmp_treaty">使能状态:</label>
+            <select name="neName" id="SHStaus" class="neconfig-select    w-selelct">
+                <option value="使能">使能</option>
+                <option value="非使能">非使能</option>
+            </select>
+        </div>
+        <div class="rsvpLabel" id="TETABLE" style="margin-top: 10px">
+            <label class="control-label" for="autoFind">链路列表:</label>
+            <table>
+              <thead>
+              <th><input type="checkbox"  class="thcheck" style='position: inherit;opacity: 1;left: 0px'></th>
+              <th>名称</th>
+              </thead>
+                <tbody class="TEConn">
+                </tbody>
+            </table>
+        </div>
+
+
+        <div id="TETool" style="margin-top: 10px">
+            <button class="use">应用</button>
+            <!--            <button class="deit">修改</button>-->
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</body>
+
+<!--<script src="jquery.js"></script>-->
+<!--<script src="js/NeCofigJs.js"></script>-->
+<script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/NeCofigJs.js"></script>
+</html>

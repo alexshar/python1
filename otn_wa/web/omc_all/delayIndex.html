@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>10_2</title>
+	<!--<script src="/oms1350/web/eqm/omc_all/js/jquery.1.9.1.min.js"></script>-->
+	<style>
+		@charset "UTF-8";
+		/*html, body, h1, h2, h3, h4, h5, h6, div, dl, dt, dd, ul, ol, li, p, blockquote, pre, hr, figure, table, caption, th, td, form, fieldset, legend, input, button, textarea, menu {*/
+			/*margin: 0;*/
+			/*padding: 0; }*/
+
+		/*html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 {*/
+			/*-webkit-text-size-adjust: none; }*/
+
+		/*body {*/
+			/*font-size: 14px;*/
+			/*color: #666;*/
+			/*font-family: "Microsoft YaHei", "Arial", "黑体", "宋体", "sans-serif"; }*/
+
+		/*html, body, fieldset, img, iframe, abbr {*/
+			/*border: 0; }*/
+
+		/*dl, dt, dd, ul, ol, li {*/
+			/*list-style: none; }*/
+
+		/*h1, h2, h3, h4, h5, h6 {*/
+			/*font-style: normal;*/
+			/*color: #222; }*/
+
+		/*textarea {*/
+			/*overflow: auto;*/
+			/*resize: none; }*/
+
+		/*a, a:link, a:visited, a:hover, a:active, a:focus {*/
+			/*text-decoration: none; }*/
+
+		/*a:hover {*/
+			/*color: #ff4f00; }*/
+
+		/*body * {*/
+			/*-webkit-tap-highlight-color: transparent;*/
+			/*tap-highlight-color: transparent; }*/
+
+		/*.clearfix:after {*/
+			/*content: ".";*/
+			/*display: block;*/
+			/*overflow: hidden;*/
+			/*height: 0;*/
+			/*clear: both;*/
+			/*visibility: hidden; }*/
+
+		/** html .clearfix {*/
+			/*height: 1%; }*/
+
+		/*input, textarea, select {*/
+			/*outline: none; }*/
+
+		/*p {*/
+			/*word-wrap: break-word; }*/
+
+		/*.fl {*/
+			/*float: left; }*/
+
+		/*.fr {*/
+			/*float: right; }*/
+
+		/*.re {*/
+			/*position: relative; }*/
+
+		/*.fixed {*/
+			/*position: fixed; }*/
+
+		/*.ab {*/
+			/*position: absolute; }*/
+
+		/*.hidden {*/
+			/*display: none; }*/
+
+		/*.container {*/
+			/*width: 100%;*/
+			/*max-width: 500px; }*/
+
+		/*.ma {*/
+			/*margin: 0 auto; }*/
+
+		/*.tl {*/
+			/*text-align: left; }*/
+
+		/*.tr {*/
+			/*text-align: right; }*/
+
+		/*.tc {*/
+			/*text-align: center; }*/
+
+		/*.redundancyProtect {*/
+			/*padding: 15px;*/
+			/*margin-top: 20px; }*/
+
+		/*.redundancyProtect .page-title {*/
+			/*font-weight: 700;*/
+			/*line-height: 50px;*/
+			/*font-size: 20px; }*/
+
+
+		/*.redundancyProtect .main-tab-top li {*/
+			/*float: left;*/
+			/*line-height: 40px;*/
+			/*height: 40px;*/
+			/*border-right: 1px solid #e2e2e2;*/
+			/*border-top: 1px solid #e2e2e2;*/
+			/*padding: 0 15px;*/
+			/*cursor: pointer;*/
+			/*-webkit-border-radius: 0 4px 0 0;*/
+			/*-moz-border-radius: 0 4px 0 0;*/
+			/*border-radius: 0 4px 0 0; }*/
+
+		/*.redundancyProtect .main-tab-top li:first-child {*/
+			/*border-left: 1px solid #e2e2e2;*/
+			/*-webkit-border-radius: 4px 0 0 0;*/
+			/*-moz-border-radius: 4px 0 0 0;*/
+			/*border-radius: 4px 0 0 0; }*/
+
+		/*.redundancyProtect .main-tab-top li.active {*/
+			/*background: #124191;*/
+			/*color: #fff;*/
+			/*border-color: #124191; }*/
+
+		/*.redundancyProtect .main-tab {*/
+			/*border: 1px solid #e2e2e2;*/
+			/*padding: 15px;*/
+			/*display: none;*/
+			/*-webkit-border-radius: 0 4px 4px 4px;*/
+			/*-moz-border-radius: 0 4px 4px 4px;*/
+			/*border-radius: 0 4px 4px 4px;*/
+			/*background: #f3f4f5; }*/
+
+		/*.redundancyProtect label {*/
+			/*line-height: 40px;*/
+			/*width: 80px;*/
+			/*text-align: right;*/
+			/*display: inline-block; }*/
+
+		/*.redundancyProtect select {*/
+			/*width: 160px !important;*/
+			/*display: inline-block;*/
+			/*padding: 5px 2px !important; }*/
+
+		/*.redundancyProtect select option {*/
+			/*display: inline-block;*/
+			/*width: 160px;*/
+			/*line-height: 40px; }*/
+
+		/*.redundancyProtect .tabs-box {*/
+			/*margin-top: 16px; }*/
+
+		/*.redundancyProtect .tabs-box .tab {*/
+			/*display: none;*/
+			/*background: #f2f3f4;*/
+			/*-webkit-border-radius: 4px;*/
+			/*-moz-border-radius: 4px;*/
+			/*border-radius: 4px;*/
+			/*border: 1px solid #124191; }*/
+
+		/*.redundancyProtect .tabs-box .tab .tab-title {*/
+			/*line-height: 40px;*/
+			/*font-weight: 700;*/
+			/*font-size: 16px;*/
+			/*padding: 0 15px;*/
+			/*background: #124191;*/
+			/*color: #fff; }*/
+
+		/*.redundancyProtect .tabs-box .tab .content {*/
+			/*padding: 15px; }*/
+
+		/*.redundancyProtect .tabs-box .tab .content .status {*/
+			/*color: #f00;*/
+			/*line-height: 40px; }*/
+
+		/*.redundancyProtect .tabs-box .tab .btn-box {*/
+			/*margin-top: 10px; }*/
+
+		/*.redundancyProtect .tabs-box .tab .show-data {*/
+			/*border: 1px solid #e2e2e2;*/
+			/*display: inline-block;*/
+			/*min-width: 160px;*/
+			/*line-height: 30px;*/
+			/*height: 30px;*/
+			/*margin: 5px 0;*/
+			/*text-align: left;*/
+			/*padding: 0 7px;*/
+			/*background: #fff;*/
+			/*-webkit-border-radius: 4px;*/
+			/*-moz-border-radius: 4px;*/
+			/*border-radius: 4px; }*/
+
+		/*.redundancyProtect .tabs-box .tab .show-data.btn-width {*/
+			/*width: 66px;*/
+			/*text-align: center;*/
+			/*background: #eee; }*/
+
+		/*.redundancyProtect button.btn {*/
+			/*width: 80px;*/
+			/*display: inline-block;*/
+			/*line-height: 30px;*/
+			/*height: 30px;*/
+			/*-webkit-border-radius: 3px;*/
+			/*-moz-border-radius: 3px;*/
+			/*border-radius: 3px;*/
+			/*outline: 0;*/
+			/*border: 1px solid #e2e2e2;*/
+			/*background: #eee;*/
+			/*cursor: pointer;*/
+			/*-webkit-box-shadow: 0 0 0 0 #ffffff;*/
+			/*-moz-box-shadow: 0 0 0 0 #ffffff;*/
+			/*box-shadow: 0 0 0 0 #ffffff;*/
+			/*padding: 0; }*/
+
+		/*.redundancyProtect button.btn:hover {*/
+			/*border: 1px solid #428EFF;*/
+			/*background: #124191;*/
+			/*color: #fff; }*/
+
+		/*.redundancyProtect button.btn:active {*/
+			/*border: 1px solid #2d78f4;*/
+			/*background: #124191;*/
+			/*color: #fff; }*/
+
+		/*.redundancyProtect button.btn-blue {*/
+			/*border: 1px solid #124191;*/
+			/*background: #124191;*/
+			/*color: #fff; }*/
+
+		/*.redundancyProtect .btn.btn-default {*/
+			/*border: 1px solid #e2e2e2;*/
+			/*background: #eee;*/
+			/*cursor: default;*/
+			/*color: #888; }*/
+
+		/*.redundancyProtect .btn.btn-default:hover, .redundancyProtect .btn.btn-default:active {*/
+			/*border: 1px solid #e2e2e2;*/
+			/*background: #eee;*/
+			/*cursor: default;*/
+			/*color: #888; }*/
+
+		/*.redundancyProtect .btn.btn-disabled {*/
+			/*border: 1px solid #e2e2e2;*/
+			/*background: #eee;*/
+			/*cursor: default;*/
+			/*color: #888; }*/
+
+		/*.redundancyProtect .btn.btn-disabled:hover {*/
+			/*border: 1px solid #e2e2e2;*/
+			/*background: #eee;*/
+			/*color: #888; }*/
+
+		/*.redundancyProtect .btn.btn-disabled:active {*/
+			/*border: 1px solid #e2e2e2;*/
+			/*background: #eee;*/
+			/*color: #888; }*/
+
+		/*.redundancyProtect .btn.btn-disabled-blue {*/
+			/*border: 1px solid #124191;*/
+			/*background: #124191;*/
+			/*color: #fff; }*/
+
+		/*.redundancyProtect .btn.btn-disabled-blue:hover, .redundancyProtect .btn.btn-disabled-blue:active {*/
+			/*border: 1px solid #124191;*/
+			/*background: #124191;*/
+			/*color: #fff; }*/
+
+		/*select {*/
+			/*width: 160px !important;*/
+			/*z-index: 1000; }*/
+
+		/*#img_wait {*/
+			/*position: fixed;*/
+			/*top: 0;*/
+			/*left: 0;*/
+			/*right: 0;*/
+			/*bottom: 0;*/
+			/*text-align: center;*/
+			/*width: 100%;*/
+			/*height: 100%;*/
+			/*background: rgba(0, 0, 0, 0.6);*/
+			/*display: none; }*/
+
+		/*#img_wait .loading {*/
+			/*display: table-cell;*/
+			/*width: 38px;*/
+			/*height: 38px;*/
+			/*vertical-align: middle; }*/
+
+		/*#protectedFenders {*/
+			/*width: 300px;*/
+			/*display: inline-block;*/
+			/*line-height: 24px !important;*/
+			/*text-align: left; }*/
+
+		/*#protectedFenders .item {*/
+			/*width: 50%;*/
+			/*display: inline-block;*/
+			/*text-align: left; }*/
+
+	</style>
+	<style>
+		table {
+			/*margin:100px auto;*/
+			width: 100%;
+			border: 1px solid black;
+			border-collapse: collapse;
+		}
+
+		th,
+		td {
+			border: 1px solid black;
+			text-align: center;
+			height: 30px;
+		}
+
+		#showMask {
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			z-index: 900;
+			position: absolute;
+			left: 0;
+			top: 0;
+			visibility: hidden;
+		}
+		input[type="checkbox"]{
+			left: 0px!important;
+			position: inherit!important;
+			opacity: 1!important;
+		}
+		#showMask02 {
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			z-index: 1900;
+			position: absolute;
+			left: 0;
+			top: 0;
+			visibility: hidden;
+		}
+		/*#myTable {
+            visibility: hidden;
+        }*/
+
+		#setInfo {
+			width: 430px;
+			height: 180px;
+			/*z-index: 100960;*/
+			/*position: absolute;*/
+			/*top: 50%;*/
+			/*left: 50%;*/
+			/*margin-left: -215px;*/
+			/*margin-top: -40px;*/
+			/*background-color: #FFFFFF;*/
+			visibility: hidden;
+			text-align: center;
+			margin-bottom: 10px;
+		}
+		.ui-dialog-body{
+			height: 490px!important;
+			padding: 0!important;
+		}
+		.ui-dialog-content{
+			margin-top: -108px!important;
+			height: 292px!important;
+			margin-left: 56px!important;
+		}
+		.showOpticalInfo {
+			width: 630px;
+			height: 540px;
+			z-index: 960;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-left: -315px;
+			margin-top: -270px;
+			background-color: #FFFFFF;
+			visibility: hidden;
+			text-align: center;
+		}
+
+		.showTopologyInfo {
+			width: 800px;
+			height: 540px;
+			z-index: 960;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-left: -400px;
+			margin-top: -270px;
+			background-color: #FFFFFF;
+			visibility: hidden;
+			text-align: center;
+		}
+
+		.showGuangFang02 {
+			display: none;
+		}
+		/*#showSetting {
+            display: none;
+        }*/
+		.DCNSelect{
+			width:100px!important;
+			display:inline-block;
+			margin-left:24px;
+		}
+		#loadingBg {
+			width: 100%;
+			height: 100%;
+			position: fixed;
+			top: 0;
+			left: 0;
+			background: rgba(0, 0, 0, .3);
+			z-index: 999;
+		}
+
+		.opticalLinkTable {
+			width: 80%;
+			margin: 20px auto;
+		}
+
+		.opticalLinkTable td {
+			font-size: 12px;
+		}
+        selelct{
+            display: inline-block!important;
+            width: 200px !important;
+        }
+		.opticalLinkTable th {
+			font-size: 14px;
+		}
+		#myTable,#showSetting{
+			visibility: hidden;
+		}
+		#showTopology02{
+			width: 59%;float: right;
+			/*border: 1px solid salmon;*/
+			height: 560px;
+			/*display: none;*/
+			margin-top:10px;
+		}
+		input{
+			background-color: #FFFFFF;
+			width: 200px;
+			border: 1px solid #eeeeee;
+			margin-left: 24px!important;
+			padding: 2px 5px!important;
+		}
+		#img_wait {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			text-align: center;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.6);
+			display: none;
+			z-index: 4000000;
+		}
+
+		#img_wait .loading {
+			display: table-cell;
+			width: 38px;
+			height: 38px;
+
+			vertical-align: middle;
+			z-index: 4000008;
+		}
+		p{
+			margin-top: 0!important;
+			margin-bottom: 0.5rem!important;
+		}
+		.coverPointDiv{
+			position: absolute;
+			width: 300px;
+			height: 307px;
+			/*border: 1px solid mediumslateblue;*/
+			left: 164px;
+			top: 94px;
+		}
+		.point{
+			width: 8px;
+			height: 8px;
+			/*background-color: darksalmon;*/
+			position: absolute;
+			/*border: 1px solid yellow;*/
+		}
+		.point-one{
+			top: -7px;
+			left: 21px;
+		}
+		.point-two{
+			top: -4px;
+			right:18px;
+		}
+		.point-three{
+			top: 4px;
+			right: 18px;
+		}
+		.point-four{
+			top: 23px;
+			right: -6px;
+		}
+		.point-five{
+			bottom: 14px;
+			right: -6px;
+		}
+		.point-six{
+			 bottom: 13px;
+			 right: 14px;
+		 }
+		.point-seven{
+			bottom: -6px;
+			right: 18px;
+		}
+		.point-eight{
+			bottom: -5px;
+			left: 20px;
+		}
+		.point-night{
+			bottom: 14px;
+			left: -4px;
+		}
+		.point-ten{
+			top: 23px;
+			left: -2px;
+		}
+		.point-eleven{
+			top: 23px;
+			left: 17px;
+		}
+		.point-twelve{
+			top: 3px;
+			left: 21px;
+		}
+		.APImargin{
+			margin-right: -88px!important;
+			margin-left: -84px!important;
+		}
+	</style>
+	<!--<link rel="stylesheet" href="https://172.24.168.132:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />-->
+	<!--<script type="text/javascript" src="https://172.24.168.132:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>-->
+	<!--<link rel="stylesheet" href="/oms1350/web/eqm/omc_all/css/ui-dialog.css" />-->
+	<!--<script type="text/javascript" src="/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>-->
+	<!--<script type="text/javascript" src="/oms1350/web/eqm/omc_all/js/redundancyProtect.js"></script>-->
+	<!--<script type="text/javascript" src="redundancyProtect.js"></script>-->
+
+	<link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+	<script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+	<script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/delayIndex.js"></script>
+</head>
+
+<body>
+
+<div style="width: 90%;height: auto;margin-left:8%;margin-top:-30px;">
+
+<div style="width: 40%;margin-top:-2px;float:left;">
+	<p>
+		<button id="searchOptical">查询光纤连接明细表</button>
+		<button id="showTopology">查询光纤连接拓扑图</button>
+		<button onclick="deleteAllOpt()">删除全部</button>
+	</p>
+	<!--<div style="width: 90%;height: 40px;">-->
+	<p>
+				<span id="addSetingArea">
+					<span style="float: left;">
+					网元
+					<select class="searchNe DCNSelect" onchange="showGuang(this.value)"></select>
+					</span>
+				<span class="guangFangShow" style="float: left;margin-left: 10px;
+						margin-right:10px ;">
+						光放<select class="searchGuangFang DCNSelect"></select>
+					</span>
+				<span style="margin-left: 6px;">
+						<button id="searchInfo">添加配置</button>
+					</span>
+				</span>
+		<span style="float: right;">
+					<button id="searchAllInfo" onclick="reload()">添加所有</button>
+
+				</span>
+		</p>
+	<!--</div>-->
+
+	<table border="1" id="myTable">
+		<thead>
+		<tr id="thOne">
+			<th>全选
+				<input type="checkbox" id="chooseAll"  style='position: inherit;opacity: 1;left: 0px' />
+			</th>
+			<th>
+				网元
+			</th>
+			<th>
+				光放
+			</th>
+			<th>
+				操作
+			</th>
+			<th>
+				删除
+			</th>
+		</tr>
+
+		</thead>
+		<tbody></tbody>
+	</table>
+	<p id="showSetting" style="padding-left:220px ;margin-top:10px;">
+		<button id="autoConfig">自动配置</button>
+		<button id="cancelConfig">取消自动配置</button>
+	</p>
+</div>
+
+<!--查看拓扑图-->
+<div  style="width: 20%;height:auto;visibility: hidden;margin-left:42%;margin-top:50px;position: relative;" id="showTuoPut">
+	<center>
+		<button onclick="closeVisDist()" id="closeOne">关闭拓扑图</button>
+		<button onclick="reloadVisDist()" id="reloadPicture">刷新拓扑图</button>
+	</center>
+
+	<canvas id="canvas" width="600" height="600" style="margin-top: 10px;margin-left: 40px;">
+	</canvas>
+	<div class="coverPointDiv">
+		<div class="point point-one" title="WGPHN-1-1-5"></div>
+		<div class="point point-two" title="WGPHN-2-1-5"></div>
+		<div class="point point-three" title="WGPHN-2-1-6"></div>
+		<div class="point point-four" title="WGPHN-2-1-2"></div>
+		<div class="point point-five" title="WGPHN-3-1-2"></div>
+		<div class="point point-six" title="WGPHN-3-1-4"></div>
+		<div class="point point-seven" title="WGPHN-3-1-3"></div>
+		<div class="point point-eight" title="WGPHN-4-1-3"></div>
+		<div class="point point-night" title="WGPHN-4-1-2"></div>
+		<div class="point point-ten" title="WGPHN-1-1-2"></div>
+		<div class="point point-eleven" title="WGPHN-1-1-4"></div>
+		<div class="point point-twelve" title="WGPHN-1-1-6"></div>
+	</div>
+</div>
+
+</div>
+<div id="showMask"></div>
+<div id="showMask02"></div>
+<div id="setInfo">
+	<h4>
+		<input type="checkbox" id="SAPICheck" onclick="checkmonitoring('#SAPICheck')" class="APImargin"/>SAPI 监视使能
+	</h4>
+	<p>
+		SAPI TTI 发送 <input type="text" id="SAPIsend" disabled="disabled" style="background-color:white; width:200px;border:1px solid #eee;margin-left: 24px!important;padding: 2px 5px!important"/>
+	</p>
+	<p>
+		SAPI TTI 期望 <input type="text" id="SAPIexpect" disabled="disabled" onpropertychange="OnPropChanged('#SAPIexpect')" style="background-color:white; width:200px;border:1px solid #eee;margin-left: 24px!important;padding: 2px 5px!important"/>
+	</p>
+	<p>
+		SAPI TTI 接受 <input type="text" id="SAPIaccept" disabled="disabled" style="background-color:white; width:200px;border:1px solid #eee;margin-left: 24px!important;padding: 2px 5px!important"/>
+	</p>
+	<p>
+		<span style="float: left;	margin-left: 90px;">SAPI 状态</span>
+		<label id="SAPstatus" style="margin-left: -50px;"> </label>
+	</p>
+	<br>
+	<h4>
+		<input type="checkbox" id="DAPICheck"  onclick="checkmonitoring('#DAPICheck')" class="APImargin"/>DAPI 监视使能
+	</h4>
+	<p>
+		DAPI TTI 发送 <input type="text" id="DAPIsend" disabled="disabled" style="background-color:white; width:200px;border:1px solid #eee;margin-left: 24px!important;padding: 2px 5px!important"/>
+	</p>
+	<p>
+		DAPI TTI 期望 <input type="text" id="DAPIexpect" disabled="disabled" onpropertychange="OnPropChanged('#SAPIexpect')" style="background-color:white; width:200px;border:1px solid #eee;margin-left: 24px!important;padding: 2px 5px!important"/>
+	</p>
+	<p>
+		DAPI TTI 接受 <input type="text" id="DAPIaccept" disabled="disabled" style="background-color:white; width:200px;border:1px solid #eee;margin-left: 24px!important;padding: 2px 5px!important"/>
+	</p>
+	<p>
+		<span style="float: left;	margin-left: 90px;">DAPI 状态</span>
+		<label id="DAPIStatus" style="margin-left: -50px;"></label>
+	</p>
+	<br>
+	<div align="center" style="margin-top: 12px;">
+		<button onclick="manualSetting()" id="sureSetting">确定</button>
+		<span style="margin-left: 20px;">
+				<button class="closeWindow" onclick="closeWindow()">取消</button>
+		</span>
+	</div>
+</div>
+<!--查看光纤连接列表-->
+<div class="showOpticalInfo">
+	<table border="1" class="opticalLinkTable">
+		<!--<caption>光纤连接详情</caption>-->
+		<thead>
+		<tr>
+
+			<th>
+				本端网元
+			</th>
+			<th>
+				本端光放
+			</th>
+			<th>
+				远端网元
+			</th>
+			<th>
+				远端光放
+			</th>
+			<th>
+				连接状态
+			</th>
+			<th>
+				故障信息
+			</th>
+		</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+	<p style="text-align: center;">
+		<button>确定</button>
+	</p>
+</div>
+
+<!--旋转圈圈-->
+<div id="img_wait">
+	<div class="loading">
+		<svg width="38" height="38" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="#124191">
+			<g fill="none" fill-rule="evenodd">
+				<g transform="translate(1 1)" stroke-width="2">
+					<circle stroke-opacity=".5" cx="18" cy="18" r="18" />
+					<path d="M36 18c0-9.94-8.06-18-18-18">
+						<animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite"
+						/>
+					</path>
+				</g>
+			</g>
+		</svg>
+	</div>
+</div>
+
+<!--<div id="jinxingzhong"  style="display: none">-->
+	<!--<span>运行中..</span>-->
+<!--</div>-->
+<!--<div id="setSuccess" style="display: none">-->
+	<!--<span>配置成功..</span>-->
+<!--</div>-->
+</body>
+
+</html>

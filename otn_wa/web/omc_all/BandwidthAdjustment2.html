@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>带宽调整</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/index.css">      
+</head>
+<body>
+
+<div id="app" class="Cutover-task-management">
+    <div class="header">
+        <span class="header-icon"></span>
+        <span class="word">带宽调整</span>
+    </div>
+    <div class="main-content">
+        <el-card>
+            <span><strong>业务列表</strong></span><br>
+            <el-table :data="serviceList" highlight-current-row @current-change="onCurrentChange">
+                <el-table-column label="业务名称" prop="guiLabel" min-width="300"></el-table-column>
+                <el-table-column label="业务速率" prop="effectiveRate" min-width="100"></el-table-column>
+                <el-table-column label="管理状态" prop="operationalState" min-width="120"></el-table-column>
+                <el-table-column label="源节点/端口" prop="a1NodeAndPort" min-width="200"></el-table-column>
+                <el-table-column label="宿节点/端口" prop="z1NodeAndPort" min-width="200"></el-table-column>
+                <!-- <el-table-column label="操作">
+                    <template slot-scope="scope">
+                        <el-button
+                                type="primary"
+                                size="mini"
+                                @click="onModify(scope.row)">修改</el-button>
+                    </template>
+                </el-table-column> -->
+            </el-table>
+        </el-card>
+        <el-card v-if="selected">
+            <div style="margin-bottom: 1.5rem;">
+                <span><strong>{{selected.connectionAlias}}带宽信息</strong></span>
+                <el-button style="margin-left: 5rem;" type="primary" @click="onModifyShow">修 改</el-button>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <el-tag v-for="item in selected.oduList" style="margin:4px;width:5rem">{{item}}</el-tag>
+            </div>
+            <!-- <div>
+                <el-button type="primary" @click="onModifyShow">修 改</el-button>
+            </div> -->
+        </el-card>
+    </div>
+
+    <el-dialog title="带宽修改" :visible.sync="dialogFormVisible"  v-if="selected">
+            <span>业务名称: {{selected.connectionAlias}}</span>
+            <el-input-number v-model="newRate" :min="1" :max="selected.maxRate" :step="1"></el-input-number>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible=false">取 消</el-button>
+            <el-button type="primary" @click="onModify" :loading="loading">确 定</el-button>
+        </div>
+    </el-dialog>
+</div>
+
+</body>
+</html>
+
+
+<script>
+    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                serviceList: [],
+                conf: [],
+                selected: null,
+                dialogFormVisible: false,
+                loading: false,
+                newRate: 1
+            }
+        },
+        methods: {
+            getServiceList() {
+                Promise.all([
+                    axios.get("/oms1350/data/otn/connections/paths"),
+                    axios.get("https://135.251.96.98:5031/bw_adj")
+                ])
+                    .then(([rspPath, rspConf]) => {
+                        if (rspPath.data == undefined || rspPath.data.items == undefined) {
+                            return;
+                        }
+                        let conf = [];
+                        if (rspConf.data != undefined && rspConf.data.items != undefined) {
+                            conf = rspConf.data.items;
+                            this.conf = conf;
+                        }
+                        this.serviceList = rspPath.data.items.filter(v => (v.effectiveRate == "10GbE" || v.effectiveRate == "100GbE"));
+                        for (const service of this.serviceList) {
+                            if (service.effectiveRate.includes("10G")) service.maxRate = 10;
+                            else service.maxRate = 80;
+                            let found = conf.find(v => v.name === service.connectionAlias);
+                            if (found) {
+                                service.newRate = Math.min(+found.newRate, service.maxRate);
+                            } else {
+                                service.newRate = service.maxRate;
+                            }
+                            service.oduList = [];
+                            for (i = 0; i < service.newRate; i ++) {
+                                service.oduList.push("ODU0#" + (i+1));
+                            }
+                        }
+                        console.log(this.serviceList)
+                    })
+                    .catch(e => {
+
+                    })
+                    .then(() => {
+
+                    })
+            },
+            onModifyShow() {
+                this.newRate = this.selected.newRate;
+                this.dialogFormVisible = true;
+            },
+            onModify() {
+                let newRate = Math.floor(Number(this.newRate));
+                if (newRate > this.selected.maxRate) {
+                    newRate = this.selected.maxRate;
+                }
+                this.selected.newRate = newRate;
+                let reqBody = {
+                    name: this.selected.connectionAlias,
+                    newRate: newRate
+                }
+                let found = this.conf.find(v => v.name === this.selected.connectionAlias)
+                if (found) {
+                    reqBody = found;
+                    reqBody.newRate = newRate;
+                }
+                this.loading = true
+                axios.post("https://135.251.96.98:5031/bw_adj", reqBody).then(rsp => {
+                    this.getServiceList();
+                    this.loading = false;
+                    this.dialogFormVisible = false;
+                })
+            },
+            onCurrentChange(current) {
+                this.selected = current;
+            }
+        },
+        created() {
+            this.getServiceList();
+        }
+    })
+</script>
+
+<style>
+    body{margin: 0;height: 100%}
+    html,#app{height: 100%}
+    #app{height: calc(100% - 68px)}
+    .header{
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+    .main-content{
+        min-height: 100%;
+        margin: 1rem
+    }
+    .header .header-icon{
+        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+    .header .word{
+        color: rgba(255,255,255,0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+    .flex-1{
+        display: flex;
+        flex: 1;
+        margin-left: 10px;
+        padding-top: 20px;
+    }
+    .row-1{
+        margin-right: 10px;
+    }
+    .row-1 select{
+        display: block;
+    }
+    .table-div{
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #EBEEF5;
+        border-bottom: 0;
+        margin: 10px;
+    }
+    .table-div .table-row{
+        display: flex;
+        flex-direction: row;
+    }
+    .table-div .table-row div{
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        height: 30px;
+        padding: 5px 0;
+        border: 1px solid #EBEEF5;
+        border-right:0 ;
+        border-top:0 ;
+    }
+    .table-div .table-row .input{
+        padding: 5px!important;
+        width: 90%;
+        /*border: 1px solid #DCDFE6;*/
+    }
+    .el-card {
+        margin: 0.5rem;
+    }
+</style>

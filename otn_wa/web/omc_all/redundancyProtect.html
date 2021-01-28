@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>7.3_3 Redundancy Protection TEST</title>
+    <script src="/oms1350/web/eqm/omc_all/js/jquery.1.9.1.min.js"></script>
+    <style>
+	@charset "UTF-8";
+html, body, h1, h2, h3, h4, h5, h6, div, dl, dt, dd, ul, ol, li, p, blockquote, pre, hr, figure, table, caption, th, td, form, fieldset, legend, input, button, textarea, menu {
+  margin: 0;
+  padding: 0; }
+
+html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 {
+  -webkit-text-size-adjust: none; }
+
+body {
+  font-size: 14px;
+  color: #666;
+  font-family: "Microsoft YaHei", "Arial", "黑体", "宋体", "sans-serif"; }
+
+html, body, fieldset, img, iframe, abbr {
+  border: 0; }
+
+dl, dt, dd, ul, ol, li {
+  list-style: none; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-style: normal;
+  color: #222; }
+
+textarea {
+  overflow: auto;
+  resize: none; }
+
+a, a:link, a:visited, a:hover, a:active, a:focus {
+  text-decoration: none; }
+
+a:hover {
+  color: #ff4f00; }
+
+body * {
+  -webkit-tap-highlight-color: transparent;
+  tap-highlight-color: transparent; }
+
+.clearfix:after {
+  content: ".";
+  display: block;
+  overflow: hidden;
+  height: 0;
+  clear: both;
+  visibility: hidden; }
+
+* html .clearfix {
+  height: 1%; }
+
+input, textarea, select {
+  outline: none; }
+
+p {
+  word-wrap: break-word; }
+
+.fl {
+  float: left; }
+
+.fr {
+  float: right; }
+
+.re {
+  position: relative; }
+
+.fixed {
+  position: fixed; }
+
+.ab {
+  position: absolute; }
+
+.hidden {
+  display: none; }
+
+.container {
+  width: 100%;
+  max-width: 500px; }
+
+.ma {
+  margin: 0 auto; }
+
+.tl {
+  text-align: left; }
+
+.tr {
+  text-align: right; }
+
+.tc {
+  text-align: center; }
+
+.redundancyProtect {
+  padding: 15px;
+  margin-top: 20px; }
+
+.redundancyProtect .page-title {
+  font-weight: 700;
+  line-height: 50px;
+  font-size: 20px; }
+
+.redundancyProtect .main-tab-top li {
+  float: left;
+  line-height: 40px;
+  height: 40px;
+  border-right: 1px solid #e2e2e2;
+  border-top: 1px solid #e2e2e2;
+  padding: 0 15px;
+  cursor: pointer;
+  -webkit-border-radius: 0 4px 0 0;
+  -moz-border-radius: 0 4px 0 0;
+  border-radius: 0 4px 0 0; }
+
+.redundancyProtect .main-tab-top li:first-child {
+  border-left: 1px solid #e2e2e2;
+  -webkit-border-radius: 4px 0 0 0;
+  -moz-border-radius: 4px 0 0 0;
+  border-radius: 4px 0 0 0; }
+
+.redundancyProtect .main-tab-top li.active {
+  background: #124191;
+  color: #fff;
+  border-color: #124191; }
+
+.redundancyProtect .main-tab {
+  border: 1px solid #e2e2e2;
+  padding: 15px;
+  display: none;
+  -webkit-border-radius: 0 4px 4px 4px;
+  -moz-border-radius: 0 4px 4px 4px;
+  border-radius: 0 4px 4px 4px;
+  background: #f3f4f5; }
+
+.redundancyProtect label {
+  line-height: 40px;
+  width: 80px;
+  text-align: right;
+  display: inline-block; }
+
+.redundancyProtect select {
+  width: 160px !important;
+  display: inline-block;
+  padding: 5px 2px !important; }
+
+.redundancyProtect select option {
+  display: inline-block;
+  width: 160px;
+  line-height: 40px; }
+
+.redundancyProtect .tabs-box {
+  margin-top: 16px; }
+
+.redundancyProtect .tabs-box .tab {
+  display: none;
+  background: #f2f3f4;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #124191; }
+
+.redundancyProtect .tabs-box .tab .tab-title {
+  line-height: 40px;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 0 15px;
+  background: #124191;
+  color: #fff; }
+
+.redundancyProtect .tabs-box .tab .content {
+  padding: 15px; }
+
+.redundancyProtect .tabs-box .tab .content .status {
+  color: #f00;
+  line-height: 40px; }
+
+.redundancyProtect .tabs-box .tab .btn-box {
+  margin-top: 10px; }
+
+.redundancyProtect .tabs-box .tab .show-data {
+  border: 1px solid #e2e2e2;
+  display: inline-block;
+  min-width: 160px;
+  line-height: 30px;
+  height: 30px;
+  margin: 5px 0;
+  text-align: left;
+  padding: 0 7px;
+  background: #fff;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px; }
+
+.redundancyProtect .tabs-box .tab .show-data.btn-width {
+  width: 66px;
+  text-align: center;
+  background: #eee; }
+
+.redundancyProtect button.btn {
+  width: 80px;
+  display: inline-block;
+  line-height: 30px;
+  height: 30px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  outline: 0;
+  border: 1px solid #e2e2e2;
+  background: #eee;
+  cursor: pointer;
+  -webkit-box-shadow: 0 0 0 0 #ffffff;
+  -moz-box-shadow: 0 0 0 0 #ffffff;
+  box-shadow: 0 0 0 0 #ffffff;
+  padding: 0; }
+
+.redundancyProtect button.btn:hover {
+  border: 1px solid #428EFF;
+  background: #124191;
+  color: #fff; }
+
+.redundancyProtect button.btn:active {
+  border: 1px solid #2d78f4;
+  background: #124191;
+  color: #fff; }
+
+.redundancyProtect button.btn-blue {
+  border: 1px solid #124191;
+  background: #124191;
+  color: #fff; }
+
+.redundancyProtect .btn.btn-default {
+  border: 1px solid #e2e2e2;
+  background: #eee;
+  cursor: default;
+  color: #888; }
+
+.redundancyProtect .btn.btn-default:hover, .redundancyProtect .btn.btn-default:active {
+  border: 1px solid #e2e2e2;
+  background: #eee;
+  cursor: default;
+  color: #888; }
+
+.redundancyProtect .btn.btn-disabled {
+  border: 1px solid #e2e2e2;
+  background: #eee;
+  cursor: default;
+  color: #888; }
+
+.redundancyProtect .btn.btn-disabled:hover {
+  border: 1px solid #e2e2e2;
+  background: #eee;
+  color: #888; }
+
+.redundancyProtect .btn.btn-disabled:active {
+  border: 1px solid #e2e2e2;
+  background: #eee;
+  color: #888; }
+
+.redundancyProtect .btn.btn-disabled-blue {
+  border: 1px solid #124191;
+  background: #124191;
+  color: #fff; }
+
+.redundancyProtect .btn.btn-disabled-blue:hover, .redundancyProtect .btn.btn-disabled-blue:active {
+  border: 1px solid #124191;
+  background: #124191;
+  color: #fff; }
+
+select {
+  width: 160px !important;
+  z-index: 1000; }
+
+#img_wait {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: none; }
+
+#img_wait .loading {
+  display: table-cell;
+  width: 38px;
+  height: 38px;
+  vertical-align: middle; }
+
+#protectedFenders {
+  width: 300px;
+  display: inline-block;
+  line-height: 24px !important;
+  text-align: left; }
+
+#protectedFenders .item {
+  width: 50%;
+  display: inline-block;
+  text-align: left; }
+
+#protectedFenders input[type="checkbox"], #protectedFenders input[type="radio"] {
+  position: static;
+  opacity: 1;
+  margin-right: 2px !important;
+  line-height: 24px !important; }
+	</style>
+    <script type="text/javascript" src="/oms1350/web/eqm/omc_all/js/redundancyProtect.js"></script>
+    <!--<script type="text/javascript" src="redundancyProtect.js"></script>-->
+
+</head>
+
+<body>
+    <div class="ma container redundancyProtect">
+        <!--<p class="page-title">7.3_3 设备冗余保护</p>-->
+
+        <ul class="clearfix main-tab-top">
+            <li>配置界面</li>
+            <li>保护倒换操作</li>
+        </ul>
+        <div class="main-tab" id="interface">
+            <div class="select-panel">
+                <div class="ne">
+                    <label>网元：</label>
+                    <select>
+                    </select>
+                </div>
+                <div>
+                    <label>保护类型： </label>
+                    <select class="type"></select>
+                </div>
+            </div>
+            <div class="tabs-box">
+                <div class="tab" style="display: none;">
+                    <p class="tab-title">支路板1:N保护 </p>
+
+                    <div class="content" style="width:380px;margin:0 auto">
+                        <div class="protect-plate">
+                            <label>保护板： </label>
+                            <select>
+                            </select>
+                        </div>
+                        <div class="clearfix" style="width:380px;margin:10px auto 0">
+                            <label class="fl" style="line-height: 24px!important;">被保护板： </label>
+
+                            <div id="protectedFenders"></div>
+                        </div>
+                        <div class="btn-box tc" style="width:380px;margin:10px auto">
+                            <button class="btn btn-blue" onclick="setting_btn_click($(this),$('#interface'));">设置</button>
+                            <span class="tip"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab">
+                    <p class="tab-title">矩阵保护</p>
+
+                    <div class="content">
+                        <div class="inner">
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                        </div>
+                        <div class="btn-box tc">
+                            <button class="btn btn-default" onclick="setting_btn_click($(this));">设置</button>
+                            <span class="tip"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab">
+                    <p class="tab-title">主控制保护</p>
+
+                    <div class="content">
+                        <div class="inner">
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                        </div>
+                        <div class="btn-box tc">
+                            <button class="btn btn-default" onclick="setting_btn_click($(this));">设置</button>
+                            <span class="tip"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab">
+                    <p class="tab-title">电源保护</p>
+                    <div class="content">
+                        <div class="inner">
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                        </div>
+                        <div class="btn-box tc">
+                            <button class="btn btn-default" onclick="setting_btn_click($(this));">设置</button>
+                            <span class="tip"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main-tab" id="switching">
+            <div class="select-panel">
+                <div class="ne">
+                    <label>网元：</label>
+                    <select>
+                    </select>
+                </div>
+                <div>
+                    <label>保护类型： </label>
+                    <select class="type"></select>
+                </div>
+            </div>
+            <div class="tabs-box">
+                <div class="tab"  style="display: none;">
+                    <p class="tab-title">支路板1:N保护 </p>
+
+                    <div class="content">
+                        <div class="protect-plate">
+                            <label>保护板： </label>
+                            <select>
+                            </select>
+                        </div>
+                        <div>
+                            <div class="clearfix" style="margin:10px auto 0;">
+                                <label class="fl" style="line-height: 40px!important;">被保护板： </label>
+
+                                <div class="fl" id="protectedFendersChecked"></div>
+                            </div>
+                        </div>
+                        <div class='tc no-data' style='line-height: 40px;margin:30px 0 20px;'><span>暂无保护板</span></div>
+						<p class="status tc">
+                        </p>
+                        <div class="btn-box tc">
+                            <!--<button class="btn lock-btn btn-blue" onclick="protectFendersClocked($(this),true)">锁定</button>-->
+                            <!--<button class="btn lock-btn" onclick="protectFendersClocked($(this),false)">清除</button>-->
+                            <button class='btn dh-btn' method="lockout" onclick='changeFender($(this),"lockout")'>锁定</button>
+                            <button class='btn dh-btn' method="force" onclick='changeFender($(this),"force")'>强制备用</button>
+                            <button class='btn dh-btn manual-btn' method="manual" onclick='changeFender($(this),"manual")'>人工倒换</button>
+                            <button class="btn lock-btn btn-blue"onclick="changeFender($(this),'clear')">清除</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab">
+                    <p class="tab-title">矩阵保护</p>
+
+                    <div class="content">
+                        <div class="inner">
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                        </div>
+                        <p class="status tc">
+                        </p>
+                        <div class="btn-box tc">
+                            <button class='btn dh-btn' method="lockout" onclick='protect_lockout_btn($(this),"lockout")'>锁定</button>
+                            <button class='btn dh-btn' method="force" onclick='protect_lockout_btn($(this),"force")'>强制备用</button>
+                            <!--<button class='btn dh-btn auto-btn' method="auto" onclick='protect_lockout_btn($(this),"auto")'>自动</button>-->
+                            <button class='btn dh-btn manual-btn' method="manual" onclick='protect_lockout_btn($(this),"manual")'>人工倒换</button>
+                            <button class="btn lock-btn btn-blue"onclick="protect_lockout_btn($(this),'clear')">清除</button>
+                            <!-- <button class="btn btn-blue" id="jzbhDaoHuanButton">倒换</button> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="tab">
+                    <p class="tab-title">主控制保护</p>
+
+                    <div class="content">
+                        <div class="inner">
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                        </div>
+                        <p class="status tc">
+                        </p>
+                        <div class="btn-box tc">
+                            <button class='btn dh-btn' method="lockout" onclick='protect_lockout_btn($(this),"lockout")'>锁定</button>
+                            <button class='btn dh-btn' method="force" onclick='protect_lockout_btn($(this),"force")'>强制备用</button>
+                            <!--<button class='btn dh-btn auto-btn' method="auto" onclick='protect_lockout_btn($(this),"auto")'>自动</button>-->
+                            <button class='btn dh-btn manual-btn' method="manual" onclick='protect_lockout_btn($(this),"manual")'>人工倒换</button>
+                            <button class="btn lock-btn btn-blue" onclick="protect_lockout_btn($(this),'clear')">清除</button>
+                            <!-- <button class="btn btn-blue" id="zkzbhButton">倒换</button> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="tab">
+                    <p class="tab-title">电源保护</p>
+
+                    <div class="content">
+                        <div class="inner">
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                            <div class="tc">
+                                <span class="show-data">
+                                    交叉连接矩阵盘
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="img_wait">
+        <div class="loading">
+            <svg width="38" height="38" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="#124191">
+                <g fill="none" fill-rule="evenodd">
+                    <g transform="translate(1 1)" stroke-width="2">
+                        <circle stroke-opacity=".5" cx="18" cy="18" r="18" />
+                        <path d="M36 18c0-9.94-8.06-18-18-18">
+                            <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite"
+                            />
+                        </path>
+                    </g>
+                </g>
+            </svg>
+        </div>
+    </div>
+</body>
+
+</html>

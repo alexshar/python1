@@ -9,10 +9,10 @@
     <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
     <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/index.css">
 
-<!--    <script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
-<!--    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
-<!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
-<!--    <script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
+    <!--    <script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+    <!--    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
+    <!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+    <!--    <script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
 </head>
 <body>
 <div id="app" class="Cutover-task-management">
@@ -24,12 +24,12 @@
          element-loading-text="加载中"
          element-loading-spinner="el-icon-loading"
          element-loading-background="rgba(0, 0, 0, 0.8)">
-    <div style="padding-top: 20px;padding-left: 10px">
-        <template>
-            <el-radio v-model="subType" label= 'Cmd_Facility_Loopback'>开启外环回</el-radio>
-            <el-radio v-model="subType" label= 'Cmd_Terminal_Loopback'>开启内环回</el-radio>
-        </template>
-        <span class="block">
+        <div style="padding-top: 20px;padding-left: 10px">
+            <template>
+                <el-radio v-model="subType" label= 'Cmd_Facility_Loopback'>开启外环回</el-radio>
+                <el-radio v-model="subType" label= 'Cmd_Terminal_Loopback'>开启内环回</el-radio>
+            </template>
+            <span class="block">
             <span>选择环回自动结束时间：</span>
             <el-date-picker
                     v-model="chooseTime"
@@ -39,61 +39,61 @@
                     placeholder="选择日期时间">
             </el-date-picker>
         </span>
-        <el-button type="primary" @click="submit">提交</el-button>
-    </div>
+            <el-button type="primary" @click="submit">提交</el-button>
+        </div>
 
-    <el-table
-            :data="tableData"
-            @selection-change="handleSelectionChange"
-            style="width: 100%">
-        <el-table-column
-                type="selection"
-                width="55">
-        </el-table-column>
-        <el-table-column
-                label="端口名称"
-                prop="guiLabel" sortable>
-        </el-table-column>
-        <el-table-column
-                label="网元名称"
-                prop="neName">
-        </el-table-column>
-        <el-table-column
-                label="id"
-                prop="id">
-        </el-table-column>
-        <el-table-column
-                label="是否支持内环回"
-                width="120">
-            <template slot-scope="scope">
-                <span>{{fileter(scope.row.supportsTerminalLoopback)}}</span>
-            </template>
-        </el-table-column>
-        <el-table-column
-                label="是否支持外环回"
-                width="120">
-            <template slot-scope="scope">
-                <span>{{fileter(scope.row.supportsFacilityLoopback)}}</span>
-            </template>
-        </el-table-column>
-        <el-table-column
-                label="环回状态"
-                prop="portLoopbackType" sortable>
-        </el-table-column>
-        <el-table-column
-                label="自动释放时间"
-                prop="execTime" sortable>
-        </el-table-column>
-        <el-table-column label="操作">
-            <template slot-scope="scope">
-                <el-button
-                        v-if="scope.row.portLoopbackType !='RELEASE'"
-                        type="primary"
-                        size="mini"
-                        @click="handleRelease(scope.row)">释放</el-button>
-            </template>
-        </el-table-column>
-    </el-table>
+        <el-table
+                :data="tableData"
+                @selection-change="handleSelectionChange"
+                style="width: 100%">
+            <el-table-column
+                    type="selection"
+                    width="55">
+            </el-table-column>
+            <el-table-column
+                    label="端口名称"
+                    prop="guiLabel" sortable>
+            </el-table-column>
+            <el-table-column
+                    label="网元名称"
+                    prop="neName">
+            </el-table-column>
+            <el-table-column
+                    label="id"
+                    prop="id">
+            </el-table-column>
+            <el-table-column
+                    label="是否支持内环回"
+                    width="120">
+                <template slot-scope="scope">
+                    <span>{{fileter(scope.row.supportsTerminalLoopback)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    label="是否支持外环回"
+                    width="120">
+                <template slot-scope="scope">
+                    <span>{{fileter(scope.row.supportsFacilityLoopback)}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    label="环回状态"
+                    prop="portLoopbackType" sortable>
+            </el-table-column>
+            <el-table-column
+                    label="自动释放时间"
+                    prop="execTime" sortable>
+            </el-table-column>
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <el-button
+                            v-if="scope.row.portLoopbackType !='RELEASE'"
+                            type="primary"
+                            size="mini"
+                            @click="handleRelease(scope.row)">释放</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
     </div>
 </div>
 </body>
@@ -203,17 +203,17 @@
                 axios.post(`/oms1350/data/otn/ports/${row.portId}/loopback?loopbackCommandName=PerformRelease&portLoopbackType=FACILITY&layerRateId=${row.layerRateId}&neId=${row.neId}&tpDisplayLabel=${row.tpDisplayLabel}&portId=${row.portId}&neName=${row.neName}`,
                     {Tag: 'Cmd_Release_Loopback'}
                 )
-                .then( (response)=> {
-                    this.$message({
-                        message: '释放成功',
-                        type: 'success'
+                    .then( (response)=> {
+                        this.$message({
+                            message: '释放成功',
+                            type: 'success'
+                        });
+                        this.getNes();
+                    })
+                    .catch(function (error) {
+                        this.loading=false;
+                        console.log(error);
                     });
-                    this.getNes();
-                })
-                .catch(function (error) {
-                    this.loading=false;
-                    console.log(error);
-                });
             },
             submit(){
                 console.log(this.multipleSelection)
@@ -249,13 +249,13 @@
                     console.log(_subType)
                     axios.post(`/oms1350/data/otn/ports/${portId}/loopback?loopbackCommandName=${_subType}&portLoopbackType=RELEASE&layerRateId=${layerRateId}&neId=${neId}&tpDisplayLabel=${tpDisplayLabel}&portId=${portId}&neName=${neName}`                   ,{Tag: this.subType}
                     )
-                    .then( (response)=> {
+                        .then( (response)=> {
 
-                    })
-                    .catch(function (error) {
-                        this.loading=false;
-                        console.log(error);
-                    });
+                        })
+                        .catch(function (error) {
+                            this.loading=false;
+                            console.log(error);
+                        });
                 }
                 console.log(this.chooseTime,list)
                 axios.defaults.baseURL= 'https://135.251.96.98:5031'
@@ -266,35 +266,35 @@
                         items:list,
                     }
                 )
-                .then( (response)=> {
-                    this.$message('已开启环回,请到设备管理器确认配置情况');
-                    this.getNes();
-                })
-                .catch(function (error) {
-                    this.loading=false;
-                    console.log(error);
-                });
+                    .then( (response)=> {
+                        this.$message('已开启环回,请到设备管理器确认配置情况');
+                        this.getNes();
+                    })
+                    .catch(function (error) {
+                        this.loading=false;
+                        console.log(error);
+                    });
 
             },
             getTrails(){
                 this.loading=true;
                 axios.defaults.baseURL = 'https://135.251.96.98:8443';
                 axios.get('/oms1350/data/otn/connections/trails')
-                .then( (response)=> {
-                    let flag = false;
-                    this.tableData=[];
-                    for (let i= 0;i<response.data.items.length;i++){
-                        if(i==response.data.items.length-1){
-                            flag=true;
+                    .then( (response)=> {
+                        let flag = false;
+                        this.tableData=[];
+                        for (let i= 0;i<response.data.items.length;i++){
+                            if(i==response.data.items.length-1){
+                                flag=true;
+                            }
+                            this.gete2ePhysicalRoute(response.data.items[i].id,flag);
+                            // console.log(arr[i].id)
                         }
-                        this.gete2ePhysicalRoute(response.data.items[i].id,flag);
-                        // console.log(arr[i].id)
-                    }
-                })
-                .catch(function (error) {
-                    this.loading=false;
-                    console.log(error);
-                });
+                    })
+                    .catch(function (error) {
+                        this.loading=false;
+                        console.log(error);
+                    });
             },
             async getReleseTime(){
                 axios.defaults.baseURL= 'https://135.251.96.98:5031'
@@ -310,10 +310,20 @@
                                     _time = new Date(_time);
                                     let time = _time.toLocaleDateString() + " " + _time.toLocaleTimeString()
                                     arr[k].execTime= time;
+                                }else {
+                                    arr[k].execTime= 'N/A';
                                 }
                             }
                         }
-                        this.tableData = arr;
+                        this.tableData = [];
+                        setTimeout(()=>{
+                            this.tableData = arr;
+                        },100)
+
+                        console.log(this.tableData.length)
+                        for (let i=0;i<this.tableData.length;i++){
+                            console.log( this.tableData[i].id,this.tableData[i].execTime)
+                        }
                     })
                     .catch(function (error) {
                         this.loading=false;
@@ -324,32 +334,32 @@
                 // console.log(flag)
                 axios.defaults.baseURL = 'https://135.251.96.98:8443';
                 axios.get(`/oms1350/data/otn/connection/${id}/e2ePhysicalRoute/`)
-                .then( (response)=> {
-                    let arr =[];
-                    let _data = response.data.data;
-                    if(!_data){_data=[]};
-                    for (let i=0;i<_data.length;i++){
-                        //supportsFacilityLoopback 外环  ，supportsTerminalLoopback内环
-                        if (_data[i].className=='port'&&(_data[i].supportsTerminalLoopback=='true'||_data[i].supportsFacilityLoopback == "true")&&_data[i].portRate=='Wdm_LayerRate_OS'){
-                        // if ((_data[i].className=='port'||_data[i].className=='trail')&&(_data[i].supportsTerminalLoopback=='true'||_data[i].supportsFacilityLoopback == "true")){
-                            if(!this.obj[_data[i].id]){//去重
-                                this.obj[_data[i].id] = 1;
-                                // _data[i].execTime='N/A';
-                                arr.push(_data[i])
+                    .then( (response)=> {
+                        let arr =[];
+                        let _data = response.data.data;
+                        if(!_data){_data=[]};
+                        for (let i=0;i<_data.length;i++){
+                            //supportsFacilityLoopback 外环  ，supportsTerminalLoopback内环
+                            if (_data[i].className=='port'&&(_data[i].supportsTerminalLoopback=='true'||_data[i].supportsFacilityLoopback == "true")&&_data[i].portRate=='Wdm_LayerRate_OS'){
+                                // if ((_data[i].className=='port'||_data[i].className=='trail')&&(_data[i].supportsTerminalLoopback=='true'||_data[i].supportsFacilityLoopback == "true")){
+                                if(!this.obj[_data[i].id]){//去重
+                                    this.obj[_data[i].id] = 1;
+                                    // _data[i].execTime='N/A';
+                                    arr.push(_data[i])
+                                }
                             }
                         }
-                    }
-                    this.tableData = this.tableData.concat(arr);
-                    if(flag===true){
+                        this.tableData = this.tableData.concat(arr);
+                        if(flag===true){
+                            this.loading=false;
+                            this.getReleseTime();
+                        }
+                        // console.log(response
+                    })
+                    .catch(function (error) {
                         this.loading=false;
-                        this.getReleseTime();
-                    }
-                    // console.log(response
-                })
-                .catch(function (error) {
-                    this.loading=false;
-                    console.log(error);
-                });
+                        console.log(error);
+                    });
 
                 // if(flag==true){
                 //     this.loading=false;

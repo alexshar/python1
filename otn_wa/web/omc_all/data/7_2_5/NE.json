@@ -1,0 +1,18 @@
+{
+  "NE1":{
+    "neId":"1",
+    "userLabel":"WGPHN-1"
+  },
+  "NE2":{
+    "neId":"2",
+    "userLabel":"WGPHN-2"
+  },
+  "NE3":{
+    "neId":"3",
+    "userLabel":"WGPHN-3"
+  },
+    "NE4":{
+    "neId":"4",
+    "userLabel":"WGPHN-4"
+  }
+}

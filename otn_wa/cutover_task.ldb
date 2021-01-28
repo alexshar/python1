@@ -1,0 +1,88 @@
+[
+    {
+        "id": 6,
+        "items": [
+            {
+                "linkName": "pss32-152/11STAR1-2-3-L1 WGPHN-1/11STAR1-6-2-L1 OTU2",
+                "layerRate": "OTU2",
+                "new_linkName": "pss32-152/11STAR1-2-3-L1 WGPHN-1/11STAR1-6-2-L1 OTU2",
+                "id": "401",
+                "frequency": "9180",
+                "new_frequency": "9170",
+                "result": 0,
+                "a": {
+                    "neName": "pss32-152",
+                    "ip": "172.24.16.152",
+                    "lPortLabel": "11STAR1-2-3-L1",
+                    "sfdPortLabel": "SFD-28-1-9180",
+                    "linePortLabel": "AHPHG-2-5-LINE",
+                    "new_lPortLabel": "11STAR1-2-3-L1",
+                    "new_sfdPortLabel": "SFD-28-1-9170",
+                    "new_linePortLabel": "AHPHG-2-5-LINE"
+                },
+                "z": {
+                    "neName": "WGPHN-1",
+                    "ip": "135.251.7.201",
+                    "lPortLabel": "11STAR1-6-2-L1",
+                    "sfdPortLabel": "SFD-35-1-9180",
+                    "linePortLabel": "AHPHG-6-4-LINE",
+                    "new_lPortLabel": "11STAR1-6-2-L1",
+                    "new_sfdPortLabel": "SFD-35-1-9170",
+                    "new_linePortLabel": "AHPHG-6-4-LINE"
+                }
+            }
+        ],
+        "name": "gejie_lxt_11star1_real-simulator",
+        "execTime": "1",
+        "isManual": 1,
+        "status": 2,
+        "chooseContent": [
+            "401"
+        ]
+    },
+    {
+        "id": 7,
+        "items": [
+            {
+                "linkName": "pss32-140-pss32-141/dbs-11star1-9170",
+                "layerRate": "OTU2",
+                "new_linkName": "pss32-140-pss32-141/dbs-11star1-9170",
+                "id": "474",
+                "frequency": "9190",
+                "new_frequency": "9200",
+                "result": -2000,
+                "a": {
+                    "neName": "pss32-141",
+                    "ip": "172.24.16.141",
+                    "lPortLabel": "11STAR1-7-22-L1",
+                    "sfdPortLabel": "SFD-28-1-9190",
+                    "linePortLabel": "AM2125B-7-3-LINEIN",
+                    "linePortLabel2": "AM2125B-7-2-LINEOUT",
+                    "new_lPortLabel": "11STAR1-7-22-L1",
+                    "new_sfdPortLabel": "SFD-28-1-9200",
+                    "new_linePortLabel": "AM2125B-7-3-LINEIN",
+                    "new_linePortLabel2": "AM2125B-7-2-LINEOUT"
+                },
+                "z": {
+                    "neName": "pss32-140",
+                    "ip": "172.24.16.140",
+                    "lPortLabel": "11STAR1-7-22-L1",
+                    "sfdPortLabel": "SFD-28-1-9190",
+                    "linePortLabel": "AM2125B-7-2-LINEOUT",
+                    "linePortLabel2": "AM2125B-7-3-LINEIN",
+                    "new_lPortLabel": "11STAR1-7-22-L1",
+                    "new_sfdPortLabel": "SFD-28-1-9200",
+                    "new_linePortLabel": "AM2125B-7-2-LINEOUT",
+                    "new_linePortLabel2": "AM2125B-7-3-LINEIN"
+                }
+            }
+        ],
+        "name": "hello",
+        "execTime": "2",
+        "isManual": 0,
+        "status": -1,
+        "chooseContent": [
+            "474"
+        ]
+    }
+]

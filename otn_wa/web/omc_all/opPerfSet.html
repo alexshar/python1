@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+    <style type="text/css">
+        #OPerformance select,#dlg select{
+            display: inline-block;
+            margin-bottom: 10px ! important;
+        }
+        #OPerformance input[type='text']{
+            width: 200px ! important;
+            background: #fff ! important;
+        }
+        #dlg{
+            display: none;
+            text-align: center;
+        }
+        #OPerformance .sysSpanCustom{
+            display: inline-block ! important;
+            width: 50px ! important;
+        }
+        #OPerformance input[type="text"],#dlg input[type="text"]{
+            margin-bottom: 10px !important;
+        }
+        #OPerformance{
+            text-align:center;
+        }
+        #erroPerformance{
+            visibility: hidden;
+            color: red;
+        }
+    </style>
+    <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+</head>
+<body>
+<div class="dijitTitlePane dijitTitlePaneFocused dijitFocused" id="EPTnetwDetails_TP" widgetid="EPTnetwDetails_TP"  >
+    <div data-dojo-attach-event="ondijitclick:_onTitleClick, onkeydown:_onTitleKey" class="dijitTitlePaneTitle dijitTitlePaneTitleFixedOpen dijitFixedOpen" data-dojo-attach-point="titleBarNode" id="EPTnetwDetails_TP_titleBarNode">
+        <div class="dijitTitlePaneTitleFocus" data-dojo-attach-point="focusNode" role="heading">
+            <span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span><span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner">-</span><span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode" style="user-select: none;">光功率性能基准设定</span>
+        </div>
+    </div>
+    <div class="dijitTitlePaneContentOuter" id="OPerformance" data-dojo-attach-point="hideNode" role="presentation" style="text-align: center">
+        <div>
+            <span class="sysSpanCustom">网元:</span>
+            <select name="ne" id="neList" class="neconfig-select" style="width:200px!important;">
+            </select>
+        </div>
+        <div style="margin-top: 10px">
+            <span class="sysSpanCustom">光端口:</span>
+            <select name="ne" id="port" class="neconfig-select" style="width:200px!important;">
+            </select>
+        </div>
+        <div style="margin-top: 10px">
+            <span class="sysSpanCustom"  class="neconfig-select"> 上限</span>
+            <input type="text" id="OPformanceUp" placeholder="请输入小于8的数字"/>
+        </div>
+        <div style="margin-top: 10px">
+            <span class="sysSpanCustom"> 下限</span>
+            <input type="text" id="OPformanceDown" placeholder="请输入大于-24且小于上限的数字"/>
+        </div>
+        <input type="button" value="设定" id="setOPPerformance" style="margin-top: 10px">
+        <span id="erroPerformance">输入有误......</span>
+    </div>
+</div>
+<div id="dlg">
+    <div id="ConfrimDlg">
+        <div style="text-align: center;">
+            <button class="sure" style="width: 50px">是</button>
+            <button class="no" style="width: 50px">否</button>
+        </div>
+
+    </div>
+
+    <div id="operation">
+        <h3><span class="contion">操作执行中.....</span></h3>
+    </div>
+
+    <div id="DLGsuccess">
+        <h3><span >成功</span></h3>
+    </div>
+</div>
+<script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/OPowerPerformance.js"></script>
+</body>
+</html>

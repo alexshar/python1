@@ -1,0 +1,51 @@
+[
+  {
+    "ne_id": "7",
+    "ne_name": "OCS1",
+    "plates": [
+      {
+        "id": 0,
+        "fender": "24XANYMR-slot3",
+        "status":0,
+        "method":"",
+        "location":0,
+        "protectedPlate": [
+          {
+            "id": "0",
+            "value": true,
+            "fenderName": "24XANYMR-slot2"
+          },
+          {
+            "id": "1",
+            "value": true,
+            "fenderName": "24XANYMR-slot4"
+          },
+          {
+            "id": "2",
+            "value": true,
+            "fenderName": "24XANYMR-slot5"
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "fender": "10XANY10G-slot9",
+        "status":0,
+        "method":"",
+        "location":0,
+        "protectedPlate": [
+          {
+            "id": "0",
+            "value": true,
+            "fenderName": "10XANY10G-slot8"
+          },
+          {
+            "id": "1",
+            "value": true,
+            "fenderName": "10XANY10G-slot12"
+          }
+        ]
+      }
+    ]
+  }
+]

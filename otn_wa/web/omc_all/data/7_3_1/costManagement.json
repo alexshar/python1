@@ -1,0 +1,36 @@
+
+{
+  "NE":[
+      {"id":"1","userLabel": "NE-1", "url":"http://www.jb51.net/1" },
+      {"id":"2","userLabel": "NE-2", "url":"http://www.jb51.net/2" },
+      {"id":"3","userLabel": "NE-3", "url":"http://www.jb51.net/3" },
+      {"id":"4","userLabel": "NE-4", "url":"http://www.jb51.net/3" }
+  ],
+  "TP":[
+    {"id":"p_1","userLabel": "prot-1", "type":"SDH","neId":"1"},
+    {"id":"p_2","userLabel": "port-2", "type":"SDH","neId":"1"},
+    {"id":"p_3","userLabel": "port-3", "type":"SDH","neId":"2"},
+    {"id":"p_4","userLabel": "port-4", "type":"SDH","neId":"2"},
+    {"id":"p_5","userLabel": "prot-5", "type":"SDH","neId":"2"},
+    {"id":"p_6","userLabel": "port-6", "type":"OTN","neId":"2"},
+    {"id":"p_7","userLabel": "port-7", "type":"OTN","neId":"2"},
+    {"id":"p_8","userLabel": "port-8", "type":"OTN","neId":"2"},
+    {"id":"p_9","userLabel": "prot-8", "type":"OTN","neId":"4"},
+    {"id":"p_10","userLabel": "port-10", "type":"OTN","neId":"4"},
+    {"id":"p_11","userLabel": "port-11", "type":"OTN","neId":"3"},
+    {"id":"p_12","userLabel": "prot-12", "type":"OTN","neId":"3"},
+    {"id":"p_13","userLabel": "port-13", "type":"OTN","neId":"3"}
+  ],
+  "SLOT":[
+    {"id":"S_1","userLabel": "solt-1", "type":"SDH","neId":"1"},
+    {"id":"S_2","userLabel": "solt-2", "type":"SDH","neId":"3"},
+    {"id":"S_3","userLabel": "solt-3", "type":"SDH","neId":"1"},
+    {"id":"S_4","userLabel": "solt-4", "type":"SDH","neId":"1"},
+    {"id":"S_5","userLabel": "solt-5", "type":"SDH","neId":"1"},
+    {"id":"S_6","userLabel": "solt-6", "type":"OTN","neId":"1"},
+    {"id":"S_7","userLabel": "solt-7", "type":"OTN","neId":"3"},
+    {"id":"S_8","userLabel": "solt-8", "type":"OTN","neId":"4"},
+    {"id":"S_9","userLabel": "solt-8", "type":"OTN","neId":"4"},
+    {"id":"S_10","userLabel": "solt-10", "type":"OTN","neId":"4"}
+  ]
+}

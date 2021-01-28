@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>显示图标详情</title>
+	<style type="text/css">
+		#all {
+			margin: auto;
+			width: 1280px;
+			height: auto;
+			/*margin-top: 50px;*/
+		}
+
+		#box {
+			width: 407px;
+			height: 200px;
+			/*border: 1px solid #000;*/
+			/*margin: 130px auto;*/
+			text-align: center;
+			font-size: 16px;
+			float: left;
+		}
+
+		th {
+			text-align: center;
+			height: 30px;
+			width: 100px;
+		}
+
+		td {
+			width: 100px;
+			height: 40px;
+			text-align: center;
+		}
+
+		caption {
+			text-align: center;
+		}
+
+		table {
+			border-collapse: collapse;
+			margin-top:120px;
+		}
+
+		td {
+			width: 180px;
+		}
+
+		#showEcharts {
+			margin-left: 190px;
+		}
+
+		input[type=button] {
+			border: none;
+			width: 60px;
+			height: 30px;
+			outline: none;
+			background-color: #E6E6E6;
+			cursor: pointer;
+			border-radius: 6px;
+		}
+		select{
+				width: 100px!important;
+				display: inline-block;
+				margin-right: 40px;
+				margin-bottom: 10px;
+				height: 30px;
+			}
+	</style>
+</head>
+
+<body>
+	<div id="all">
+
+
+		<div id="box">
+			
+			<table width="600" border="1" align="center">
+				<caption>
+					波长<select id="boChang">
+					</select>
+					<span style="font-size: 24px;">OSNR监控展示详情</span>
+				</caption>
+				<tbody>
+					<tr></tr>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
+				<tr></tr>
+				</tbody>
+			</table>
+		</div>
+		<div id="showEcharts" style="width: 620px;height:400px;float: left;">
+
+		</div>
+	</div>
+	<script type="text/javascript" src="/oms1350/web/eqm/omc_all/js/jquery-1.10.2.min.js"></script>
+
+	<script type="text/javascript" src="/oms1350/web/eqm/omc_all/js/echarts.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			//osnr数组
+			var osnrArr = [];
+			//osnr数组
+			var glArr = [];
+			//osnrZ数组
+			var osnrArrZ2 = [];
+			//osnr数组
+			var glArrZ2 = [];
+var url_path = '/oms1350/web/eqm/omc_all/';
+			var chart = document.getElementById("showEcharts");
+			var echart = echarts.init(chart);
+			//获取路径中的参数值
+			function getQueryString(name) {
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+				var r = window.location.search.substr(1).match(reg);
+				if (r != null) {
+					return decodeURI(r[2]);
+				} else {
+					return null;
+				}
+			}
+			var boId = getQueryString("boId"), lianLu = getQueryString("lianLu");
+
+			var allInfo = [];
+			var jiZhun = [];
+			
+								//获取链路的值
+					$.ajax({ 
+						type:"GET", 
+//						url:"controlSet.json", 
+						url: url_path + 'data/9_3_5/controlSet.json', 
+						dataType:"json", 
+						success:function(data){ 
+							allInfo=data;
+//							console.log(data[0].allInfos);
+							$("#lianLu").empty();
+							for (var i=0;i<data[0].allInfos.length;i++) {
+									var k = data[0].allInfos[i]["lianLu"];
+									$("#lianLu").append("<option>"+k+"</option>");
+							}
+						$.each(data,function(i,n){ 
+								$("#boChang").append("<option value="+n.id+">"+n.boChang+"</option>");
+						}); 
+					}
+				});
+				
+				//获取下拉框对应的值
+				$("#boChang").change(function(){
+					var tr_length=$("table tr").length;
+						var c = $("#boChang").find("option:selected").val();
+						$("table tr").remove();
+						for(var i=0;i<tr_length;i++){
+							$("table tbody").append('<tr></tr>')
+						}
+						showTableInfo(c);
+				});
+			
+			
+			//显示table详情
+			function showTableInfo(selInd){
+				//获取链路的值
+			$.ajax({
+				type: "GET",
+//				url: "controlSet.json",
+				url: url_path + 'data/9_3_5/controlSet.json', 
+				dataType: "json",
+				success: function (data) {
+					var tableInfo = [];
+					var isAdd = false;
+					$.each(data, function (k, item) {
+						if (item.id == parseInt(selInd)) {
+							var tableLength = (item.allInfos.length + 1);
+							for (var i = 0; i < tableLength; i++) {
+								if (i == 0) {
+									$("table tr").eq(0).append("<th></th>");
+									$("table tr").eq(1).append("<td>OSNR(A-Z)</td>");
+										$("table tr").eq(2).append("<td>OSNR(Z-A)</td>");
+									$("table tr").eq(3).append("<td>光功率(A-Z)</td>");
+									$("table tr").eq(4).append("<td>光功率(Z-A)</td>");
+								} else if (i == (tableLength - 1)) {
+									$("table tr").eq(0).append("<th>操作</th>");
+									$("table tr").eq(1).append("<td rowspan='2'><input type='button' value='查看'/></td>");
+									$("table tr").eq(3).append("<td rowspan='2'><input type='button' value='查看'/></td>");
+								} else if (i == (tableLength - 2)) {
+
+									for (var j = 0; j < item.jiZhun.length; j++) {
+										jiZhun.push(item.jiZhun[j]);
+									}
+								} else {
+									
+								}
+								tableInfo = item.allInfos;
+									if (!isAdd) {
+										for (var j = 0; j < item.allInfos.length; j++) {
+											var biaot = (item.allInfos[j]["lianLu"]);
+											var osnr = (item.allInfos[j]["osnr"]);
+											var osnrZ = (item.allInfos[j]["osnrZ-A"]);
+											var guanglv = (item.allInfos[j]["guanglv"]);
+											var guanglvZ = (item.allInfos[j]["guanglv-A"]);
+											$("table tr").eq(0).append("<th>" + biaot + "</th>");
+											$("table tr").eq(1).append("<td>" + osnr + "</td>");
+											$("table tr").eq(2).append("<td>" + osnrZ + "</td>");
+											$("table tr").eq(3).append("<td>" + guanglv + "</td>");
+											$("table tr").eq(4).append("<td>" + guanglvZ + "</td>");
+										}
+									}
+									isAdd = true;
+							}
+
+						}
+					});
+				}
+			});
+			}
+			//默认显示第一个
+			showTableInfo(0);
+			
+			var option = "";
+			$("table").delegate("input[type=button]", "click", function (i) {
+				var origelData = []; //原始数据
+				var changeData = []; //倒换数据
+				var k = $(this).parent().siblings();
+				var cc = $(this).parent().parent().index() - 1;
+				var jiZhunXian = jiZhun[cc];
+				var jiZhunXian2 = 0;
+				var showPictureTitle = "";
+				var showWhichTile=false;
+					var theadTitle = $("table tr").eq(0).children();
+
+				var theadArr = [];
+				for (var i = 1; i < theadTitle.length - 1; i++) {
+					theadArr.push($(theadTitle[i]).text());
+				}
+
+				var thTtitle = $(k[0]).text();
+				//如果选中的是第一个按钮 显示 OSNR(A-Z)的数据
+				if (cc == 0) {
+					for (var i = 0; i < $("table tr").eq(2).children("td").length; i++) {
+						if (i != 0 && i != ($("table tr").eq(2).children("td").length)) {
+							changeData.push($("table tr").eq(2).children("td").eq(i).text());
+						}
+					}
+					for (var i = 1; i < k.length; i++) {
+						origelData.push($(k[i]).text());
+						jiZhunXian2 = jiZhun[2];
+					}
+option = {
+					tooltip: {
+						trigger: 'axis'
+					},
+					legend:{
+						data:['OSNR(A-Z)', 'OSNR(A-Z)基准值', 'OSNR(Z-A)', 'OSNR(Z-A)基准值']
+					},
+					grid: {
+						left: '3%',
+						right: '4%',
+						bottom: '3%',
+						containLabel: true
+					},
+					toolbox: {
+						feature: {
+							saveAsImage: {}
+						}
+					},
+					xAxis: {
+						type: 'category',
+						boundaryGap: false,
+						data: theadArr
+					},
+					yAxis: {
+						type: 'value'
+					},
+					series: [
+						{
+							name: 'OSNR(A-Z)',
+							type: 'line',
+							//													            stack: '总量',	
+							data: origelData
+
+						},
+						{
+							name: 'OSNR(A-Z)基准值',
+							type: 'line',
+							//													            stack: '总量',
+							data: [jiZhunXian, jiZhunXian, jiZhunXian, jiZhunXian]
+						},
+						{
+							name: 'OSNR(Z-A)',
+							type: 'line',
+							//													            stack: '总量',
+							data: changeData
+						},
+						{
+							name: 'OSNR(Z-A)基准值',
+							type: 'line',
+							//													            stack: '总量',
+							data: [jiZhunXian2, jiZhunXian2, jiZhunXian2, jiZhunXian2]
+						}
+					]
+				};
+				
+				
+				} else {
+					for (var i = 0; i < $("table tr").eq(4).children("td").length; i++) {
+						if (i != 0 && i != (($("table tr").eq(4).children("td").length+1))) {
+						changeData.push($("table tr").eq(4).children("td").eq(i).text());
+					}
+					}
+					for (var i = 1; i < k.length; i++) {
+						origelData.push($(k[i]).text());
+						jiZhunXian2 = jiZhun[3];
+					}
+					showWhichTile=false;
+					
+					
+					option = {
+					title: {
+						//						text: showPictureTitle
+					},
+					tooltip: {
+						trigger: 'axis'
+					},
+					legend:{
+						data:['光功率(A-Z)', '光功率(A-Z)基准值', '光功率(Z-A)', '光功率(Z-A)基准值']
+					},
+					grid: {
+						left: '3%',
+						right: '4%',
+						bottom: '3%',
+						containLabel: true
+					},
+					toolbox: {
+						feature: {
+							saveAsImage: {}
+						}
+					},
+					xAxis: {
+						type: 'category',
+						boundaryGap: false,
+						data: theadArr
+					},
+					yAxis: {
+						type: 'value'
+					},
+					series: [
+						{
+							name: '光功率(A-Z)',
+							type: 'line',
+							//													            stack: '总量',	
+							data: origelData
+
+						},
+						{
+							name: '光功率(A-Z)基准值',
+							type: 'line',
+							//													            stack: '总量',
+							data: [jiZhunXian, jiZhunXian, jiZhunXian, jiZhunXian]
+						},
+						{
+							name: '光功率(Z-A)',
+							type: 'line',
+							//													            stack: '总量',
+							data: changeData
+						},
+						{
+							name: '光功率(Z-A)基准值',
+							type: 'line',
+							//													            stack: '总量',
+							data: [jiZhunXian2, jiZhunXian2, jiZhunXian2, jiZhunXian2]
+						}
+					]
+				};
+				}
+				echart.setOption(option);
+			});
+		});
+	</script>
+</body>
+
+</html>

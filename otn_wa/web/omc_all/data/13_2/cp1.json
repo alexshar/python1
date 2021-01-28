@@ -1,0 +1,106 @@
+{
+    "NE": [
+        {
+            "neId": "1",
+            "userLabel": "ASON1",
+            "x": 100,
+            "y": 50,
+            "w": 100,
+            "h": 100,
+            "alarmState": "CLEARED",
+            "neIcon": "https://172.24.168.132:8443/oms1350/web/eqm/omc_all/pic/ASON1.svg"
+        },
+        {
+            "neId": "3",
+            "userLabel": "Ason3",
+            "x": 800,
+            "y": 50,
+            "w": 100,
+            "h": 100,
+            "alarmState": "CLEARED",
+            "neIcon": "https://172.24.168.132:8443/oms1350/web/eqm/omc_all/pic/ASON3.svg"
+        },
+        {
+            "neId": "2",
+            "userLabel": "Ason2",
+            "x": 100,
+            "y": 400,
+            "w": 100,
+            "h": 100,
+            "alarmState": "CLEARED",
+            "neIcon": "https://172.24.168.132:8443/oms1350/web/eqm/omc_all/pic/ASON2.svg"
+        },
+        {
+            "neId": "4",
+            "userLabel": "Ason4",
+            "x": 800,
+            "y": 400,
+            "w": 100,
+            "h": 100,
+            "alarmState": "CLEARED",
+            "neIcon": "https://172.24.168.132:8443/oms1350/web/eqm/omc_all/pic/ASON4.svg"
+        }
+    ],
+    "connection": [
+        {
+            "id": "TE1/TE6",
+            "userLabel": "ASON1-ASON2",
+            "connA": {
+                "neId": "1"
+            },
+            "connZ": {
+                "neId": "2"
+            },
+            "alarmState": "CLEARED",
+            "connType": "noopsycheConfig"
+        },
+        {
+            "id": "TE2",
+            "userLabel": "ASON1-ASON3",
+            "connA": {
+                "neId": "1"
+            },
+            "connZ": {
+                "neId": "3"
+            },
+            "alarmState": "CLEARED",
+            "connType": "noopsycheConfig"
+        },
+        {
+            "id": "TE4",
+            "userLabel": "ASON2-ASON4",
+            "connA": {
+                "neId": "2"
+            },
+            "connZ": {
+                "neId": "4"
+            },
+            "alarmState": "CLEARED",
+            "connType": "noopsycheConfig"
+        },
+        {
+            "id": "TE3",
+            "userLabel": "ASON2-ASON3",
+            "connA": {
+                "neId": "2"
+            },
+            "connZ": {
+                "neId": "3"
+            },
+            "alarmState": "CLEARED",
+            "connType": "noopsycheConfig"
+        },
+        {
+            "id": "TE5",
+            "userLabel": "ASON4-ASON3",
+            "connA": {
+                "neId": "4"
+            },
+            "connZ": {
+                "neId": "3"
+            },
+            "alarmState": "CLEARED",
+            "connType": "noopsycheConfig"
+        }
+    ]
+}

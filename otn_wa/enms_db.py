@@ -127,7 +127,7 @@ def get_alarm_collection(table_name, time_symbol=0, page=1, page_size=20):
     timestamp = get_timestamp(time_symbol)
     db, client = init_target_db("controller_V2")
     collection = db[collection_name]
-    f = {"nmsRaiseTime": {'$lte': timestamp}}
+    f = {"neRaiseTime": {'$lte': timestamp}} # 1591693993466
     total = collection.count_documents(f)
     items = collection.find(f).skip((page-1)*page_size).limit(page_size)
     result = {

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/DCNStyle.css"/>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+    <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+</head>
+<body>
+<div class="div">
+	<div id="ConfrimDlg">
+		<div>
+			<h1 style="margin-top: 0px">是否应用?</h1>
+		</div>
+
+		<div style="text-align: center;">
+			<button class="sure" style="width: 50px" onClick="comfirmApplycation()">是</button>
+			<button class="no" style="width: 50px">否</button>
+		</div>
+	</div>
+	<div id="operation">
+		<div>
+			<h3>操作执行中.....</h3>
+		</div>
+	</div>
+	<div id="success">
+		<div>
+			<h3>操作成功！</h3>
+		</div>
+	</div>
+	<div id="errTip">
+		<div>
+			<h3>格式错误！</h3>
+		</div>
+	</div>
+	<div id="errNumTip">
+		<div>
+			<h3>输入正确范围数字！</h3>
+		</div>
+	</div>
+    <div class="DCNcard" class="dijitTitlePaneContentOuter">
+        <ul class="DCNnav">
+            <li conId="GCCcard" class="choseLi">嵌入式信道管理</li>
+            <li conId="OSCcard">OSC监控信道管理</li>
+            <li conId="OAMPcard">带外通信网络管理</li>
+        </ul>
+        <div id="GCCcard" data-dojo-attach-point="hideNode" role="presentation">
+            <div>
+                <p class="textAlign"><span class="sysSpanCustom">网元</span></p>
+                <select id = "DcnNeUserlabel" class="neconfig-select DCNSelect" onchange="changeDCNne()"></select>
+            </div>
+			<div>
+				<p class="textAlign"><span class="sysSpanCustom">通道名称</span></p>
+                <input type="text" id="channelUserlabel" style="background-color:white; width:200px;border:1px solid #eee;margin-left: 24px!important;padding: 2px 5px!important"/>
+			</div>
+			<div>
+				<p class="textAlign"><span class="sysSpanCustom">ECC通道</span></p>
+                <select id="ECCchannel" class="neconfig-select DCNSelect">
+					<option value="GCC0">GCC0</option>
+					<option value="GCC1">GCC1</option>
+				</select>
+			</div>
+			<div>
+				<p class="textAlign"><span class="sysSpanCustom">添加通道</span></p>
+                <select id="AddOtu" class="neconfig-select DCNSelect"></select>
+			</div>
+			<div>
+				<p class="textAlign"><span class="sysSpanCustom">管理状态</span></p>
+                <select id="adminState" class="neconfig-select DCNSelect">
+					<option value="DISABLED">禁止</option>
+					<option value="ENABLED">使能</option>
+				</select>
+			</div>
+            <div style="margin-top:10px">
+                <button class="DCNBtnStyle" onclick="addGccConfig()" style="margin-left:14%">应用</button>
+                <button class="DCNBtnStyle" style="margin-left:1%" onclick="showGCCcard()">查询</button>
+            </div>
+			<div id="GCCList">
+				<table>
+						<thead>
+							<tr>
+								<th class="tableBor">网元名称</th>
+								<th class="tableBor">通道名称</th>
+								<th class="tableBor">使能状态</th>
+								<th class="tableBor">通道端口</th>
+								<th class="tableBor">ECC通道</th>
+								<th class="tableBor">通道状态</th>
+								<th style="width:10%" class="tableBor">操作</th>
+							</tr>
+						</thead>
+						<tbody class="GccListConn"></tbody>
+					</table>
+			</div>
+        </div>
+        <div id="OSCcard" data-dojo-attach-point="hideNode" role="presentation">
+			<div>
+				<p class="textAlign"><span class="sysSpanCustom">网元</span></p>
+				<select id="oscNeName" class="neconfig-select DCNSelect" onchange="changeOAselect()"></select>
+			</div>
+			<div>
+				<p class="textAlign"><span class="sysSpanCustom">光放</span></p>
+				<select class="neconfig-select DCNSelect" id="oscNe"></select>
+			</div>
+			<div>
+				<p class="textAlign"><span class="sysSpanCustom">端口MTU</span></p>
+				<input type="text" id="portMTU" value="1500" style="background-color:white; width:200px;border:1px solid #eee;margin-left: 24px!important;padding: 2px 5px!important"/>
+				<span class="dcnInpCondi">(576-1500)</span>
+			</div>
+			<div>
+				<p class="textAlign"><span>管理状态</span></p>
+				<select class="neconfig-select DCNSelect" id="adminOscState">
+					<option value="DISABLED">禁止</option>
+					<option value="ENABLED">使能</option>
+				</select>
+			</div>
+			<div>
+				<p class="textAlign"><span>OSC模式</span></p>
+				<select class="neconfig-select DCNSelect" id="oscMode">
+					<option value="100BaseFx">100BaseFx</option>
+					<option value="OSC/STM1">OSC/STM1</option>
+				</select>
+			</div>
+			<div>
+				<button class="DCNBtnStyle" style="margin-left:14%" onclick="addOscConfig()">应用</button>
+				<button class="DCNBtnStyle" style="margin-left:1%" onclick="showOSCcard()">查询</button>
+			</div>
+			<div id="OSCList">
+				<table>
+					<thead>
+							<tr>
+								<th class="tableBor">网元名称</th>
+								<th class="tableBor">光放</th>
+								<th class="tableBor">端口MTU</th>
+								<th class="tableBor">OSC模式</th>
+								<th class="tableBor">使能状态</th>
+								<th class="tableBor">端口状态</th>
+								<th style="width:10%" class="tableBor">操作</th>
+							</tr>
+						</thead>
+						<tbody class="OscListConn"></tbody>
+					</table>
+				</table>
+			</div>
+        </div>
+        <div id="OAMPcard">
+            <div>
+                <p class="textAlign"><span>网元</span></p>
+                <select class="neconfig-select DCNSelect" id="OAMPneName" onchange="OAMPchangeNe()"></select>
+            </div>
+            <div>
+                <p class="textAlign"><span>MAC地址</span></p>
+				<input id="MACaddress" type="text" readonly="value" style="background-color:white; width:200px;border:1px solid #eee;margin-left: 24px!important;padding: 2px 5px!important"/>
+            </div>
+            <div>
+                <p class="textAlign"><span>OAMP IPv4地址</span></p>
+                <div class="ipStyle">
+                    <input id="oIp1" class="ipInp" type="text" style="width:45px;border:none;outline: none;" maxlength="3"/>.
+                    <input id="oIp2" class="ipInp" type="text" style="width:45px;border:none;outline: none;" maxlength="3"/>.
+                    <input id="oIp3" class="ipInp" type="text" style="width:45px;border:none;outline: none;" maxlength="3"/>.
+                    <input id="oIp4" class="ipInp" type="text" style="width:45px;border:none;outline: none;" maxlength="3"/>
+                </div>
+            </div>
+            <div>
+                <p class="textAlign"><span>IPv4子网掩码</span></p>
+                <div class="ipStyle">
+                    <input id="oIp5" class="ipInp1" type="text" style="width:45px;border:none;outline: none;" maxlength="3"/>.
+                    <input id="oIp6" class="ipInp1" type="text" style="width:45px;border:none;outline: none;" maxlength="3"/>.
+                    <input id="oIp7" class="ipInp1" type="text" style="width:45px;border:none;outline: none;" maxlength="3"/>.
+                    <input id="oIp8" class="ipInp1" type="text" style="width:45px;border:none;outline: none;" maxlength="3"/>
+                </div>
+            </div>
+            <div>
+                <p class="textAlign"><span>端口使能</span></p>
+                <select class="neconfig-select DCNSelect" id="portEnable">
+					<option value="UP">启动</option>
+					<option value="DOWN">停止</option>
+				</select>
+            </div>
+            <div>
+                <p class="textAlign"><span>监控链路速率</span></p>
+                <select class="neconfig-select DCNSelect" id="proLinkSpeed">
+                    <option value="100Mbps">100Mbps</option>
+                    <option value="10Mbps">10Mbps</option>
+                    <option value="自动">自动</option>
+                </select>
+            </div>
+            <div>
+                <p class="textAlign"><span>协商模式</span></p>
+                <select class="neconfig-select DCNSelect" id="duplexMode">
+                    <option value="自协商">自协商</option>
+                    <option value="全双工">全双工</option>
+                    <option value="半双工">半双工</option>
+                </select>
+            </div>
+			<div>
+				<button class="DCNBtnStyle" style="margin-left:14%" onclick="updateOAMPdata()">应用</button>
+				<button class="DCNBtnStyle" style="margin-left:1%" onclick="showOAMPcard()">查询</button>
+			</div>
+            <div id="OAMPList">
+				<table>
+					<thead>
+						<tr>
+							<th class="tableBor">网元名称</th>
+							<th class="tableBor">MAC地址</th>
+							<th class="tableBor">IPv4地址</th>
+							<th class="tableBor">IPv4子网掩码</th>
+							<th class="tableBor">端口使能</th>
+							<th class="tableBor">监控链路速率</th>
+							<th class="tableBor">协商模式</th>
+							<th class="tableBor">端口状态</th>
+							<th style="width:10%" class="tableBor">操作</th>
+						</tr>
+					</thead>
+					<tbody class="OAMPListConn"></tbody>
+					</table>
+				</table>
+			</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/DCNJs.js"></script>
+</body>
+</html>

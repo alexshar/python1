@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<!--
+	Note:  (5/30/2013, PHM)
+		Currently, Main_Otn.html and Main_Otn.vm are identical.
+		I intend to keep it that way until we begin to use
+		some specific .vm (velocity) functionality
+
+	TODO: (7JUL2013)  Get menu items from a JSON file/object, based upon user preferences.
+ -->
+<html lang="en">
+
+<head>
+ <meta http-equiv="content-type" content="text/html; charset=utf-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+ <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+ <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+ <style>
+     select{
+         display:inline-block;
+         width:auto!important;
+     }
+     .propertiesDialog{
+         width:auto!important;
+         background-image:none!important;
+         height:auto!important;
+         cursor: default!important;
+         text-align: left;
+     }
+     .ui-dialog .dgrid-cell {
+         padding: 3px!important;
+         overflow: hidden!important;
+         vertical-align: top!important;
+         border: 1px solid #ddd!important;
+         border-top-style: none!important;
+         box-sizing: border-box!important;
+         -moz-box-sizing: border-box!important;
+         -ms-box-sizing: border-box!important;
+         -webkit-box-sizing: border-box!important;
+         text-overflow: auto;
+         overflow: hidden;
+         word-wrap: break-word;
+         word-break: normal;
+     }
+     .dgrid .dgrid-header .dgrid-cell {
+         background-color: #ddd!important;
+     }
+
+     input[type="text"] {
+         display:inline-block!important;
+         width:70%!important;
+         height: auto!important;
+         background-color:none!important;
+     }
+
+     input[type="submit"] {
+         width:60px!important;
+         height: 25px!important
+     }
+
+     .dgrid-sort-arrow, .ui-icon {
+         display: none!important;
+     }
+
+     #overlay {
+         background: #000;
+         filter: alpha(opacity=50); /* IE的透明度 */
+         opacity: 0.5;  /* 透明度 */
+         display: none;
+         position: absolute;
+         top: 0px;
+         left: 0px;
+         width: 100%;
+         height: 100%;
+         z-index: 500; /* 此处的图层要大于页面 */
+     }
+     .dgrid-resize-header-container {
+         text-align: center!important;
+     }
+
+     .dgrid .dgrid-cell {
+         padding: 3px!important;
+         text-align: center!important;
+         overflow: hidden!important;
+         vertical-align: top!important;
+         border: 1px solid #ddd!important;
+         border-top-style: none!important;
+         box-sizing: border-box!important;
+         -moz-box-sizing: border-box!important;
+         -ms-box-sizing: border-box!important;
+         -webkit-box-sizing: border-box!important;
+         text-overflow: auto;
+         overflow: hidden;
+         white-space: normal!important;
+         word-wrap: break-word;
+         word-break: normal
+     }
+
+     .dgrid-cell-padding {
+         padding: 3px!important;
+     }
+
+     .dgrid-row-table{
+         width:99%\0;
+     }
+     .table-body{width:100%; height:300px;overflow-y:scroll;}
+
+     .table-head table,.table-body table{width:100%;}
+
+     .table-head{padding-right:16px;}
+
+     th {
+         background-color:#ddd!important;
+         text-align:center;
+         font-weight:bolder
+     }
+     table,td,th {
+         background: #fff;
+     }
+     .neconfig-select {
+         display: inline;
+     }
+     .sysSpanCustom {
+         width:80px;
+         display:-moz-inline-box; /* css注释：for ff2 */
+         display:inline-block;
+         text-align:left;
+     }
+     .table-body{width:100%; height:400px;}
+
+     .table-head table,.table-body table{width:100%;}
+
+     /*.table-head{padding-right:16px;}*/
+
+     th {
+         background-color:#ddd!important;
+         text-align:center;
+         font-weight:bolder
+     }
+     table,td,th {
+         background: #fff;
+         border: 1px solid #ccc;
+     }
+     input[type="checkbox"]:not(:checked),
+     input[type="checkbox"]:checked {
+         opacity: 1!important;
+         position: static!important;
+         vertical-align:middle!important;
+     }
+
+     #zn_temp_data {
+         margin:0 auto;
+         width:200px;
+         border: 1px solid #000;
+     }
+
+     #zn_route_data {
+         margin:0 auto;
+         width:400px;
+         border: 1px solid #000;
+     }
+
+     .my_custom_btn {
+         background-color: #124191;
+         border: 1px solid #124191;
+         border-radius: 5%;
+         color: white;
+         padding: 5px!important;
+         cursor: pointer!important;
+     }
+ </style>
+    <script>
+        var server_path = 'https://135.251.96.98:8443';
+        var cgi_path = "https://135.251.96.98:8443/cgi-bin/test.cgi";
+        var znConnMngData = {};
+        var editIndex;
+        $(document).ready(function(){
+           loadConnMngConfig();
+        });
+
+        function loadConnMngConfig() {
+            $.getJSON(server_path + '/oms1350/web/eqm/omc_all/data/13_1_2/znConnMng.json', function(data) {
+               znConnMngData =  data;
+                $.each(data['config']['speedList'],function(n,item){
+                    $("#znConnMng_speedlist").append("<option value='"+item+"'>"+item+"</option>");
+                });
+                $.each(data['config']['protectTypeList'],function(n,item){
+                    $("#znConnMng_protectTypelist").append("<option value='"+item+"'>"+item+"</option>");
+                });
+                $.each(data['config']['sourceNodeList'],function(n,item){
+                    $("#znConnMng_sourceNodelist").append("<option value='"+item.name+"'>"+item.name+"</option>");
+                });
+                $.each(data['config']['targetNodeList'],function(n,item){
+                    $("#znConnMng_targetNodelist").append("<option value='"+item.name+"'>"+item.name+"</option>");
+                });
+                $.each(data['config']['ASONList'],function(n,item){
+                    $("#znConnMng_ASONlist").append("<option value='"+item+"'>"+item+"</option>");
+                });
+                $.each(data['config']['businessList'],function(n,item){
+                    $("#znConnMng_businesslist").append("<option value='"+item+"'>"+item+"</option>");
+                });
+                $.each(data['config']['routeList'],function(n,item){
+                    $("#znConnMng_routelist").append("<option value='"+item+"'>"+item+"</option>");
+                });
+
+                selectZnSourceNode();
+
+                selectZnTargetNode();
+            });
+        }
+
+        function selectZnSourceNode() {
+            $("#znConnMng_sourcePortlist").empty();
+            var selectedZnSourceNode = $('#znConnMng_sourceNodelist option:selected').val();
+            $.each(znConnMngData['config']['sourceNodeList'], function(n, item) {
+                if(item.name == selectedZnSourceNode) {
+                    $.each(item.ports, function(i, port) {
+                        $("#znConnMng_sourcePortlist").append("<option value='"+port+"'>"+port+"</option>");
+                    });
+                }
+            });
+        }
+
+        function selectZnTargetNode() {
+            $("#znConnMng_targetPortlist").empty();
+            var selectedZnSourceNode = $('#znConnMng_targetNodelist option:selected').val();
+            $.each(znConnMngData['config']['targetNodeList'], function(n, item) {
+                if(item.name == selectedZnSourceNode) {
+                    $.each(item.ports, function(i, port) {
+                        $("#znConnMng_targetPortlist").append("<option value='"+port+"'>"+port+"</option>");
+                    });
+                }
+            });
+        }
+
+        function pushZnConnMng() {
+            $('#wait_save_znConn').show();
+            $('#createZnBusiness_btn').attr("disabled","disabled");
+            $('#showDataList_btn').attr("disabled","disabled");
+            var selectedSoNode = $('#znConnMng_sourceNodelist option:selected').val();
+            var selectedSoPort = $('#znConnMng_sourcePortlist option:selected').val();
+            var selectedTaNode = $('#znConnMng_targetNodelist option:selected').val();
+            var selectedTaPort = $('#znConnMng_targetPortlist option:selected').val();
+            setTimeout(function(){
+                var tempFlag = false;
+                if(selectedSoNode == selectedTaNode && selectedSoPort == selectedTaPort) {
+                    tempFlag = true;
+                    $('#wait_save_znConn').hide();
+                    $('#createZnBusiness_btn').removeAttr("disabled");
+                    $('#showDataList_btn').removeAttr("disabled");
+                    showDialog('提示','znConnMng_error1');
+                }
+                if((selectedSoPort.indexOf('GBE') != -1 && selectedTaPort.indexOf('GBE') == -1) ||
+                        (selectedSoPort.indexOf('GBE') == -1 && selectedTaPort.indexOf('GBE') != -1)) {
+                    tempFlag = true;
+                    $('#wait_save_znConn').hide();
+                    $('#createZnBusiness_btn').removeAttr("disabled");
+                    $('#showDataList_btn').removeAttr("disabled");
+                    showDialog('提示','znConnMng_error2');
+                }
+
+
+               /* $.each(znConnMngData['errorData'], function(n, item) {
+                   if(item.sourcePort == $('#znConnMng_sourcePortlist option:selected').val()) {
+                       tempFlag = true;
+                       $('#wait_save_znConn').hide();
+                       $('#createZnBusiness_btn').removeAttr("disabled");
+                       $('#showDataList_btn').removeAttr("disabled");
+                       showErrorMsg(n);
+                   }
+                });*/
+                if(tempFlag) {
+                    return;
+                }
+                var now=new Date().getTime();
+                var createdZnData = {};
+                createdZnData.speed = $('#znConnMng_speedlist option:selected').val();
+                createdZnData.protectType = $('#znConnMng_protectTypelist option:selected').val();
+                createdZnData.sourceNode = $('#znConnMng_sourceNodelist option:selected').val();
+                createdZnData.sourcePort = $('#znConnMng_sourcePortlist option:selected').val();
+                createdZnData.targetNode = $('#znConnMng_targetNodelist option:selected').val();
+                createdZnData.targetPort = $('#znConnMng_targetPortlist option:selected').val();
+                createdZnData.ASON = $('#znConnMng_ASONlist option:selected').val();
+                createdZnData.business = $('#znConnMng_businesslist option:selected').val();
+                createdZnData.routeWay = $('#znConnMng_routelist option:selected').val();
+                createdZnData.businessName = $('#znConnMng_businessName').val();
+                createdZnData.priority = $('#znConnMng_prioritylist option:selected').val();
+                createdZnData.productWay = $('#znConnMng_productTypelist option:selected').val();
+                createdZnData.createTime = now;
+                var tempDataArr = [];
+                if($('#znConnMng_routelist option:selected').val() == '自动') {
+                    if((selectedSoNode == 'ASON1' || selectedSoNode == 'ASON2')&&(selectedTaNode == 'ASON1' || selectedTaNode == 'ASON2')) {
+                        createdZnData.tempData = ['ASON1-TE1'];
+                    }
+                } else {
+                    $.each($('#zn_temp_data input:checked'),function(n, item) {
+                        tempDataArr.push($(item).val());
+                    });
+                    createdZnData.tempData = tempDataArr;
+                }
+                znConnMngData['data'].push(createdZnData);
+                var tempData = {
+                    'content':JSON.stringify(znConnMngData),
+                    'filename':'/oms1350/web/eqm/omc_all/data/13_1_2/znConnMng.json'}
+                $.post(cgi_path, tempData, function(resp) {
+                    $('#wait_save_znConn').hide();
+                    $('#createZnBusiness_btn').removeAttr("disabled");
+                    $('#showDataList_btn').removeAttr("disabled");
+                    if(resp == 'success') {
+                        showDialog('提示','znConnMng_DLGsuccess');
+                        setTimeout(function(){
+                            var tempdialog = dialog.getCurrent();
+                            if(tempdialog){
+                                tempdialog.close();
+                            }
+                        }, 2000);
+                    } else {
+                        alert('保存失败');
+
+                    }
+//                window.location.reload();
+                }).error(function(){
+                    $('#wait_save_znConn').hide();
+                    alert("连接服务器失败!");
+                    $('#createZnBusiness_btn').removeAttr("disabled");
+                    $('#showDataList_btn').removeAttr("disabled");
+                });
+            },2000);
+        }
+
+        function showErrorMsg(index) {
+            $('#zn_error_msg').text(znConnMngData['errorData'][index]['errorMsg']);
+            var d = dialog({
+                title: '提示',
+                width:$(document.body).width() * 0.4,
+                content: $('#znConnMng_errorDia')
+            });
+            d.show();
+        }
+
+        var sureFunc;
+        function createZnBusiness() {
+            if($('#znConnMng_routelist option:selected').val() == '手动' && $('#zn_temp_data input:checked').length == 0) {
+                showDialog('提示','znConnMng_portnull');
+                return;
+            }
+            if(!$('#znConnMng_businessName').val()) {
+                showDialog('提示','znConnMng_namenull');
+                return;
+            }
+            sureFunc = pushZnConnMng;
+            showDialog('提示','znConnMng_ConfrimDlg');
+        }
+
+        function showDataList() {
+            loadZnConnList();
+            showDialog('SPC业务列表','znConnMng_dataList', $(document.body).width() * 0.8);
+        }
+
+        function loadZnConnList() {
+            $('#znConnList_table').empty();
+            $.each(znConnMngData['data'], function(n, item) {
+                var htmlStr = '<tr>';
+                htmlStr += '<td style="text-align:center!important;"  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><input type="checkbox" class="znLinkCheckbox" value="'+n+'"></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.speed+' </div></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.protectType+' </div></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.sourceNode+' </div></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.sourcePort+' </div></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.targetNode+' </div></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.targetPort+' </div></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.businessName+' </div></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.ASON+' </div></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.business+' </div></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.routeWay+' </div></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.priority+' </div></td>';
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+item.productWay+' </div></td>';
+                var concatRouteName = '';
+                for(var k= 0; k < item.tempData.length; k++) {
+                    if(k!= item.tempData.length-1 && item.tempData.length > 1) {
+                        concatRouteName = concatRouteName + item.tempData[k] + '/';
+                    } else {
+                        concatRouteName = concatRouteName + item.tempData[k]
+                    }
+                }
+                htmlStr += '<td  role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog">'+concatRouteName+' </div></td>';
+      /*          htmlStr += '<td>'+item.speed+'</td>';
+                htmlStr += '<td>'+item.protectType+'</td>';
+                htmlStr += '<td>'+item.sourceNode+'</td>';
+                htmlStr += '<td>'+item.sourcePort+'</td>';
+                htmlStr += '<td>'+item.targetNode+'</td>';
+                htmlStr += '<td>'+item.targetPort+'</td>';
+                htmlStr += '<td>'+item.businessName+'</td>';
+                htmlStr += '<td>'+item.ASON+'</td>';
+                htmlStr += '<td>'+item.business+'</td>';
+                htmlStr += '<td>'+item.route+'</td>';
+                htmlStr += '<td>'+item.priority+'</td>';
+                htmlStr += '<td>'+item.productWay+'</td>';*/
+                htmlStr += '</tr>';
+                $('#znConnList_table').append(htmlStr);
+            });
+            var fanxiBox = $("#znConnMng_dataList input:checkbox");
+            fanxiBox.click(function () {
+                if(this.checked || this.checked=='checked'){
+
+                    fanxiBox.removeAttr("checked");
+                    //这里需注意jquery1.6以后必须用prop()方法
+                    //$(this).attr("checked",true);
+                    $(this).prop("checked", true);
+                }
+            });
+        }
+        var editZnRouteDia;
+        function showDialog(title, id, width) {
+            var dialogId = '#' + id;
+            if(!width) {
+                width = $(document.body).width() * 0.3
+            }
+            var d = dialog({
+                title: title,
+                width:width,
+                content: $(dialogId)
+            });
+            d.show();
+            if(title == '软重路由') {
+                editZnRouteDia = dialog.getCurrent();;
+            }
+        }
+
+        var isSureSave = false;
+
+        function sure() {
+            var tempdialog = dialog.getCurrent();
+            if(tempdialog){
+                tempdialog.close();
+            }
+            if(sureFunc) {
+                sureFunc();
+            }
+        }
+
+        function no() {
+            var tempdialog = dialog.getCurrent();
+            if(tempdialog){
+                tempdialog.close();
+            }
+        }
+
+        function changeRouteWay() {
+            if($('#znConnMng_routelist option:selected').val() == '手动') {
+                $('#zn_temp_data').empty();
+                $.each(znConnMngData['tempData'],function(n, item){
+                    $('#zn_temp_data').append('<input type="checkbox" value="'+item+'"><span>'+item+'</span><br>');
+                });
+                $('#zn_temp_data').show();
+            } else {
+                $('#zn_temp_data').hide();
+            }
+        }
+
+        function queryZnLink() {
+            if($('.znLinkCheckbox:checked').length == 0) {
+                showDialog('提示','znConnMng_checknull');
+                return;
+            }
+            loadSPCInfo();
+            showDialog('SPC信息','znConnMng_SPCInfo',$(document.body).width() * 0.7);
+        }
+
+        function loadSPCInfo() {
+            $('#znConnMng_SPCInfo').empty();
+            editIndex = $('.znLinkCheckbox:checked').val();
+            $.each(znConnMngData['data'][editIndex]['SPCInfo'],function(n, item) {
+                $('#znConnMng_SPCInfo').append('<span class="sysSpanCustom">'+item.key+': </span><div class="dijit dijitReset dijitInline dijitLeft dijitTextBox dijitTextBoxDisabled dijitDisabled" id="widget_EPTntwGenTime" role="presentation" widgetid="EPTntwGenTime" style="width: 210px; margin-top: 15px; margin-bottom: 15px; margin-left: 4px;"><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" data-dojo-attach-point="textbox,focusNode" autocomplete="off" name="ntwGenTime" type="text" tabindex="-1" id="sys_username" title="Created Time" disabled="" aria-disabled="true" value="'+item.value+'"></div></div><br>');
+            });
+        }
+
+        function editZnLink() {
+            if($('.znLinkCheckbox:checked').length == 0) {
+                showDialog('提示','znConnMng_checknull');
+                return;
+            }
+            loadZnRouteData();
+            showDialog('软重路由','znConnMng_EditRouteData',$(document.body).width() * 0.5);
+        }
+
+        function loadZnRouteData() {
+            editIndex = $('.znLinkCheckbox:checked').val();
+            console.log("znLinkCheckbox:"+editIndex);
+            $('#zn_route_data').empty();
+            $.each(znConnMngData['tempData'],function(n, item){
+                $('#zn_route_data').append('<input type="checkbox" id="zn_route_checkbox_'+item+'" value="'+item+'"><span>'+item+'</span><br>');
+                $.each(znConnMngData['data'][editIndex]['tempData'],function(i, data){
+                    if(item == data) {
+                        $('#zn_route_checkbox_'+item).attr("checked",'true');
+                    }
+                });
+            });
+
+        }
+
+        function delZnLink() {
+            if($('.znLinkCheckbox:checked').length == 0) {
+                showDialog('提示','znConnMng_checknull');
+                return;
+            }
+            sureFunc = pushDelZnLink;
+            showDialog('提示','znConnMng_ConfrimDlg');
+        }
+
+        function pushDelZnLink() {
+            $('#wait_del_business').show();
+            $('#link_edit_btn').attr("disabled","disabled");
+            $('#link_del_btn').attr("disabled","disabled");
+            $('#createZnBusiness_btn').attr("disabled","disabled");
+            $('#showDataList_btn').attr("disabled","disabled");
+            setTimeout(function() {
+                var delIndex = $('.znLinkCheckbox:checked').val();
+                znConnMngData['data'].splice(delIndex, 1);
+                var tempData = {
+                    'content': JSON.stringify(znConnMngData),
+                    'filename': '/oms1350/web/eqm/omc_all/data/13_1_2/znConnMng.json'
+                }
+                $.post(cgi_path, tempData, function (resp) {
+                    $('#wait_del_business').hide();
+                    $('#createZnBusiness_btn').removeAttr("disabled");
+                    $('#showDataList_btn').removeAttr("disabled");
+                    $('#link_edit_btn').removeAttr("disabled");
+                    $('#link_del_btn').removeAttr("disabled");
+                    if (resp == 'success') {
+                        showDialog('提示', 'znConnMng_DLGsuccess');
+                        loadZnConnList();
+                        setTimeout(function () {
+                            var tempdialog = dialog.getCurrent();
+                            if (tempdialog) {
+                                tempdialog.close();
+                            }
+                        }, 2000);
+                    } else {
+                        alert('删除失败');
+
+                    }
+                }).error(function () {
+                    $('#wait_del_business').hide();
+                    alert("连接服务器失败!");
+                    $('#createZnBusiness_btn').removeAttr("disabled");
+                    $('#showDataList_btn').removeAttr("disabled");
+                    $('#link_edit_btn').removeAttr("disabled");
+                    $('#link_del_btn').removeAttr("disabled");
+                });
+            },2000);
+        }
+
+        function saveZnRouteData() {
+            sureFunc = pushZnRouteData;
+            showDialog('提示','znConnMng_ConfrimDlg');
+        }
+
+        function pushZnRouteData() {
+            $('#wait_save_znRouteData').show();
+            $('#saveZnRouteData_btn').attr("disabled","disabled");
+            setTimeout(function(){
+                var tempDataArr = []
+                $.each($('#zn_route_data input:checked'),function(n, item) {
+                    tempDataArr.push($(item).val());
+                });
+                znConnMngData['data'][editIndex]['tempData'] = tempDataArr;
+                var tempData = {
+                    'content':JSON.stringify(znConnMngData),
+                    'filename':'/oms1350/web/eqm/omc_all/data/13_1_2/znConnMng.json'}
+                editZnRouteDia.close();
+                $.post(cgi_path, tempData, function(resp) {
+                    $('#wait_save_znRouteData').hide();
+                    $('#saveZnRouteData_btn').removeAttr("disabled");
+                    if(resp == 'success') {
+                        showDialog('提示','znConnMng_DLGsuccess');
+                        loadZnConnList();
+                        setTimeout(function(){
+                            var tempdialog = dialog.getCurrent();
+                            if(tempdialog){
+                                tempdialog.close();
+                                if(dialog.getCurrent()) {
+                                    dialog.getCurrent().close();
+                                }
+                            }
+                        }, 2000);
+                    } else {
+                        alert('保存失败');
+
+                    }
+//                window.location.reload();
+                }).error(function(){
+                    $('#wait_save_znRouteData').hide();
+                    alert("连接服务器失败!");
+                    $('#saveZnRouteData_btn').removeAttr("disabled");
+                });
+            },10000);
+        }
+    </script>
+</head>
+
+<body>
+
+<!-- comment start -->
+
+<div class="div">
+
+     <div class="dijitTitlePane dijitTitlePaneFocused dijitFocused" id="EPTnetwDetails_TP" widgetid="EPTnetwDetails_TP">
+      <div data-dojo-attach-event="ondijitclick:_onTitleClick, onkeydown:_onTitleKey" class="dijitTitlePaneTitle dijitTitlePaneTitleFixedOpen dijitFixedOpen" data-dojo-attach-point="titleBarNode" id="EPTnetwDetails_TP_titleBarNode">
+       <div class="dijitTitlePaneTitleFocus" data-dojo-attach-point="focusNode" role="heading">
+        <span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span><span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner">-</span><span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode" style="user-select: none;">智能连接管理</span>
+       </div>
+      </div>
+      <div class="dijitTitlePaneContentOuter" data-dojo-attach-point="hideNode" role="presentation">
+       <div style="text-align:center">
+        <span class="sysSpanCustom">速率: </span>
+           <select id="znConnMng_speedlist" class="neconfig-select" style="width:200px!important;">
+
+           </select><br><br>
+        <span class="sysSpanCustom">保护类型: </span>
+           <select id="znConnMng_protectTypelist" class="neconfig-select" style="width:200px!important;">
+
+            </select><br><br>
+           <span class="sysSpanCustom">优先级: </span>
+           <select id="znConnMng_prioritylist" class="neconfig-select" style="width:200px!important;">
+               <option value="1">1</option>
+               <option value="1">2</option>
+               <option value="1">3</option>
+               <option value="1">4</option>
+               <option value="1">5</option>
+           </select><br><br>
+           <span class="sysSpanCustom">建立方式: </span>
+           <select id="znConnMng_productTypelist" class="neconfig-select" style="width:200px!important;">
+                <option value="自动">自动</option>
+               <option value="手工">手工</option>
+           </select><br><br>
+           <span class="sysSpanCustom">源节点: </span>
+           <select id="znConnMng_sourceNodelist" onchange="selectZnSourceNode();" class="neconfig-select" style="width:200px!important;">
+
+           </select><br><br>
+           <span class="sysSpanCustom">源端口: </span>
+           <select id="znConnMng_sourcePortlist" class="neconfig-select" style="width:200px!important;">
+
+           </select><br><br>
+           <span class="sysSpanCustom">宿节点: </span>
+           <select id="znConnMng_targetNodelist" onchange="selectZnTargetNode();" class="neconfig-select" style="width:200px!important;">
+
+           </select><br><br>
+           <span class="sysSpanCustom">宿端口: </span>
+           <select id="znConnMng_targetPortlist" class="neconfig-select" style="width:200px!important;">
+
+           </select><br>
+           <span class="sysSpanCustom">业务名称: </span><div class="dijit dijitReset dijitInline dijitLeft dijitTextBox" id="widget_EPTntwGenTime" role="presentation" widgetid="EPTntwGenTime" style="width: 210px; margin-top: 15px; margin-bottom: 15px; margin-left: 4px;"><div class="dijitReset dijitInputField dijitInputContainer"><input style="cursor:text!important;" class="dijitReset dijitInputInner" data-dojo-attach-point="textbox,focusNode" autocomplete="off" name="ntwGenTime" type="text" tabindex="-1" id="znConnMng_businessName" title="businessName"></div></div><br>
+           <span class="sysSpanCustom">ASON恢复: </span>
+           <select id="znConnMng_ASONlist" class="neconfig-select" style="width:200px!important;">
+
+           </select><br><br>
+           <span class="sysSpanCustom">业务方式: </span>
+           <select id="znConnMng_businesslist" class="neconfig-select" style="width:200px!important;">
+
+           </select><br><br>
+           <span class="sysSpanCustom">路由方式: </span>
+           <select id="znConnMng_routelist" onchange="changeRouteWay()" class="neconfig-select" style="width:200px!important;">
+
+           </select><br><br>
+           <div style="display: none" id="zn_temp_data">
+           </div><br>
+           <p id="wait_save_znConn" style="display: none;">数据提交中,请稍候....</p>
+           <input type="submit" id="createZnBusiness_btn" class="my_custom_btn" style="height: 20px!important;"  onclick="createZnBusiness()" value="业务建立">
+           <input type="submit" id="showDataList_btn" class="my_custom_btn" style="height: 20px!important;"   onclick="showDataList()" value="查询">
+       </div>
+      </div>
+     </div>
+
+    <div id="znConnMng_dataList" style="display: none">
+        <div _dijitmenudijit_menu_56="1" style="width: 100%;height:500px; float:left;" widgetid="dgrid_0"
+             role="grid" class="dgrid dgrid-grid ui-widget">
+            <div style="margin-bottom: 5px!important;">
+                <input type="submit" class="my_custom_btn" style="height: 24px!important;margin-left: 5px!important;" id="link_edit_btn" onclick="editZnLink()" value="软重路由">
+                <input type="submit" class="my_custom_btn" style="height: 24px!important;margin-left: 5px!important;" id="link_del_btn" onclick="delZnLink()" value="删除">
+                <span id="wait_del_business" style="display: none;">正在删除,请稍候...</span>
+            </div>
+            <div style="height:400px; text-align:center;" widgetid="dgrid_0" role="grid" class="dgrid dgrid-grid ui-widget">
+                <div role="row" class="dgrid-header dgrid-header-row ui-widget-header">
+                    <table role="presentation" class="dgrid-row-table">
+                        <tbody>
+                        <tr>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">操作</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">速率</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">保护类型</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">源节点</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">源端口</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">宿节点</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">宿端口</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">业务名称</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">ASON恢复</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">业务方式</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">路由方式</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">优先级</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">建立方式</div></td>
+                            <td role="gridcell" class="dgrid-cell dgrid-cell-padding dgrid-column-0 field-info query-path query-paths"><div class="query-path query-paths propertiesDialog" style="text-align: center!important;">路由</div></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="-moz-user-select: none; margin-top: 25px; margin-bottom: 22px;" tabindex="-1"
+                     class="dgrid-scroller">
+                    <div class="dgrid-content ui-widget-content">
+                        <div id="dgrid_0-row-65" class=" dgrid-row dgrid-row-even ui-state-default" role="row">
+                            <table role="presentation" class="dgrid-row-table">
+                                <tbody id="znConnList_table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="table-head">-->
+                <!--<table>-->
+                    <!--<colgroup>-->
+                        <!--<col width="40px">-->
+                        <!--<col width="80px">-->
+                        <!--<col width="80px">-->
+                        <!--<col width="150px">-->
+                        <!--<col width="150px">-->
+                        <!--<col width="150px">-->
+                        <!--<col width="150px">-->
+                        <!--<col width="100px">-->
+                        <!--<col width="60px">-->
+                        <!--<col width="60px">-->
+                        <!--<col width="51px">-->
+                        <!--<col width="54px">-->
+                        <!--<col width="52px">-->
+                    <!--</colgroup>-->
+                    <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th></th>-->
+                        <!--<th>速率</th>-->
+                        <!--<th>保护类型</th>-->
+                        <!--<th>源节点</th>-->
+                        <!--<th>源端口</th>-->
+                        <!--<th>宿节点</th>-->
+                        <!--<th>宿端口</th>-->
+                        <!--<th>业务名称</th>-->
+                        <!--<th>ASON恢复</th>-->
+                        <!--<th>业务方式</th>-->
+                        <!--<th>路由</th>-->
+                        <!--<th>优先级</th>-->
+                        <!--<th>生产方式</th>-->
+                    <!--</tr>-->
+                    <!--</thead>-->
+                <!--</table>-->
+            <!--</div>-->
+            <!--<div class="table-body">-->
+                <!--<table>-->
+                    <!--<colgroup>-->
+                        <!--<col width="40px">-->
+                        <!--<col width="80px">-->
+                        <!--<col width="80px">-->
+                        <!--<col width="150px">-->
+                        <!--<col width="150px">-->
+                        <!--<col width="150px">-->
+                        <!--<col width="150px">-->
+                        <!--<col width="100px">-->
+                        <!--<col width="60px">-->
+                        <!--<col width="60px">-->
+                        <!--<col width="50px">-->
+                        <!--<col width="50px">-->
+                        <!--<col width="50px">-->
+                    <!--</colgroup>-->
+                    <!--<tbody id="znConnList_table">-->
+
+                    <!--</tbody>-->
+                <!--</table>-->
+            <!--</div>-->
+        </div>
+    </div>
+
+    <div id="znConnMng_EditRouteData" style="display:none;text-align:center">
+        <div  id="zn_route_data">
+
+        </div>
+        <p id="wait_save_znRouteData" style="display: none;">数据提交中,请稍候....</p>
+        <input type="submit" class="my_custom_btn" id="saveZnRouteData_btn" style="height: 24px!important;" onclick="saveZnRouteData()" value="保存">
+    </div>
+
+    <div id="znConnMng_SPCInfo" style="display:none;text-align:center">
+        <span class="sysSpanCustom">用户名: </span><div class="dijit dijitReset dijitInline dijitLeft dijitTextBox dijitTextBoxDisabled dijitDisabled"  role="presentation" widgetid="EPTntwGenTime" style="width: 210px; margin-top: 15px; margin-bottom: 15px; margin-left: 4px;"><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" data-dojo-attach-point="textbox,focusNode" autocomplete="off" name="ntwGenTime" type="text" tabindex="-1" id="sys_username" title="Created Time" disabled="" aria-disabled="true" value=""></div></div><br>
+    </div>
+
+    <div id="znConnMng_ConfrimDlg" style="display: none">
+        <div>
+            <h1 style="margin-top: 0px">确认提交?</h1>
+        </div>
+
+        <div style="text-align: center;">
+            <button id="znConnMng_sure" onclick="sure()" style="width: 50px">是</button>
+            <button id="znConnMng_no" onclick="no()" style="width: 50px">否</button>
+        </div>
+
+    </div>
+
+    <div id="znConnMng_DLGsuccess" style="display: none;text-align: center;">
+        <h3><span >成功</span></h3>
+    </div>
+
+    <div id="znConnMng_namenull" style="display: none;text-align: center;">
+        <h3><span >业务名称不能为空！</span></h3>
+    </div>
+
+    <div id="znConnMng_checknull" style="display: none;text-align: center;">
+        <h3><span >请选择业务！</span></h3>
+    </div>
+
+    <div id="znConnMng_error1" style="display: none;text-align: center;">
+        <h3><span >创建失败！</span></h3>
+        <h3><span >配置参数选择错误！</span></h3>
+    </div>
+
+    <div id="znConnMng_error2" style="display: none;text-align: center;">
+        <h3><span >创建失败!</span></h3>
+        <h3><span >速率不匹配！</span></h3>
+    </div>
+    <div id="znConnMng_portnull" style="display: none;text-align: center;">
+        <h3><span >请选择路由！</span></h3>
+    </div>
+
+
+    <div id="znConnMng_errorDia" style="display: none;text-align: center;">
+        <h3><span >创建错误！</span></h3>
+        <p id="zn_error_msg" style="width: 100%;
+    height: auto;
+    word-wrap:break-word;
+    word-break:break-all;
+    overflow: hidden;  "></p>
+    </div>
+
+</div>
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+[
+    {
+        "key": "Alarm_20200419_110606@OTNE_1-19",
+        "abspath": "/alu/DEPOT/BackupJobs/Alarm_20200419_110606/OTNE_1-19/Alarm/SSotneVM1/AS",
+        "domain": "OTNE_1-19",
+        "date": "Alarm_20200419_110606",
+        "file_name": "AS.tar.gz.20200419_110606",
+        "remote_location": "/root",
+        "remote_name": "testlxt2020",
+        "host": "10.242.111.231"
+    },
+    {
+        "key": "Alarm_20200518_070926@OTNE_1-19",
+        "abspath": "/alu/DEPOT/BackupJobs/Alarm_20200518_070926/OTNE_1-19/Alarm/SSotneVM1/AS",
+        "domain": "OTNE_1-19",
+        "date": "Alarm_20200518_070926",
+        "file_name": "AS.tar.gz.20200518_070926",
+        "remote_location": "",
+        "remote_name": "",
+        "host": ""
+    },
+    {
+        "key": "Alarm_20200602_052800@OTNE_1-19",
+        "abspath": "/alu/DEPOT/BackupJobs/Alarm_20200602_052800/OTNE_1-19/Alarm/SSotneVM1/AS",
+        "domain": "OTNE_1-19",
+        "date": "Alarm_20200602_052800",
+        "file_name": "AS.tar.gz.20200602_052800",
+        "remote_location": "/home",
+        "remote_name": "ttttt",
+        "host": "10.242.111.231"
+    }
+]

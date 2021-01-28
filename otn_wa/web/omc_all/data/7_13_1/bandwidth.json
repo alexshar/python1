@@ -1,0 +1,1 @@
+[{"id":1,"name":"test1","type":"ELINE","state":"up","tpSum":2,"sinkNode":"","sourceNode":"","BusinessRate":"test1","ODU2name":"ODU2name1","time":"0","ODUtime":1,"ODU":4},{"id":2,"name":"test2","type":"EVPL","state":"Down","tpSum":2,"sinkNode":"","sourceNode":"","BusinessRate":"test2","ODU2name":"ODU2name2","time":"0","ODUtime":"","ODU":10}]

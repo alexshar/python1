@@ -1,0 +1,314 @@
+{
+  "ne1p1": {
+    "neId": "1",
+    "tpId": "ne1p1",
+    "userLabel": "OTU4-1-1-34-1",
+    "portFilter":"ODU4"
+  },
+  "ne1p2": {
+    "neId": "1",
+    "tpId": "ne1p2",
+    "userLabel": "OTU4-1-1-36-1",
+    "portFilter":"ODU4"
+  },
+  "ne1p3": {
+    "neId": "1",
+    "tpId": "ne1p3",
+    "userLabel": "OTU4-1-1-38-1",
+    "portFilter":"ODU4"
+  },
+  "ne1p4": {
+    "neId": "1",
+    "tpId": "ne1p4",
+    "userLabel": "OTU2-1-1-12-1",
+	"portFilter":"ODU2"
+  },
+  "ne1p5": {
+    "neId": "1",
+    "tpId": "ne1p5",
+    "userLabel": "OTU2-1-1-12-2",
+    "portFilter":"ODU2"
+  },
+  "ne1p6": {
+    "neId": "1",
+    "tpId": "ne1p6",
+    "userLabel": "OTU2-1-1-12-3",
+    "portFilter":"ODU2"
+  },
+  "ne1p7": {
+    "neId": "1",
+    "tpId": "ne1p7",
+    "userLabel": "OTU2-1-1-12-4",
+    "portFilter":"ODU2"
+  },
+  "ne1p8": {
+    "neId": "1",
+    "tpId": "ne1p8",
+    "userLabel": "OTU2-1-1-12-5",
+    "portFilter":"ODU2"
+  },
+  "ne1p9": {
+    "neId": "1",
+    "tpId": "ne1p9",
+    "userLabel": "OTU2-1-1-12-6",
+    "portFilter":"ODU2"
+  },
+  "ne1p10": {
+    "neId": "1",
+    "tpId": "ne1p10",
+    "userLabel": "OTU2-1-1-12-7",
+    "portFilter":"ODU2"
+  },
+  "ne1p11": {
+    "neId": "1",
+    "tpId": "ne1p11",
+    "userLabel": "OTU2-1-1-12-8",
+    "portFilter":"ODU2"
+  },
+  "ne1p12": {
+    "neId": "1",
+    "tpId": "ne1p12",
+    "userLabel": "OTU2-1-1-12-9",
+    "portFilter":"ODU2"
+  },
+  "ne1p13": {
+    "neId": "1",
+    "tpId": "ne1p13",
+    "userLabel": "OTU2-1-1-12-10",
+    "portFilter":"ODU2"
+  },
+  "ne1p14": {
+    "neId": "1",
+    "tpId": "ne1p14",
+    "userLabel": "STM64-1-1-3-1",
+    "portFilter":"STM64"
+  },
+  "ne1p15": {
+    "neId": "1",
+    "tpId": "ne1p15",
+    "userLabel": "STM64-1-1-3-2",
+    "portFilter":"STM64"
+  },
+  "ne1p16": {
+    "neId": "1",
+    "tpId": "ne1p16",
+    "userLabel": "STM64-1-1-3-3",
+    "portFilter":"STM64"
+  },
+  "ne1p17": {
+    "neId": "1",
+    "tpId": "ne1p17",
+    "userLabel": "STM64-1-1-3-4",
+    "portFilter":"STM64"
+  },
+  "ne1p18": {
+    "neId": "1",
+    "tpId": "ne1p18",
+    "userLabel": "STM64-1-1-3-5",
+    "portFilter":"STM64"
+  },
+  "ne1p19": {
+    "neId": "1",
+    "tpId": "ne1p19",
+    "userLabel": "STM64-1-1-3-6",
+    "portFilter":"STM64"
+  },
+  "ne1p20": {
+    "neId": "1",
+    "tpId": "ne1p20",
+    "userLabel": "STM64-1-1-10-1",
+    "portFilter":"STM64"
+  },
+  "ne1p21": {
+    "neId": "1",
+    "tpId": "ne1p21",
+    "userLabel": "STM64-1-1-10-2",
+    "portFilter":"STM64"
+  },
+  "ne1p22": {
+    "neId": "1",
+    "tpId": "ne1p22",
+    "userLabel": "STM64-1-1-10-3",
+    "portFilter":"STM64"
+  },
+  "ne1p23": {
+    "neId": "1",
+    "tpId": "ne1p23",
+    "userLabel": "STM64-1-1-10-4",
+    "portFilter":"STM64"
+  },
+  "ne1p24": {
+    "neId": "1",
+    "tpId": "ne1p24",
+    "userLabel": "STM64-1-1-10-5",
+    "portFilter":"ODU2"
+  },
+  "ne1p25": {
+    "neId": "1",
+    "tpId": "ne1p25",
+    "userLabel": "STM64-1-1-10-6",
+    "portFilter":"STM64"
+  },
+  "ne1p26": {
+    "neId": "1",
+    "tpId": "ne1p26",
+    "userLabel": "STM64-1-1-10-7",
+    "portFilter":"STM64"
+  },
+  "ne1p27": {
+    "neId": "1",
+    "tpId": "ne1p27",
+    "userLabel": "STM64-1-1-10-8",
+    "portFilter":"STM64"
+  },
+  "ne1p28": {
+    "neId": "1",
+    "tpId": "ne1p28",
+    "userLabel": "STM64-1-1-10-9",
+    "portFilter":"STM64"
+  },
+  "ne1p29": {
+    "neId": "1",
+    "tpId": "ne1p29",
+    "userLabel": "STM64-1-1-10-10",
+    "portFilter":"STM64"
+  },
+  "ne1p30": {
+    "neId": "1",
+    "tpId": "ne1p30",
+    "userLabel": "STM16-1-1-8-9",
+    "portFilter":"STM16"
+  },
+  "ne2p1": {
+    "neId": "2",
+    "tpId": "ne2p1",
+    "userLabel": "OTU4-1-1-3-1",
+    "portFilter":"OTU4"
+  },
+  "ne2p2": {
+    "neId": "2",
+    "tpId": "ne2p2",
+    "userLabel": "OTU4-1-1-5-1",
+    "portFilter":"OTU4"
+  },
+  "ne2p3": {
+    "neId": "2",
+    "tpId": "ne2p3",
+    "userLabel": "OTU4-1-1-7-1",
+    "portFilter":"OTU4"
+  },
+  "ne2p4": {
+    "neId": "2",
+    "tpId": "ne2p4",
+    "userLabel": "OTU2-1-1-17-1",
+    "portFilter":"ODU2"
+  },
+  "ne2p5": {
+    "neId": "2",
+    "tpId": "ne2p5",
+    "userLabel": "OTU2-1-1-17-7",
+    "portFilter":"ODU2"
+  },
+  "ne2p6": {
+    "neId": "2",
+    "tpId": "ne2p6",
+    "userLabel": "GBE10-1-1-17-5",
+    "portFilter":"GBE10"
+  },
+  "ne2p7": {
+    "neId": "2",
+    "tpId": "ne2p7",
+    "userLabel": "GBE10-1-1-17-6",
+    "portFilter":"GBE10"
+  },
+  "ne3p1": {
+    "neId": "3",
+    "tpId": "ne3p1",
+    "userLabel": "OTU4-1-1-3-1",
+    "portFilter":"OTU4"
+  },
+  "ne3p2": {
+    "neId": "3",
+    "tpId": "ne3p2",
+    "userLabel": "OTU4-1-1-5-1",
+    "portFilter":"OTU4"
+  },
+  "ne3p3": {
+    "neId": "3",
+    "tpId": "ne3p3",
+    "userLabel": "OTU4-1-1-7-1",
+    "portFilter":"OTU4"
+  },
+  "ne3p4": {
+    "neId": "3",
+    "tpId": "ne3p4",
+    "userLabel": "OTU2-1-1-17-1",
+    "portFilter":"ODU2"
+  },
+  "ne3p5": {
+    "neId": "3",
+    "tpId": "ne3p5",
+    "userLabel": "OTU2-1-1-17-6",
+    "portFilter":"ODU2"
+  },
+  "ne3p6": {
+    "neId": "3",
+    "tpId": "ne3p6",
+    "userLabel": "STM64-1-1-17-3",
+    "portFilter":"STM64"
+  },
+  "ne3p7": {
+    "neId": "3",
+    "tpId": "ne3p7",
+    "userLabel": "STM64-1-1-17-7",
+    "portFilter":"STM64"
+  },
+  "ne3p8": {
+    "neId": "3",
+    "tpId": "ne3p8",
+    "userLabel": "STM64-1-1-17-8",
+    "portFilter":"STM64"
+  },
+  "ne3p9": {
+    "neId": "3",
+    "tpId": "ne3p9",
+    "userLabel": "STM64-1-1-17-9",
+    "portFilter":"STM64"
+  },
+  "ne3p10": {
+    "neId": "3",
+    "tpId": "ne3p10",
+    "userLabel": "STM64-1-1-17-10",
+    "portFilter":"STM64"
+  },
+  "ne4p1": {
+    "neId": "4",
+    "tpId": "ne4p1",
+    "userLabel": "OTU4-1-1-34-1",
+    "portFilter":"OTU4"
+  },
+  "ne4p2": {
+    "neId": "4",
+    "tpId": "ne4p2",
+    "userLabel": "OTU4-1-1-36-1",
+    "portFilter":"OTU4"
+  },
+  "ne4p3": {
+    "neId": "4",
+    "tpId": "ne4p3",
+    "userLabel": "OTU4-1-1-38-1",
+    "portFilter":"OTU4"
+  },
+  "ne4p4": {
+    "neId": "4",
+    "tpId": "ne4p4",
+    "userLabel": "OTU2-1-1-8-1",
+    "portFilter":"ODU2"
+  },
+  "ne4p5": {
+    "neId": "4",
+    "tpId": "ne4p5",
+    "userLabel": "GBE100-1-1-41-1",
+    "portFilter":"GBE100"
+  }
+}

@@ -15,6 +15,8 @@ import pm_monitor
 import cutover
 import misc_data_ftp
 from loopback import Loopback
+from bandwidth_adjust import BandwidthAdjust
+from smart_service import SmartService
 
 app = Flask(__name__)
 CORS(app, resources=r'/*')
@@ -177,6 +179,9 @@ def get_alarm_upload_logs():
 def get_alarm_upload_logs_detail():
     return jsonify(alarm_data_ftp.get_log())
 
+'''
+告警名字的修改
+'''
 @app.route('/alarm_names', methods=['PUT', 'GET'])
 def put_alarm_names():
     if request.method == 'PUT':
@@ -188,6 +193,14 @@ def put_alarm_names():
         if not request.args or 'lang' not in request.args:
             abort(500)
         return jsonify(alarm_names.get_all_alarm_names(request.args['lang']))
+
+# 激活语言包
+@app.route('/active_alarm_lang', methods=['POST'])
+def active_alarm_lang():
+    if not request.json or 'lang' not in request.json:
+        abort(500)
+    alarm_names.active_lang(request.json["lang"])
+    return "OK"
 
 '''
 Wave Shift 波长偏移
@@ -238,7 +251,7 @@ misc_data_ftp.init()
 
 @app.route("/get_db_backups", methods=['GET'])
 def get_db_backups():
-    return jsonify(misc_data_ftp.get_history())
+    return jsonify(misc_data_ftp.refresh())
 
 @app.route('/file_upload', methods=['POST'])
 def file_upload():
@@ -246,6 +259,7 @@ def file_upload():
         abort(500)
     r = misc_data_ftp.file_upload(request.json)
     if r < 0:
+        logging.warning("return error=", r)
         abort(501)
     return jsonify("OK")
 
@@ -260,6 +274,34 @@ def loopback_release():
         if not request.json:
             abort(500)
         return jsonify(loopback_ins.add_loopback_release_task(request.json))
+
+'''
+带宽调整
+'''
+@app.route('/bw_adj', methods=['GET', 'POST'])
+def bandwidth_adjust():
+    if request.method == 'GET':
+        return jsonify(bandwidth_adjust_ins.get_all_items())
+    if request.method == 'POST':
+        if not request.json:
+            abort(500)
+        return jsonify(bandwidth_adjust_ins.add_item(request.json))
+
+'''
+智能业务
+'''
+@app.route('/setup_service', methods=['POST'])
+def setup_service():
+    if not request.json:
+        abort(400)
+    s, r = smart_service_ins.setup_service(request.json)
+    if s < 0:
+        abort(400, r)
+    return jsonify(r)
+
+@app.route('/get_service_list', methods=['GET'])
+def get_service_list():
+    return jsonify(smart_service_ins.get_all_service())
 
 if __name__ == "__main__":
     # init logger
@@ -281,6 +323,10 @@ if __name__ == "__main__":
 
     # 为环回添加调度器服务
     loopback_ins = Loopback(schduler_ins)
+
+    bandwidth_adjust_ins = BandwidthAdjust()
+
+    smart_service_ins = SmartService()
 
     # 将host设置为0.0.0.0，则外网用户也可以访问到这个服务
     app.run(host="0.0.0.0", port=5031, debug=False, ssl_context='adhoc')

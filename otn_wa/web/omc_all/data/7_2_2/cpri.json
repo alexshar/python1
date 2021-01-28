@@ -1,0 +1,34 @@
+{
+  "infos" :[
+    {
+      "ne":"ne1",
+      "slot":"槽道1",
+      "info":"CPRI测试板卡信息"
+    },
+    {
+      "ne":"ne1",
+      "slot":"槽道2",
+      "info":"CPRI测试板卡信息"
+    },
+    {
+      "ne":"ne1",
+      "slot":"槽道3",
+      "info":"CPRI测试板卡信息"
+    },
+    {
+      "ne":"ne2",
+      "slot":"槽道2",
+      "info":"CPRI测试板卡信息"
+    },
+    {
+      "ne":"ne2",
+      "slot":"槽道3",
+      "info":"CPRI测试板卡信息"
+    },
+    {
+      "ne":"ne2",
+      "slot":"槽道4",
+      "info":"CPRI测试板卡信息"
+    }
+  ]
+}

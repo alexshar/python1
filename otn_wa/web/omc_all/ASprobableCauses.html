@@ -3,21 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>告警重定义</title>
-    <!-- 引入样式 -->
-    <!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
-    <!-- 引入组件库 -->
-    <!--    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>-->
-    <!--    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>-->
-    <!--    <script src="js/element.js"></script>-->
-    <!--    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>-->
-    <!--    <script src="js/axios.min.js"></script>-->
 
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/index.css">      
+    <!--
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <!-- 引入组件库 -->
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    -->
 </head>
 <body>
 <div id="app">
@@ -55,6 +52,13 @@
             <div class="row-1">
                 <el-button type="primary"  @click="submit" >提交修改</el-button>
                 <el-button icon="el-icon-download" type="primary" @click="exportData2Csv">下载</el-button>
+                <el-dropdown  @command="onActiveLang">
+                    <el-button type="primary">激活语言<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item command='cn'>中文</el-dropdown-item>
+                        <el-dropdown-item command='en'>English</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
             </div>
 
         </div>
@@ -69,6 +73,14 @@
                 <div><input class="input" v-model="item.value"></div>
             </div>
         </div>
+
+        <el-dialog title="修改显示语言" :visible.sync="dialogFormVisible">
+            <span>执行中......</span>
+            <!-- <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible=false">取 消</el-button>
+                <el-button type="primary" @click="onModify" :loading="loading">确 定</el-button>
+            </div> -->
+        </el-dialog>
     </div>
 
 
@@ -142,6 +154,7 @@
 </style>
 <script>
     axios.defaults.baseURL = 'https://135.251.96.98:5031';
+    axios.defaults.timeout = 300000;
     var app = new Vue({
         el: '#app',
         data() {
@@ -162,6 +175,7 @@
                     {label:'告警标识', prop:'key'},
                     {label:'告警类型', prop:'value'},
                 ],
+                dialogFormVisible: false
             }
         },
         methods: {
@@ -197,6 +211,19 @@
                         console.log(error);
                         _this.loading=false;
                     });
+            },
+            onActiveLang(command) {
+                let reqBody = {lang: 'en'}
+                if (command === "cn") {
+                    reqBody.lang = 'cn'
+                }
+                this.dialogFormVisible = true;
+                axios.post('/active_alarm_lang', reqBody)
+                    .then(rsp => { })
+                    .catch(err => { })
+                    .then(() => {
+                        this.dialogFormVisible = false;
+                    })
             },
             exportData2Csv() {
                 let header=[];
@@ -239,12 +266,6 @@
             this.getList();
         }
     })
-
-
-
-
-
-
 
 
 </script>

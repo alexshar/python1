@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>13_3</title>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+    <style type="text/css">
+        #communicationTypeCon,.nodeItemTitle{
+            margin:0;
+            padding:0;
+            margin-left:20px;
+            width:40%;
+        }
+        #communicationTypeCon:after,.nodeItemTitle:after{
+            content:""
+        display:block;
+            clear:both;
+            zoom:1;
+        }
+        #communicationTypeCon>li,.nodeItemTitle>li{
+            list-style: none;
+            cursor: pointer;
+            float: left;
+            width: 20%;
+            margin-top: 10px;
+        }
+        .communicationItemBox{
+            display:none;
+            overflow:hidden;
+        }
+
+        #dlg{
+            display:none;
+        }
+        #CmalPerMang table{
+            padding:2px 15px;
+        }
+        #CmalPerMang table th {
+            background: #124191;
+            color: #fff;
+            text-align: center;
+            padding: 4px 0;
+        }
+        #CmalPerMang table {
+            /* padding: 2px 15px; */
+            margin: 20px 10px 0px 20px;
+            border: 1px solid #ccc;
+        }
+        .nodeItemBox,.communicationList{
+            display:none;
+        }
+        .itemBoxActive{
+            display:block;
+        }
+
+        .communicationItemTopo {
+            background: #fff;
+            margin-top: 36px;
+            padding-left: 20px;
+        }
+        #communicationTypeCon li {
+            background: #124191;
+            color: #fff;
+            margin-right: 2px;
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        #CmalPerMang{
+            text-align:center;
+        }
+        .communicationItemTitle {
+            padding: 6px 10px ! important;
+            background: #124191 ! important;
+            box-shadow: none ! important;
+            color: #fff;
+            cursor: pointer;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+        .nodeItemTitle{
+            padding: 2px 4px ! important;
+            background: #124191 ! important;
+            box-shadow: none ! important;
+            color: #fff;
+            cursor: pointer;
+        }
+        .domFocus{
+            background:#3ABDB5 ! important;
+            color:#fff;
+        }
+        #CmalPerMang td{
+            border: 1px solid #ccc;
+            padding: 6px;
+        }
+        #rockView{
+            width:90%;
+            border:1px solid gray;
+            margin-left:5%;
+        }
+        #content{
+            display:block;
+            margin-top:20px;
+            /*height: 30%;*/
+        }
+        #rockContent{
+            /*width:90%;*/
+            /*height:200px;*/
+            /*overflow-y: auto;*/
+            width:100%;
+
+        }
+        #rockCanvas{
+            z-index:999;
+        }
+        .DCNBtnStyle{
+            padding: 6px 10px ! important;
+            background: #124191 ! important;
+            box-shadow: none ! important;
+            color: #fff;
+            cursor: pointer;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+    </style>
+    <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+</head>
+<body>
+<div class="dijitTitlePane dijitTitlePaneFocused dijitFocused" id="EPTnetwDetails_TP" widgetid="EPTnetwDetails_TP"  >
+    <div data-dojo-attach-event="ondijitclick:_onTitleClick, onkeydown:_onTitleKey" class="dijitTitlePaneTitle dijitTitlePaneTitleFixedOpen dijitFixedOpen" data-dojo-attach-point="titleBarNode" id="EPTnetwDetails_TP_titleBarNode">
+        <div class="dijitTitlePaneTitleFocus" data-dojo-attach-point="focusNode" role="heading">
+            <span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span><span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner">-</span><span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode" style="user-select: none;">控制平面故障与性能管理</span>
+        </div>
+    </div>
+    <div class="dijitTitlePaneContentOuter" data-dojo-attach-point="hideNode" role="presentation">
+        <div id="CmalPerMang">
+            <div class="communication">
+                <button class="communicationItemTitle domFocus">通道</button>
+                <button class="communicationItemTitle">节点</button>
+                <button class="DCNBtnStyle" onclick="showTopo()">显示拓扑</button>
+            </div>
+            <div class="communicationItemBox">
+                <section id="communication">
+                    <div class="communicationItemList">
+                        <ul id="communicationTypeCon">
+                            <li class="domFocus">TE</li>
+                        </ul>
+                        <div  class="communicationList itemBoxActive">
+                            <table id="TE">
+                                <thead>
+                                <tr>
+                                    <th>连接名称</th>
+                                    <th>连接类型</th>
+                                    <th>故障信息</th>
+                                    <th>状态</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="content">
+                        <p class="topoTitle">拓扑图</p>
+                        <div id="rockContent">
+                            <div id="rockView">
+                                <canvas id="rockCanvas"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+            </div>
+            <div class="communicationItemBox">
+                <!--节点-->
+                <div>
+                    <button class="nodeItemTitle domFocus">节点列表</button>
+                    <button class="nodeItemTitle">业务表</button>
+                </div>
+                <section id="node" class="nodeItemBox itemBoxActive">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>节点名</th>
+                            <th>IP地址</th>
+                            <th>节点开启时间</th>
+                            <th>CrankBack次数</th>
+							<th>节点故障</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </section>
+                <!--节点信息表-->
+                <section id="businessInfo" class="nodeItemBox">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>连接名称</th>
+                            <th>连接类型</th>
+                            <th>建立时间</th>
+                            <th>持续时间</th>
+                            <th>倒换次数</th>
+                            <th>路由次数</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dlg">
+    <div id="ConfrimDlg">
+        <div style="text-align: center;">
+            <button class="sure" style="width: 50px">是</button>
+            <button class="no" style="width: 50px">否</button>
+        </div>
+    </div>
+    <div id="operation">
+        <h3><span class="contion">操作执行中.....</span></h3>
+    </div>
+    <div id="DLGsuccess">
+        <h3><span >成功</span></h3>
+    </div>
+</div>
+<script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/cpFaultPerfMng.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+{
+    "Alarm": {},
+    "PM": {},
+    "Log": {
+        "Log_20200415_163400@OTNE_1-19": {
+            "key": "Log_20200415_163400@OTNE_1-19",
+            "category": "Log",
+            "abspath": "C:\\Temp\\dbbackup\\Log_20200415_163400\\OTNE_1-19\\Log\\SSotneVM1\\Log",
+            "domain": "OTNE_1-19",
+            "date": "2020/04/15 16:34:00",
+            "file_name": "Log.tar.gz.20200415_163400",
+            "host": "",
+            "remote_location": "",
+            "remote_name": ""
+        },
+        "Log_20200419_144205@OTNE_1-19": {
+            "key": "Log_20200419_144205@OTNE_1-19",
+            "category": "Log",
+            "abspath": "C:\\Temp\\dbbackup\\Log_20200419_144205\\OTNE_1-19\\Log\\SSotneVM1\\Log",
+            "domain": "OTNE_1-19",
+            "date": "2020/04/19 14:42:05",
+            "file_name": "Log.tar.gz.20200419_144205",
+            "host": "",
+            "remote_location": "",
+            "remote_name": ""
+        },
+        "Log_20200518_070903@OTNE_1-19": {
+            "key": "Log_20200518_070903@OTNE_1-19",
+            "category": "Log",
+            "abspath": "C:\\Temp\\dbbackup\\Log_20200518_070903\\OTNE_1-19\\Log\\SSotneVM1\\Log",
+            "domain": "OTNE_1-19",
+            "date": "2020/05/18 07:09:03",
+            "file_name": "Log.tar.gz.20200518_070903",
+            "host": "10.242.111.231",
+            "remote_location": "/root",
+            "remote_name": "Log.tar.gz.20200518_070903"
+        }
+    },
+    "Network": {
+        "Network_20200518_070923@OTNE_1-19": {
+            "key": "Network_20200518_070923@OTNE_1-19",
+            "category": "Network",
+            "abspath": "C:\\Temp\\dbbackup\\Network_20200518_070923\\OTNE_1-19\\Network\\SSotneVM1\\NTWKDomain",
+            "domain": "OTNE_1-19",
+            "date": "2020/05/18 07:09:23",
+            "file_name": "NTWKDomain.tar.gz.20200518_070923",
+            "host": "10.242.111.231",
+            "remote_location": "/root",
+            "remote_name": "NTWKDomain.tar.gz.20200518_070923"
+        },
+        "Network_20200518_071645@OTNE_1-19": {
+            "key": "Network_20200518_071645@OTNE_1-19",
+            "category": "Network",
+            "abspath": "C:\\Temp\\dbbackup\\Network_20200518_071645\\OTNE_1-19\\Network\\SSotneVM1\\NTWKDomain",
+            "domain": "OTNE_1-19",
+            "date": "2020/05/18 07:16:45",
+            "file_name": "NTWKDomain.tar.gz.20200518_071645",
+            "host": "",
+            "remote_location": "",
+            "remote_name": ""
+        }
+    },
+    "SWDL": {
+        "SWDL_20200513_132904@OTNE_1-19": {
+            "key": "SWDL_20200513_132904@OTNE_1-19",
+            "category": "SWDL",
+            "abspath": "C:\\Temp\\dbbackup\\SWDL_20200513_132904\\OTNE_1-19\\SWDL\\SSotneVM1\\Swdl",
+            "domain": "OTNE_1-19",
+            "date": "2020/05/13 13:29:04",
+            "file_name": "Swdl.tar.gz.20200513_132904",
+            "host": "",
+            "remote_location": "",
+            "remote_name": ""
+        }
+    },
+    "SystemConfiguration": {
+        "SystemConfiguration_20200513_132914@OTNE_1-19": {
+            "key": "SystemConfiguration_20200513_132914@OTNE_1-19",
+            "category": "SystemConfiguration",
+            "abspath": "C:\\Temp\\dbbackup\\SystemConfiguration_20200513_132914\\OTNE_1-19\\SystemConfiguration\\SSotneVM1\\SystemConfiguration",
+            "domain": "OTNE_1-19",
+            "date": "2020/05/13 13:29:14",
+            "file_name": "SystemConfiguration.tar.gz.20200513_132914",
+            "host": "",
+            "remote_location": "",
+            "remote_name": ""
+        }
+    },
+    "Operator": {
+        "Operator_20200518_070928@OTNE_1-19": {
+            "key": "Operator_20200518_070928@OTNE_1-19",
+            "category": "Operator",
+            "abspath": "C:\\Temp\\dbbackup\\Operator_20200518_070928\\OTNE_1-19\\Operator\\SSotneVM1\\Operator",
+            "domain": "OTNE_1-19",
+            "date": "2020/05/18 07:09:28",
+            "file_name": "Operator.tar.gz.20200518_070928",
+            "host": "",
+            "remote_location": "",
+            "remote_name": ""
+        }
+    }
+}

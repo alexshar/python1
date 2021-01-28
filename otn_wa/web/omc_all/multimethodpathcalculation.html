@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+<!--     <link rel="stylesheet" type="text/css" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vis/dist/vis-network.min.css"> -->
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+    <style type="text/css">
+        #dlg,#dlgtpList,.ConfrimDlgRemove,.ConfrimDlgActivate,.ConfrimDlgActivateNo{
+            display: none;
+            text-align: center;
+        }
+        .serverBox{
+            width: 100%;
+            margin-top: 20px;
+        }
+        #createConfBox{
+            width: 36%;
+            height: 100%;
+            float: left;
+            padding: 10px;
+        }
+        .serverBox:after,.routeChoseItem:after{
+                content: "";
+                display: block;
+                clear: both;
+                zoom: 1;
+                }
+            .serverBox {
+            width: 100%;
+            margin-top: 20px;
+            height: auto;
+            min-height: 500px;
+            background: white;
+            border-bottom: 1px solid #ccc;
+            }
+        #createConfBox select {
+            display: block;
+            width: 80% !important;
+            /* margin-left: 5%; */
+            margin-top: 8px !important;
+        }
+        .dlgtpList select,.routeupdateItem select{
+            display: inline-block;
+        }
+        #topShowBox{
+            width: 60%;
+            height: 100%;
+            float: left;
+        }
+        .serverProgress{
+            height: auto;
+            background: #fff;
+            position: relative;
+        }
+        .done {
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            left:-10px;
+            top: 0;
+            border-radius: 10px;
+            text-align: center;
+            line-height: 21px;
+        }
+        .done-ok{
+            color: #fff;
+            background: blue;
+        }
+        .done-no{
+            color: #ffffff;
+            background: #b5b4b4;
+        }
+        h6,p{
+            margin: 0;
+            padding-left: 10px;
+        }
+        p{margin: 0; padding: 0}
+        .serverPanel{
+            border-left:2px solid #DBDBDB;
+            padding-left: 10px;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+        #addAttribute p,.showPoint p,#showRoute p{
+            text-align: center;
+        }
+        .confStep{
+            float: right;
+        }
+        #addAttribute button{
+            float: right;
+        }
+        .serverPanel-last{
+            border-left:none;
+        }
+        .showPanel{
+            display:block ;
+        }
+        .hidenPanel{
+            display: none;
+        }
+        .confInfo{
+            display: none;
+        }
+        .chosePoit{
+            margin:10px;
+        }
+        #canvas{
+            background: #fbfbfb;
+        }
+
+        .confInfo{
+            display: none;
+        }
+        .alarmMsg{
+            color: red;
+        }
+        .confInfo-content-normal,.confInfo-content-point{
+            width: 49.7%;
+            float: left;
+            border:1px solid #ccc;
+        }
+        td {
+            border-bottom: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+            margin: 0;
+        }
+        .panel-undone{
+            background:#fafafa;
+            color:#bbb7b7;
+        }
+        .panel-undone a{
+            color:#bbb7b7;
+            text-decoration: none;
+        }
+        .panel-done{
+            background:#fff;
+            color:#ddd;
+        }
+        span.done-y {
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: blue;
+            z-index: 1000;
+            position: absolute;
+            left: -10px;
+            top: 0px;
+            border-radius: 10px;
+            text-align: center;
+            color: #fff;
+            line-height: 22px;
+            visibility: hidden;
+        }
+        .serverItem{
+            margin-top: 10px;
+        }
+        .confInfo-content-normal {
+            height: 500px;
+            background: #fff;
+            overflow: auto;
+        }
+        .confInfo-content-point {
+            background: #fff;
+            min-height: 500px;
+        }
+        #pointListInfo,.confInfo-content-normal-box{
+            padding-left: 30px;
+        }
+        .inof-title{
+            padding: 20px 0 0 20px;
+        }
+        .info-item span {
+            margin: 10px 0 10px 0;
+        }
+        .addAttributeItem select {
+            display: block;
+            width: 80% !important;
+            height: 30px !important;
+        }
+        .addAttributeItem {
+            margin-top: 10px;
+        }
+        input#dissServer {
+            display: block !important;
+            opacity: 1 !important;
+            position: relative;
+            left: 0;
+        }
+        input.setSearch {
+            width: 40% !important;
+            float: left;
+            margin-left: 5% !important;
+            margin-top: 2px !important;
+            /* border: 1px solid #f4f4f4; */
+            height: 22px !important;
+            /* border-radius: 8px; */
+        }
+        select.choseNeName,select.choseTpName{
+            width: 50% !important;
+            float: left;
+            height: 26px !important;
+            border-radius: 8px;
+            display: block !important;
+        }
+        .addAttributeItem {
+            margin-top: 10px;
+        }
+        a.choseTpDone {
+            float: right;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        tbody.tpList td {
+            height: 20px;
+        }
+        table.tpTable {
+            margin-top: 10px;
+        }
+        .pointPanel {
+            margin-top: 10px;
+            background-color: #eee;
+            padding: 10px 6px 0 10px;
+        }
+        a#addPoint, button.route-ok,.date-ok{
+            float: right;
+        }
+        .pointPanel {
+            margin-top: 10px;
+            background-color: #eee;
+            width: 80%;
+            /* text-align: center; */
+        }
+        table.pointTabel {
+            margin-top: 14px;
+            width: 100%;
+            text-align: center;
+        }
+        table.pointTabel td {
+            height: 30px;
+        }
+        .showPoint p {
+            margin-top: 10px;
+        }
+        .dlgTpMsg,.routeConf,.appointmentPanel{
+            display: none;
+        }
+        .modal-box {
+            max-height: 500px;
+            overflow: auto;
+        }
+        .cancel,.sure{
+            float: right;
+            margin-left: 10px;
+            margin-top:10px;
+        }
+        .conf-info,#pointListInfo{
+            color: #21d271;
+        }
+        .conf-titile-key{
+             margin: 5px 10px 5px 0px;
+            padding: 4px 10px;
+            border-left: 2px solid #ccc;
+        }
+        div#addAttribute p {
+            margin-top: 10px;
+        }
+        .chosePoit-count {
+            max-height: 200px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        .routeConf select,.routeConf input[type='checkbox']{
+            display: block !important;
+        }
+        .routeChose {
+            width: 40%;
+            float: left;
+            height: 100%;
+        }
+        .routeConfList{
+            width: 60%;
+            float: left;
+            height: 100%;
+            margin-top: 37px;
+        }
+        span.routeChoseItem-label {
+            /* float: right; */
+            display: block;
+            float: left;
+            padding: 10px;
+        }
+        .routechoseItem-routeName {
+            /* float: right; */
+            width: 50%;
+            height: 40px;
+            /* background: red; */
+            float: right;
+            position: relative;
+            padding: 10px;
+            /* left: 0 !important; */
+        }
+        .routeChose input {
+            display: block !important;
+            opacity: 1 !important;
+            left: 0 !important;
+            position: absolute;
+            float: right;
+            /* float: right; */
+        }
+        .routeConfItem select {
+            display: block !important;
+            width: 100% !important;
+            /* padding: 10px !important; */
+            position: relative;
+            height: 30px !important;
+            margin: 10px 0 10px 0 !important;
+        }
+        #serverTable input[type="checkbox"]:not(:checked),
+        #serverTable input[type="checkbox"]:checked
+        {
+            position: relative !important;
+            opacity: 1 !important;
+        }
+        #pathResult{
+            margin-left: 10px;
+        }
+        .confPath,.confSuccess,.Affirm,.routeUpdatePanel,.confFailed,.dlgCreateDelay{
+            display: none;
+        }
+        div#serverListBox {
+            margin: 10px;
+            background: #fff;
+        }
+        #serverListBox td, #serverListBox th{
+            padding-left: 10px;
+        }
+        span.delay{
+            margin-left: 10px;
+        }
+        .activate_item,.activateNo_item,.deleteServer,.routeUpdate{
+            margin: 4px 10px;
+        }
+        .toolItem {
+            width: 50px;
+            height: 20px;
+            padding: 10px 4px;
+            float: left;
+            text-align: center;
+        }
+        .toolItem>span{
+            width: 20px;
+            height: 20px;
+            display: block;
+            float: left;
+        }
+        div#topTool{
+            float: right;
+        }
+        span#toolItem_protect{
+            background: blue;
+        }
+        span#toolItem_job{
+            background: yellow;
+        }
+        span.routeShow {
+            float: right;
+            margin: 2px 4px;
+            background: #999a99;
+            padding: 4px;
+            color: #fff;
+            cursor: pointer;
+        }
+        #serverBox{
+            height:600px;
+            overflow-y: scroll;
+        }
+        .appointmentItem input{
+            display:  block !important;
+        }
+        .date-ok{
+            margin-top: 10px;
+        }
+        .routeupdateItem {
+            height: 30px;
+            margin-top: 10px;
+        }
+        .routeupdateItemTitle {
+            width: 30%;
+            text-align: right;
+            line-height: 30px;
+            float: left;
+        }
+        .routeupdateItemBox {
+            width: 64%;
+            float: left;
+            padding-left: 14px;
+        }
+        .routeupdateItemBox select{
+            width: 70% !important;
+            height: 30px !important;
+        }
+        .nowState{
+            line-height: 30px;
+        }
+    </style>
+    <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+</head>
+<body>
+
+<div class="dijitTitlePane dijitTitlePaneFocused dijitFocused" id="EPTnetwDetails_TP" widgetid="EPTnetwDetails_TP" >
+    <div data-dojo-attach-event="ondijitclick:_onTitleClick, onkeydown:_onTitleKey" class="dijitTitlePaneTitle dijitTitlePaneTitleFixedOpen dijitFixedOpen" data-dojo-attach-point="titleBarNode" id="EPTnetwDetails_TP_titleBarNode">
+        <div class="dijitTitlePaneTitleFocus" data-dojo-attach-point="focusNode" role="heading">
+            <span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span><span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner">-</span><span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode" style="user-select: none;">业务智能调度</span>
+        </div>
+    </div>
+    <div class="dijitTitlePaneContentOuter" data-dojo-attach-point="hideNode" role="presentation" id="server">
+        <div class="serverBox">
+            <div id="createConfBox">
+                <div id="conf">
+                    <section class="serverProgress" id="normalConf">
+                        <div class="done done-ok">1</div>
+                        <span class="done-y">√</span>
+                        <h6  class="hideMyItem">常规配置</h6>
+                         <div class="conf-titile-key" id="normalConf-title" style="display: none;"></div>
+                        <div class="serverPanel showPanel">
+                            <div class="serverItem">
+                                <label for="serverName">服务名称:</label>
+                                <input type="text" id="serverName">
+                                <span class="alarmMsg">*</span>
+                            </div>
+                            <div class="serverItem">
+                                <label for="serverType">服务类型:</label>
+                                <select name="" id="serverType">
+                                    <option value="OTN">OTN</option>
+                                    <option value="以太网">以太网</option>
+                                    <option value="SDH">SDH</option>
+                                </select>
+                            </div>
+                            <div class="serverItem">
+                                <label for="template">模板:</label>
+                                <select name="" id="template">
+                                    <option value="没有创建模板">没有创建模板</option>
+                                </select>
+                            </div>
+                            <div id="addAttribute">
+                                <p><a href="javascript:void(0)" id="addAttributeTag">附加属性</a></p>
+                                <button class="step-one">继续</button>
+                            </div>
+                            <div style="clear: both"></div>
+                        </div>
+                    </section>
+                    <section class="serverProgress panel-undone" id="poit">
+                        <div class="done done-no">2</div>
+                        <span class="done-y">√</span>
+                        <h6 class="hideMyItem">选择端点</h6>
+                        <div class="conf-titile-key" id="pointConf-title"></div>
+                        <div class="serverPanel hidenPanel">
+                            <div class="serverItem">
+                                <label for="protected">保护类型</label>
+                                <select name="" id="protected" disabled>
+                                    <option value="无保护">无保护</option>
+                                    <option value="静态1+1保护">静态1+1保护</option>
+                                    <option value="1+1重路由保护">1+1重路由保护</option>
+                                    <option value="永久1+1保护">永久1+1保护</option>
+                                </select>
+                            </div>
+                            <div class="serverItem">
+                                <label for="serviceRate">服务速率</label>
+                                <select name="" id="serviceRate" disabled>
+                                    <option value="1Gbe:ODU0">1Gbe:ODU0</option>
+                                    <option value="10Gbe:ODU2">10Gbe:ODU2</option>
+                                    <option value="10Gbe:ODU2e">10Gbe:ODU2e</option>
+                                    <option value="40Gbe:ODU3">40Gbe:ODU3</option>
+                                    <option value="100Gbe:ODU4">100Gbe:ODU4</option>
+                                    <option value="OTU1:ODU1">OTU1:ODU1</option>
+                                    <option value="OTU2:ODU2">OTU2:ODU2</option>
+                                    <option value="OTU2:ODU2e">OTU2:ODU2e</option>
+                                    <option value="OTU3:ODU3">OTU3:ODU3</option>
+                                    <option value="OTU3:ODU3e2">OTU3:ODU3e2</option>
+                                    <option value="OTU4:ODU4">OTU4:ODU4</option>
+                                    <option value="STM-1:ODU0">STM-1:ODU0</option>
+                                    <option value="STM-4:ODU0">STM-4:ODU0</option>
+                                    <option value="STM-16:ODU1">STM-16:ODU1</option>
+                                    <option value="STM-64:ODU2">STM-64:ODU2</option>
+                                    <option value="STM-256:ODU3">STM-256:ODU3</option>
+                                    <option value="FC100:ODUO">FC100:ODUO</option>
+                                    <option value="FC200:ODU1">FC200:ODU1</option>
+                                    <option value="FC400:ODUflex">FC400:ODUflex</option>
+                                </select>
+                            </div>
+                            <div class="pointPanel">
+                                <div id="pointAction">
+                                    <span id="pointTitle">端口</span>
+                                    <a href="javascript:void (0)" id="addPoint">+ SELECT PORTS</a>
+                                </div>
+                                <table class="pointTabel">
+                                    <thead>
+                                    <tr>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="pointList">
+                                    <tr></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="showPoint">
+                                <p>
+                                    <a href="javascript:void(0)" id="showPoint">查看端口列表</a>
+                                </p>
+                                <div class="confStep">
+                                    <!-- <span class="returnAction">返回</span> -->
+                                    <button class="step step-two" disabled>继续</button>
+                                </div>
+                                <div style="clear: both"></div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="serverProgress panel-undone"  id="pointConf">
+                        <div class="done done-no">3</div>
+                        <span class="done-y">√</span>
+                        <h6 class="hideMyItem">配置端点</h6>
+                         <div class="conf-titile-key"></div>
+                        <div class="serverPanel hidenPanel">
+                            <div id="showRoute">
+                                <p><a href="javascript:void(0)" class="showRoute">路由配置</a></p>
+                                <div class="confStep">
+                                    <button class="step step-three" disabled>继续</button>
+                                </div>
+                                <div style="clear: both"></div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="serverProgress panel-undone"  id="confAbstract">
+                        <div class="done done-no">4</div>
+                        <span class="done-y">√</span>
+                        <h6 class="hideMyItem">配置摘要</h6>
+                        <div class="serverPanel serverPanel-last hidenPanel">
+                            <div class="confPath">
+                                <p>路径计算结果:<strong id="pathResult"></strong><span class="delay" ></span></p>
+                            </div>
+                            <p class="lookConf" style="text-align: right;margin-top: 6px;">查看更多配置</p>
+                            <div class="confStep" style="margin-top: 10px;">
+                                <button class="step step-four" disabled>激活</button>
+                                <button class="appointment">预约发放</button>
+                            </div>
+                            <div style="clear: both"></div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <div id="topShowBox">
+                <div class="confInfo">
+                    <div class="confInfo-box">
+                        <div class="confInfo-header">
+                            <h2><strong></strong>配置摘要</h2>
+                            <span class="routeShow">显示拓扑</span>
+                        </div>
+                        <div style="clear: both;"></div>
+                        <div class="confInfo-content">
+                            <div class="confInfo-content-normal">
+                                <div class="confInfo-content-normal-title">
+                                    <p class="inof-title">
+                                        <i class=""></i>
+                                        总览信息
+                                    </p>
+                                </div>
+                                <div class="confInfo-content-normal-box">
+                                    <div class="info-item">
+                                        <p>服务名称:</p>
+                                        <span id="serverName-info"  class="conf-info"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <p>服务类型:</p>
+                                        <span id="serverType-info"  class="conf-info"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <p>模板:</p>
+                                        <span id="template-info"  class="conf-info"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <p>组ID:</p>
+                                        <span id="groupId-info" class="conf-info"></span>
+                                    </div>
+                                     <div class="info-item">
+                                        <p>路由策略:</p>
+                                        <span id="routeStrategy-info" class="conf-info"></span>
+                                    </div>
+                                     <div class="info-item">
+                                        <p>路径分离:</p>
+                                        <span id="pathSeparation-info" class="conf-info"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <p>恢复模式:</p>
+                                        <span id="recoverPattern-info"  class="conf-info"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <p>不对称服务:</p>
+                                        <span id="dissServer-info"  class="conf-info"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <p>源时隙:</p>
+                                        <span id="sourceSlotTime-info" class="conf-info"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <p>目的时隙:</p>
+                                        <span id="targetSlotTime-info"  class="conf-info"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <p>调制:</p>
+                                        <span id="modulation-info"  class="conf-info"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <p>相位编码:</p>
+                                        <span id="phaseCode-info"  class="conf-info"></span>
+                                    </div>
+                                    <div class="info-item">
+                                        <p>波形:</p>
+                                        <span id="waveform-info"  class="conf-info"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="confInfo-content-point">
+                                <div class="confInfo-content-point-title">
+                                    <p class="inof-title">
+                                        <i class=""></i>
+                                        设定的端点
+                                    </p>
+                                </div>
+                                <div class="confInfo-content-point-box">
+                                    <ul id="pointListInfo">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="confInfo-footer">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="topo">
+                    <div id="topTool">
+                        <div class="toolItem">
+                            <span id="toolItem_protect" ></span>保护
+                        </div>
+                        <div class="toolItem">
+                            <span id="toolItem_job"></span>工作
+                        </div>
+                    </div>
+                    <canvas id='canvas' width="800" height="500"></canvas>
+                </div>
+            </div>
+        </div>
+        <div id="serverListBox">
+            <div id="serverList">
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>业务名称</th>
+                        <th>类型</th>
+                        <th>状态</th>
+                        <th>路径</th>
+                        <th>时延</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="serverTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dlg">
+    <div class="modal-box">
+        <form action="" id="addAttributeForm">
+            <div class="addAttributeItem">
+                <label for="groupId">组ID</label>
+                <input type="text" id="groupId">
+            </div>
+            <div class="addAttributeItem">
+                <label for="routeStrategy">路由策略</label>
+                 <select name="" id="routeStrategy">
+                    <option value="最小时延">最小时延</option>
+                    <option value="最小跳数">最小跳数</option>
+                    <option value="最小链路代价">最小链路代价</option>
+                    <option value="负载均衡">负载均衡</option>
+                    <option value="最稳定路由">最稳定路由</option>
+                </select>
+            </div>
+            <div class="addAttributeItem">
+                <label for="pathSeparation">路径分离</label>
+                 <select name="" id="pathSeparation">
+                    <option value="节点分离">节点分离</option>
+                    <option value="链路分离">链路分离</option>
+                     <!--<option value="SRLG分离">SRLG分离</option>-->
+                     <option value="节点链路均分离">节点链路均分离</option>
+                </select>
+            </div>
+            <div class="addAttributeItem">
+                <label for="recoverPattern">恢复模式</label>
+                <select name="" id="recoverPattern">
+                    <option value="自动">自动</option>
+                    <option value="手动">手动</option>
+                </select>
+            </div>
+            <div class="addAttributeItem">
+                <label for="dissServer">不对称服务</label>
+                <input type="checkbox" id="dissServer">
+            </div>
+            <div class="addAttributeItem">
+                <label for="sourceSlotTime">源时隙</label>
+                <input type="text" id="sourceSlotTime">
+            </div>
+            <div class="addAttributeItem">
+                <label for="targetSlotTime">目的时隙</label>
+                <input type="text" id="targetSlotTime">
+            </div>
+            <div class="addAttributeItem">
+                <label for="modulation">调制</label>
+                <select name="" id="modulation">
+                    <option value="系统已分配">系统已分配</option>
+                </select>
+            </div>
+            <div class="addAttributeItem">
+                <label for="phaseCode">相位编码</label>
+                <input type="text" id="phaseCode" value="系统已分配">
+            </div>
+            <div class="addAttributeItem">
+                <label for="waveform">波形</label>
+                <select name="" id="waveform">
+                    <option value="系统已分配">系统已分配</option>
+                </select>
+            </div>
+        </form>
+        <div class="formRoot">
+            <button class="sure addAttribute-ok">确认</button>
+            <button class="cancel">取消</button>
+        </div>
+    </div>
+</div>
+<div id='dlgtpList'>
+    <div class="chosePoit">
+        <div class="chosePoit-header">
+            <select name="" class="choseNeName">
+            </select>
+            <select name="" class="choseTpName">
+                <option value=""></option>
+            </select>
+        </div>
+        <div style="clear: both;"></div>
+        <div class="chosePoit-count">
+            <table class="tpTable">
+                <thead>
+                <tr>
+                    <th>网元名称</th>
+                    <th>端口名称</th>
+                </tr>
+                </thead>
+                <tbody class="tpList">
+                <tr></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="chosePoit-footer" >
+            <a href="javascript:void(0)" class="choseTpDone">DONE</a>
+        </div>
+    </div>
+</div>
+<div class="dlgTpMsg">
+        <div class="operation">
+            <h3><span class="contion">请选择两组端口</span></h3>
+        </div>
+</div>
+<div class="routeConf">
+    <div class="routeConfPanel">
+        <div class="routeChose">
+            <div class="routeChoseItem">
+                <span class="routeChoseItem-label">
+                    显式路由
+                </span>
+                    <div class="routechoseItem-routeName">
+                        <input type="checkbox" name="" id="route-showroute" >
+                    </div>
+                </div>
+            <div class="routeChoseBox">
+                <div class="routeChoseItem routeConfItemSet">
+                <span class="routeChoseItem-label">
+                    包含节点
+                </span>
+                    <div class="routechoseItem-routeName">
+                        <input type="checkbox" name="" disabled id="route-node" value="node">
+                    </div>
+                </div>
+                <div class="routeChoseItem routeConfItemSet">
+                <span class="routeChoseItem-label">
+                    排斥节点
+                </span>
+                    <div class="routechoseItem-routeName">
+                        <input type="checkbox" name="" disabled id="route-rejectNode" value="rejectNode">
+                    </div>
+                </div>
+                <div class="routeChoseItem routeConfItemSet">
+                <span class="routeChoseItem-label">
+                    包含链路
+                </span>
+                    <div class="routechoseItem-routeName">
+                        <input type="checkbox" name="" disabled id="route-path" value="path">
+                    </div>
+                </div>
+                <div class="routeChoseItem routeConfItemSet">
+                <span class="routeChoseItem-label">
+                    排斥链路
+                </span>
+                    <div class="routechoseItem-routeName">
+                        <input type="checkbox" name="" disabled id="route-rejectPath" value="rejectPath">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="routeConfList">
+            <div class="routeConfItem">
+                <select name="" class="node" disabled>
+                    <option value=""></option>
+                </select>
+            </div>
+            <div class="routeConfItem">
+                <select name="" class="rejectNode" disabled>
+                    <option value=""></option>
+                </select>
+            </div>
+            <div class="routeConfItem">
+                <select name="" class="path" disabled>
+                    <option value=""></option>
+                </select>
+            </div>
+            <div class="routeConfItem">
+                <select name="" class="rejectPath" disabled>
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="formRoot">
+            <button class="route-ok">确认</button>
+        </div>
+    </div>
+</div>
+<div class="appointmentBox">
+    <div class="appointmentPanel">
+        <div class="appointmentConf">
+            <div class="appointmentItem">
+                <label class="startTimeTitle">开始时间</label>
+                <input type="datetime-local" class="startTime">
+            </div>
+            <div class="appointmentItem">
+                <label class="stopTimeTitle">结束时间</label>
+                <input type="datetime-local" class="stopTime">
+            </div>
+        </div>
+        <div class="formRoot">
+            <button class="date-ok">确认</button>
+        </div>
+    </div>
+</div>
+<div class="dlgSuccess">
+    <div class="confSuccess">
+        成功!
+    </div>
+</div>
+<div class="dlgFailed">
+    <div class="confFailed">
+        端口已被预约，创建失败
+    </div>
+</div>
+<div class="dlgCreate">
+    <div class="dlgCreateDelay" style="text-align: center">
+      创建中...
+    </div>
+</div>
+<div class="ConfrimDlgRemove">
+    <div>
+        <h1 style="margin-top: 0px"></h1>
+    </div>
+    <div style="
+    text-align: center;
+   ">
+        <button class="sureRemove" style="width: 50px">是</button>
+        <button class="removeCancel" style="width:50px">否</button>
+    </div>
+</div>
+<div class="ConfrimDlgActivate">
+    <div>
+        <h1 style="margin-top: 0px"></h1>
+    </div>
+    <div style="
+    text-align: center;
+   ">
+        <button class="sureActivate" style="width: 50px">是</button>
+        <button class="activateCancel" style="width:50px">否</button>
+    </div>
+</div>
+<div class="ConfrimDlgActivateNo">
+    <div>
+        <h1 style="margin-top: 0px"></h1>
+    </div>
+    <div style="
+    text-align: center;
+   ">
+        <button class="sureActivateNo" style="width: 50px">是</button>
+        <button class="activateNoCancel" style="width:50px">否</button>
+    </div>
+</div>
+<div class="routeUpdateBox">
+    <div class="routeUpdatePanel">
+        <div class="routeupdateItem">
+            <div class="routeupdateItemTitle">
+                现有路径策略:
+            </div>
+            <div class="routeupdateItemBox">
+                <span class="nowRoute nowState"></span>
+            </div>
+        </div>
+        <div class="routeupdateItem">
+            <div class="routeupdateItemTitle">
+                新的路由策略:
+            </div>
+            <div class="routeupdateItemBox">
+                <select name="" id="nowRouteChose">
+                    <option value="最小时延">最小时延</option>
+                    <option value="最小跳数">最小跳数</option>
+                    <option value="最小链路代价">最小链路代价</option>
+                    <option value="负载均衡">负载均衡</option>
+                </select>
+            </div>
+        </div>
+        <div class="routeupdateItem">
+            <div class="routeupdateItemTitle">
+                现有保护等级:
+            </div>
+            <div class="routeupdateItemBox">
+                <span class="nowProtected nowState"></span>
+            </div>
+        </div>
+        <div class="routeupdateItem">
+            <div class="routeupdateItemTitle">
+                新的保护等级:
+            </div>
+            <div class="routeupdateItemBox">
+                <select name="" id="nowProtectedChose">
+                    <option value="无保护">无保护</option>
+                    <option value="静态1+1保护">静态1+1保护</option>
+                    <option value="1+1重路由保护">1+1重路由保护</option>
+                    <option value="永久1+1保护">永久1+1保护</option>
+                </select>
+            </div>
+        </div>
+        <div style="text-align: center;margin-top: 20px">
+            <button class="routeUpdateOk" style="width: 50px">执行</button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/multimethodpathcalculation.js"></script>
+</body>
+</html>

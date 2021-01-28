@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .control-label{
+            display: inline-block;
+            width: 150px;
+        }
+        .actives{
+            width: 100px;
+            background-color: gray;
+        }
+        .Config{
+            position: relative;
+            margin-top: 10px;
+        }
+        .Config li{
+            list-style: none;
+            float: left;
+            width: 100px;
+            text-align: center;
+            border-bottom: 1px solid gainsboro;
+            cursor: pointer;
+        }
+        .Config li div{
+            border-top: 1px solid #c3bdbd;
+            width: 100%;
+            display: none;
+            position: absolute;
+            left: 0px;
+        }
+        .tabUL{
+            margin-top: 20px;
+            margin-left: 20px;
+            padding: 5px;
+            border-top: 1px solid #a59b9b;
+            height: 500px;
+        }
+        *{
+            padding: 0px;
+            margin: 0px;
+        }
+        .route{
+            position: relative;
+        }
+        select{
+            display: block;
+        }
+        .control-label{
+            display: inline-block;
+            width: 150px;
+        }
+        .w-selelct{
+            display: inline-block;
+            width: 200px !important;
+        }
+
+        #Cofings div{
+            margin-top: 10px;
+        }
+        .PGBtnStyle{
+            background-color: #124191;
+            border: 1px solid #124191;
+            border-radius: 5%;
+            color: white;
+            margin-top: 4px;
+            padding: 5px;
+        }
+        table th{
+            border: 1px solid gray;
+            text-align: center;
+            padding: 3px 0;
+            background-color: #ccc;
+            color: white;
+        }
+        table td{
+            border: 1px solid gray;
+            text-align: center;
+            padding: 3px 0;
+        }
+
+        .odukTable{
+            background-color: #124191;
+            text-align: left;
+            color: white;
+            padding: 3px 0 3px 2%;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        #handSetTab{
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 20px;
+        }
+        #handSetTab:after{
+            content: "";
+            display: block;
+            clear: both;
+            zoom: 1;
+        }
+        #handSetTab>li {
+            list-style: none;
+            float: left;
+            width: 24%;
+            text-align: center;
+            border: 1px solid #cccccc;
+            cursor: pointer;
+        }
+        .activeTab{
+            background: #ccc;
+        }
+        .defaultTab{
+            background-color: #fff;
+        }
+        div#revp_state {
+            margin-top: 10px;
+        }
+        #rsvpTool,#ospfTool,#lmpfTool{
+            text-align:center;
+            margin-top:20px;
+        }
+        #LMP,#OSPF,#RSVP{
+            text-align:center;
+        }
+        #LMP [type="checkbox"]:not(:checked){
+            opacity: 1 ! important;
+        }
+        .leftTable{
+            text-align: left;
+        }
+
+        .text-left{
+            text-align: left;
+        }
+        .info{
+            width: 100%;
+            margin-left: 10px;
+            margin-top: -17px;
+            height: 500px;
+            float: left;
+        }
+        .div-left{
+            width: 69%;
+            height: 500px;
+            float: left;
+            border-color: #ddd;
+            box-shadow: 0 0px 5px 0 rgba(0,0,0,.25);
+            padding: 5px;
+            margin-top: 5px;
+        }
+        .div-right{
+            width: 29%;
+            height: 500px;
+            float: left;
+            margin-left: 5px;
+            border-color: #ddd;
+            box-shadow: 0 0px 5px 0 rgba(0,0,0,.25);
+            padding: 5px;
+            margin-top: 5px;
+        }
+        .top-from{
+            margin-top: 10px;
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+    <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+</head>
+<body>
+
+
+<div id="DLGsuccess">
+    <h3><span >成功</span></h3>
+</div>
+
+<div id="bandfixed" style="text-align: center">
+    <from >
+        <input style="display: none" id="ids" value=""/>
+        <div class="">
+            <label class="control-label" >业务名称:</label>
+            <input type="text" class="form-control band-name"  style="width: 200px" disabled="disabled">
+        </div>
+        <div class="">
+            <label class="control-label">带宽:</label>
+            <select name=""  class=" select-band parsmers w-selelct">
+                <option value="1">1G</option>
+                <option value="2">2G</option>
+                <option value="3">3G</option>
+                <option value="4">4G</option>
+                <option value="5">5G</option>
+                <option value="6">6G</option>
+                <option value="7">7G</option>
+                <option value="8">8G</option>
+                <option value="9">9G</option>
+                <option value="10">10G</option>
+            </select>
+        </div>
+    </from>
+    <div style="text-align: center;margin-top: 20px">
+        <button class="btnConfrim btn">应用</button>
+    </div>
+</div>
+<div id="fixeds" style="text-align: center">
+    <from >
+        <input style="display: none" id="test" value=""/>
+        <div class="">
+            <label class="control-label" >业务名称:</label>
+            <input type="text" class="form-control band-name"  style="width: 200px" disabled="disabled">
+        </div>
+        <div class="top-from">
+            <label class="control-label">带宽:</label>
+            <select name=""  class=" select-band parsmers w-selelct">
+                <option value="1">1G</option>
+                <option value="2">2G</option>
+                <option value="3">3G</option>
+                <option value="4">4G</option>
+                <option value="5">5G</option>
+                <option value="6">6G</option>
+                <option value="7">7G</option>
+                <option value="8">8G</option>
+                <option value="9">9G</option>
+                <option value="10">10G</option>
+            </select>
+        </div>
+        <div class="top-from">
+            <label class="control-label" >调整时间:</label>
+            <input style="width: 200px" class="timeInput" type="datetime-local" value="2018-01-01T13:59:59"/>
+        </div>
+
+    </from>
+    <div style="text-align: center;margin-top: 20px">
+        <button class="btnConfrims btn">应用</button>
+    </div>
+</div>
+
+
+<div class="PmList redundancyProtect" style="padding-left: 5px;
+    margin-top: 10px;">
+    <div class="div-left">
+        <h3 style="margin-top: 0px">业务信息</h3>
+        <table style="float: left;margin-top: 20px;" >
+            <thead>
+            <th>业务名称</th>
+            <th>业务类型</th>
+            <th>管理状态</th>
+            <th>源节点/端口</th>
+            <th>宿节点/端口</th>
+            <th>操作</th>
+            </thead>
+            <tbody class="conn">
+            <tr>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="div-right">
+        <div class="info">
+            <h3>电路资源信息</h3>
+            <p>业务名称:<span class="bussinName text-left"></span></p>
+            <p>业务速率:<span class="bussin text-left"></span></p>
+
+            <p>ODU带宽信息:</p>
+            <p class="bussinBand text-left" style="margin-left: 10px;"></p>
+            <!-- <table>
+                 <thead>
+                 <tr>
+                     <th>属性</th>
+                     <th>值</th>
+                 </tr>
+                 </thead>
+                 <tbody>
+                 <tr >
+                     <td class="text-left">业务速率</td>
+                     <td class="bussin text-left"></td>
+                 </tr>
+
+                 <tr >
+                     <td class="text-left">ODU2名称</td>
+                     <td class="bussinODU2 text-left"></td>
+                 </tr>
+
+                 <tr >
+                     <td class="text-left">ODU带宽信息</td>
+                     <td class="bussinBand text-left">
+                     </td>
+                 </tr>
+                 </tbody>
+             </table>-->
+        </div>
+    </div>
+
+</div>
+<div id="operation">
+    <h3><span class="contion">操作执行中.....</span></h3>
+</div>
+
+
+</body>
+
+<!--<script src="jquery.js"></script>-->
+<!--<script src="js/bandWidth.js"></script>-->
+<script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/bandWidth.js"></script>
+</html>

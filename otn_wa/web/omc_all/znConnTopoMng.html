@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/znConnTopo.css"/>
+	<link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+    <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+</head>
+<body>
+	<div id="ConfrimDlg2">
+			<h1 style="margin-top: 0px">是否重置?</h1>
+
+		<div style="text-align: center;">
+			<button class="sure" style="width: 50px" onClick="comfirmApplycation2()">是</button>
+			<button class="no" style="width: 50px">否</button>
+		</div>
+	</div>
+	<div id="success">
+		<div>
+			<h3>操作成功！</h3>
+		</div>
+	</div>
+	<div id="contuin">
+		<div>
+			<h3>操作正在进行中......</h3>
+		</div>
+	</div>
+	<div class="div">
+		 <div class="znConnTopocard" class="dijitTitlePaneContentOuter">
+        <ul class="znConnToponav">
+            <li conId="SBRcard" class="choseLi">动态重路由</li>
+            <li conId="GRcard">预置重路由</li>
+            <li conId="SNCPcard">SNCP保护</li>
+            <li conId="SNCPporRecard">SNCP保护和恢复</li>
+            <li conId="foreverCard">永久1+1保护</li>
+        </ul>
+        <div id="SBRcard" data-dojo-attach-point="hideNode" role="presentation">
+			<div class="topoBtn">
+				<button class="DCNBtnStyle" onclick="resetFlowchart()">重置路由</button>
+				<button class="DCNBtnStyle" onclick="showTopo()">显示拓扑</button>
+			</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="tableBor">路由状态</th>
+                        <th class="tableBor">LSP业务</th>
+                    </tr>
+                </thead>
+                <tbody id="SBRcontent"></tbody>
+            </table>
+        </div>
+		 <div id="GRcard" data-dojo-attach-point="hideNode" role="presentation">
+			<div class="topoBtn">
+				<button class="DCNBtnStyle" onclick="showTopo1()">显示拓扑</button>
+			</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="tableBor">路由状态</th>
+                        <th class="tableBor">LSP业务</th>
+                    </tr>
+                </thead>
+                <tbody id="GRcontent"></tbody>
+            </table>
+        </div>
+		<div id="SNCPcard" data-dojo-attach-point="hideNode" role="presentation">
+			<div class="topoBtn">
+				<button class="DCNBtnStyle" onclick="showTopo2()">显示拓扑</button>
+			</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="tableBor">路由状态</th>
+                        <th class="tableBor">LSP业务</th>
+                    </tr>
+                </thead>
+                <tbody id="SNCPcontent"></tbody>
+            </table>
+        </div>
+		<div id="SNCPporRecard" data-dojo-attach-point="hideNode" role="presentation">
+			<div class="topoBtn">
+				<button class="DCNBtnStyle" onclick="showTopo3()">显示拓扑</button>
+			</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="tableBor">路由状态</th>
+                        <th class="tableBor">LSP业务</th>
+                    </tr>
+                </thead>
+                <tbody id="SNCPporRecontent"></tbody>
+            </table>
+        </div>
+		<div id="foreverCard" data-dojo-attach-point="hideNode" role="presentation">
+			<div class="topoBtn">
+				<button class="DCNBtnStyle" onclick="showTopo4()">显示拓扑</button>
+			</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="tableBor">路由状态</th>
+                        <th class="tableBor">LSP业务</th>
+                    </tr>
+                </thead>
+                <tbody id="foreverContent"></tbody>
+            </table>
+        </div>
+    </div>
+	<div id="content">
+		<p class="topoTitle">拓扑图</p>
+        <div id="rockContent">
+            <div id="rockView">
+                <canvas id="rockCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+	</div>
+   
+</body>
+<script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/znConnTopo.js"></script>
+</html>

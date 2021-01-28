@@ -1,0 +1,459 @@
+[
+  {
+    "id": "0",
+    "name": "WGPHN-4",
+    "electric": {
+      "method": "",
+      "device": [
+        {
+          "val": 19,
+          "location": true
+        },
+        {
+          "disable": true,
+          "location": false,
+          "val": 36
+        }
+      ]
+    },
+    "controller": {
+      "method": "",
+      "device": [
+        {
+          "disable": true,
+          "location": true,
+          "val": 1
+        },
+        {
+          "location": false,
+          "val": 18
+        }
+      ]
+    }
+  },
+  {
+    "id": "1",
+    "name": "WGPHN-3",
+    "electric": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 19
+        },
+        {
+          "location": false,
+          "val": 36
+        }
+      ]
+    },
+    "controller": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 1
+        },
+        {
+          "location": false,
+          "val": 18
+        }
+      ]
+    }
+  },
+  {
+    "id": "2",
+    "name": "WGPHN-2",
+    "electric": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 19
+        },
+        {
+          "location": false,
+          "val": 36
+        }
+      ]
+    },
+    "controller": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 1
+        },
+        {
+          "location": false,
+          "val": 18
+        }
+      ]
+    }
+  },
+  {
+    "id": "3",
+    "name": "WGPHN-1",
+    "electric": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 19
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 36
+        }
+      ]
+    },
+    "controller": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "val": 1
+        },
+        {
+          "location": false,
+          "val": 18
+        }
+      ]
+    }
+  },
+  {
+    "id": "4",
+    "name": "PSS8",
+    "electric": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 1
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 7
+        }
+      ]
+    },
+    "controller": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 6
+        },
+        {
+          "location": false,
+          "val": 12
+        }
+      ]
+    },
+    "matrix": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 6
+        },
+        {
+          "location": false,
+          "val": 12
+        }
+      ]
+    }
+  },
+  {
+    "id": "5",
+    "name": "PSS16II",
+    "electric": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 1
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 11
+        }
+      ]
+    },
+    "controller": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "val": 12
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 21
+        }
+      ]
+    },
+    "matrix": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "val": 12
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 21
+        }
+      ]
+    }
+  },
+  {
+    "id": "6",
+    "name": "OCS4",
+    "electric": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 91
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 94
+        }
+      ]
+    },
+    "controller": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 75
+        },
+        {
+          "location": false,
+          "val": 73
+        }
+      ]
+    },
+    "matrix": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 71
+        },
+        {
+          "location": false,
+          "val": 72
+        }
+      ]
+    }
+  },
+  {
+    "id": "7",
+    "name": "OCS1",
+    "electric": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 91
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 94
+        }
+      ]
+    },
+    "controller": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "val": 73
+        },
+        {
+          "location": false,
+          "val": 75
+        }
+      ]
+    },
+    "matrix": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "val": 72
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 71
+        }
+      ]
+    }
+  },
+  {
+    "id": "8",
+    "name": "OCS2",
+    "electric": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 44
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 45
+        }
+      ]
+    },
+    "controller": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 23
+        },
+        {
+          "location": false,
+          "val": 40
+        }
+      ]
+    },
+    "matrix": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "val": 11
+        },
+        {
+          "location": false,
+          "val": 15
+        }
+      ]
+    }
+  },
+  {
+    "id": "9",
+    "name": "OCS3",
+    "electric": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 44
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 45
+        }
+      ]
+    },
+    "controller": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 23
+        },
+        {
+          "location": false,
+          "val": 40
+        }
+      ]
+    },
+    "matrix": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "val": 15
+        },
+        {
+          "location": false,
+          "val": 11
+        }
+      ]
+    }
+  },
+  {
+    "id": "10",
+    "name": "PSS24X",
+    "electric": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "disable": true,
+          "val": 36
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 34
+        }
+      ]
+    },
+    "controller": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "val": 16
+        },
+        {
+          "location": false,
+          "disable": true,
+          "val": 29
+        }
+      ]
+    },
+    "matrix": {
+      "method": "",
+      "device": [
+        {
+          "location": true,
+          "val": 7
+        },
+        {
+          "location": false,
+          "val": 8
+        },
+        {
+          "location": false,
+          "val": 9
+        }
+      ]
+    }
+  }
+]

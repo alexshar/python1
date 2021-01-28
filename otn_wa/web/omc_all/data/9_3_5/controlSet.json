@@ -1,0 +1,93 @@
+[
+	{
+		"boChang":"9175",
+		"jiZhun":[27,24,-11,-11],
+		 "allInfos": [
+          {
+            "lianLu": "NE185-125",
+            "osnr":37.6,
+            "guanglv":0.87,
+             "osnrZ-A":28.3,
+             "guanglv-A":-16.1
+          },
+          {
+            "lianLu": "NE186-217",
+            "osnr":33.9,
+            "guanglv":-5.66,
+             "osnrZ-A":24.3,
+             "guanglv-A":-8.1
+          }
+        ],
+        "id":0
+	},
+	{
+		"boChang":"9220",
+		 "allInfos": [
+          {
+            "lianLu": "NE185-125",
+            "osnr":38,
+            "guanglv":0.91,
+             "osnrZ-A":29.3,
+             "guanglv-A":-11.1
+          },
+          {
+            "lianLu": "NE187-122",
+            "osnr":30.6,
+            "guanglv":-9.89,
+            "osnrZ-A":30.1,
+             "guanglv-A":-6.9
+          },
+          {
+            "lianLu": "NE188-236",
+            "osnr":29.3,
+            "guanglv":-6.87,
+            "osnrZ-A":31,
+             "guanglv-A":-11.01
+          },
+          {
+            "lianLu": "NE186-217",
+            "osnr":28.1,
+            "guanglv":-9.9,
+             "osnrZ-A":39,
+             "guanglv-A":1.05
+          }
+        ],
+        "jiZhun":[27,22,-11,-8],
+        "id":1
+	},
+	{
+		"boChang":"9440",
+		"jiZhun":[27,17,-11,-4],
+			 "allInfos": [
+          {
+            "lianLu": "NE185-125",
+            "osnr":40,
+            "guanglv":1.6,
+            "osnrZ-A":29,
+             "guanglv-A":2.05
+          },
+          {
+            "lianLu": "NE187-122",
+            "osnr":35.1,
+            "guanglv":0.6,
+            "osnrZ-A":19,
+             "guanglv-A":3.05
+          },
+          {
+            "lianLu": "NE188-236",
+            "osnr":34.3,
+            "guanglv":0.6,
+            "osnrZ-A":39,
+             "guanglv-A":-3.05
+          },
+          {
+            "lianLu": "NE186-217",
+            "osnr":33.5,
+            "guanglv":-9.9,
+             "osnrZ-A":34,
+             "guanglv-A":1.05
+          }
+        ],
+        "id":2
+	}
+]

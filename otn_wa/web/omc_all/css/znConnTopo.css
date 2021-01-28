@@ -1,0 +1,81 @@
+
+.znConnToponav{
+    overflow: hidden;
+    margin:0 auto;
+}
+.znConnToponav li{
+    list-style: none;
+    float:left;
+    padding:5px 10px;
+}
+#SBRcard,#GRcard,#SNCPcard,#SNCPporRecard,#foreverCard{
+	margin-top:40px;
+	width:80%;
+	margin-left:10%
+
+}
+.choseLi{
+    background-color: #ccc;
+    color:white;
+}
+.tableBor{
+    border:1px solid gray;
+    text-align:center;
+    padding:3px 0;
+    background-color:#ccc;
+    color:white;
+}
+.tableTh{
+	border:1px solid gray;
+	text-align:center;
+	padding:3px 0;
+}
+
+.DCNBtnStyle{
+	background-color: #124191;
+    border: 1px solid #124191; 
+    border-radius: 5%;
+    color: white;
+	margin-left:5px;
+}
+.topoBtn{
+	margin-bottom: 5px;
+    text-align: right;
+}
+#rockView{
+	width:80%;
+	border:1px solid gray;
+	margin-left:10%;
+}
+#content{
+	display:block;
+	margin-top:20px;
+	/*height: 30%;*/
+}
+#rockContent{
+	/*width:90%;*/
+	/*height:200px;*/
+	/*overflow-y: auto;*/
+	width:100%;
+
+}
+#rockCanvas{
+	z-index:999;
+}
+.brakBtn{
+	background-color:#ccc;
+	border:1px solid #ccc;
+	border-radius: 5%;
+	color:white;
+	margin-left:5px;
+}
+.topoTitle{
+	display: inline-block;
+    margin-left: 10%;
+    color: #124191;
+    font-weight: bold;
+}
+#errTip{
+    font-weight: bolder;
+    text-align: center;
+}

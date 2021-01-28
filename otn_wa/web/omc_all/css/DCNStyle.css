@@ -1,0 +1,65 @@
+
+.ipStyle{
+    display: inline;
+    background-color: white;
+    width: 200px;
+    border: 1px solid #eee;
+    margin-left: 24px!important;
+    padding: 2px 5px!important;
+}
+.DCNcard{
+    text-align: center;
+}
+#OAMPcard,#OSCcard,#GCCcard{
+    margin:0 auto;
+
+}
+.DCNnav{
+    overflow: hidden;
+    margin:0 auto;
+}
+.DCNnav li{
+    list-style: none;
+    float:left;
+    padding:5px 10px;
+}
+.choseLi{
+    background-color: #ccc;
+    color:white;
+}
+.DCNSelect{
+	width:200px!important;
+	display:inline-block;
+	margin-left:24px;
+}
+.GCCinp{
+	background-color:white;
+}
+.textAlign{
+	width:100px;
+	display:inline-block;
+	text-align: right;
+}
+.DCNBtnStyle{
+	background-color: #124191;
+    border: 1px solid #124191; 
+    border-radius: 5%;
+    color: white;
+}
+.tableBor{
+	border:1px solid gray;
+	text-align:center;
+	padding:3px 0;
+	background-color:#ccc;
+	color:white;
+}
+.tableTh{
+	border:1px solid gray;
+	text-align:center;
+	padding:3px 0;
+}
+.dcnInpCondi{
+	display: inline-block;
+    margin-left: -64px;
+    color: #ccc;
+}

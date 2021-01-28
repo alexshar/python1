@@ -1,0 +1,217 @@
+{
+  "NE": [
+    {
+      "neId": "1",
+      "userLabel": "ASON1",
+      "x": 100,
+      "y": 50,
+      "w": 100,
+      "h": 100,
+      "alarmState": "CLEARED",
+      "neIcon": "https://172.24.168.132:8443/oms1350/web/eqm/omc_all/pic/ASON1.svg"
+    },
+    {
+      "neId": "3",
+      "userLabel": "Ason3",
+      "x": 800,
+      "y": 50,
+      "w": 100,
+      "h": 100,
+      "alarmState": "CLEARED",
+      "neIcon": "https://172.24.168.132:8443/oms1350/web/eqm/omc_all/pic/ASON3.svg"
+    },
+    {
+      "neId": "2",
+      "userLabel": "Ason2",
+      "x": 100,
+      "y": 400,
+      "w": 100,
+      "h": 100,
+      "alarmState": "CLEARED",
+      "neIcon": "https://172.24.168.132:8443/oms1350/web/eqm/omc_all/pic/ASON2.svg"
+    },
+    {
+      "neId": "4",
+      "userLabel": "Ason4",
+      "x": 800,
+      "y": 400,
+      "w": 100,
+      "h": 100,
+      "alarmState": "CLEARED",
+      "neIcon": "https://172.24.168.132:8443/oms1350/web/eqm/omc_all/pic/ASON4.svg"
+    }
+  ],
+  "SBR": {
+    "initState": "UP",
+    "recover1": "UP",
+    "recover2": "DOWN",
+    "phyConn": "UP",
+    "flowcharts": {
+      "initFlowcharts": {
+        "flowchartState": "主用路由",
+        "connection": [
+          {
+            "id": "1111",
+            "userLabel": "ASON1/TE1-ASON2",
+            "connA": {
+              "neId": "1"
+            },
+            "connZ": {
+              "neId": "2"
+            },
+            "alarmState": "CLEARED",
+            "connType": "noopsycheConnection"
+          }
+        ]
+      },
+      "recover1Flowcharts": {
+        "flowchartState": "备用路由",
+        "connection": [
+          {
+            "id": "222",
+            "userLabel": "ASON1/TE2-ASON3/TE3-ASON2",
+            "connA": {
+              "neId": "1"
+            },
+            "connZ": {
+              "neId": "3"
+            },
+            "alarmState": "CLEARED",
+            "connType": "noopsycheConnection"
+          },
+          {
+            "id": "333",
+            "userLabel": "ASON1/TE2-ASON3/TE3-ASON2",
+            "connA": {
+              "neId": "3"
+            },
+            "connZ": {
+              "neId": "2"
+            },
+            "alarmState": "CLEARED",
+            "connType": "noopsycheConnection"
+          }
+        ]
+      },
+      "recover2Flowcharts": {
+        "flowchartState": "当前工作备用路由",
+        "connection": [
+          {
+            "id": "444",
+            "userLabel": "ASON1/TE2-ASON3/TE5-ASON4/TE4-ASON2",
+            "connA": {
+              "neId": "1"
+            },
+            "connZ": {
+              "neId": "3"
+            },
+            "alarmState": "CLEARED",
+            "connType": "noopsycheConnection"
+          },
+          {
+            "id": "555",
+            "userLabel": "ASON1/TE2-ASON3/TE5-ASON4/TE4-ASON2",
+            "connA": {
+              "neId": "3"
+            },
+            "connZ": {
+              "neId": "4"
+            },
+            "alarmState": "CLEARED",
+            "connType": "noopsycheConnection"
+          },
+		  
+          {
+            "id": "666",
+            "userLabel": "ASON1/TE2-ASON3/TE5-ASON4/TE4-ASON2",
+            "connA": {
+              "neId": "4"
+            },
+            "connZ": {
+              "neId": "2"
+            },
+            "alarmState": "CLEARED",
+            "connType": "noopsycheConnection"
+          }
+        ]
+      },
+      "phyFlowcharts": {
+        "flowchartState": "物理连接",
+        "connection": [
+          {
+			"id": "1",
+			"userLabel": "ASON1/TE1-ASON2",
+			"connA": {
+				"neId": "1"
+			},
+			"connZ": {
+				"neId": "2"
+			},
+			"alarmState": "CLEARED",
+			"connType": "noopsycheConfig"
+		},
+		{
+			"id": "2",
+			"userLabel": "ASON1/TE2-ASON2/TE3-ASON3",
+			"connA": {
+				"neId": "1"
+			},
+			"connZ": {
+				"neId": "3"
+			},
+			"alarmState": "CLEARED",
+			"connType": "noopsycheConfig"
+		},
+		{
+			"id": "3",
+			"userLabel": "ASON1/TE2-ASON3/TE3-ASON2",
+			"connA": {
+				"neId": "3"
+			},
+			"connZ": {
+				"neId": "2"
+			},
+			"alarmState": "CLEARED",
+			"connType": "noopsycheConfig"
+		},
+		{
+			"id": "4",
+			"userLabel": "ASON1/TE2-ASON3/TE5-ASON4/TE4-ASON2",
+			"connA": {
+				"neId": "1"
+			},
+			"connZ": {
+				"neId": "3"
+			},
+			"alarmState": "CLEARED",
+			"connType": "noopsycheConfig"
+		},
+		{
+			"id": "5",
+			"userLabel": "ASON1/TE2-ASON3/TE5-ASON4/TE4-ASON2",
+			"connA": {
+				"neId": "3"
+			},
+			"connZ": {
+				"neId": "4"
+			},
+			"alarmState": "CLEARED",
+			"connType": "noopsycheConfig"
+		},
+		{
+			"id": "6",
+			"userLabel": "3ASON1/TE2-ASON3/TE5-ASON4/TE4-ASON2",
+			"connA": {
+				"neId": "4"
+			},
+			"connZ": {
+				"neId": "2"
+			},
+			"alarmState": "CLEARED",
+			"connType": "noopsycheConfig"
+		}
+        ]
+      }
+    }
+  }
+}

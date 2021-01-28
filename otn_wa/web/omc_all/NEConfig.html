@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<!--
+	Note:  (5/30/2013, PHM)
+		Currently, Main_Otn.html and Main_Otn.vm are identical.
+		I intend to keep it that way until we begin to use
+		some specific .vm (velocity) functionality
+
+	TODO: (7JUL2013)  Get menu items from a JSON file/object, based upon user preferences.
+ -->
+<html lang="en">
+
+<head>
+ <meta http-equiv="content-type" content="text/html; charset=utf-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+ <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+ <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+ <style>
+     .neconfig-select {
+         display: inline;
+     }
+     .sysSpanCustom {
+         width:80px;
+         display:-moz-inline-box; /* css注释：for ff2 */
+         display:inline-block;
+         text-align:left;
+     }
+     .my_custom_btn {
+         background-color: #124191;
+         border: 1px solid #124191;
+         border-radius: 5%;
+         color: white;
+         padding: 5px!important;
+         cursor: pointer!important;
+     }
+ </style>
+    <script>
+        var server_path = 'https://135.251.96.98:8443';
+        var cgi_path = "https://135.251.96.98:8443/cgi-bin/test.cgi";
+        var neconfigData = {};
+        var neIndex;
+        var slotsIndex;
+        var portsIndex;
+        var typesIndex;
+        var neconfigSlots = [];
+        var neconfigPorts = [];
+        var neconfigTypes = [];
+        var cpriData = {};
+        var sureFunc;
+        $(document).ready(function(){
+            $.getJSON(server_path+'/oms1350/web/eqm/omc_all/data/7_2_2/ne_config.json',function(data){
+                neconfigData = data;
+                $.each(data['nes'],function(n,item){
+                    $("#neconfig_nelist").append("<option value='"+item.name+"'>"+item.name+"</option>");
+                });
+                selectNe();
+            });
+        });
+        function querySetting() {
+            var title =  $('#neconfig_typelist option:selected').val();
+            if(!title) {
+                showDialog('提示','neconfig_typenull');
+                return;
+            }
+            if($.inArray(title, ['ETH','ODUK','SDH','CPRI']) == -1) {
+                title = 'other';
+            }
+			readInfo(title);
+            var dialogId = '#neconfig_' + title;
+
+            var w = $(document.body).width() * 0.7;
+            var d = dialog({
+                title: title,
+                width:w,
+                content: $(dialogId)
+            });
+            var temp = dialog.getCurrent();
+            if(temp){
+				console.log(temp);
+                temp.close();
+            }  			
+            d.show();	
+			readInfo(title);			
+        }
+
+        function readInfo(title) {
+            var type_mapping = neconfigData['types-mapping'];
+            var selectPortInfo = neconfigPorts[portsIndex];
+            if(title == 'ETH') {
+                $('#ETH_mappinglist').empty();
+                $('#ETH_GFPlist').empty();
+                $.each(type_mapping['ETH'],function(n,item){
+                    $('#ETH_mappinglist').append("<option value='"+item+"'>"+item+"</option>")
+                });
+                $.each(neconfigData['GFP'],function(n,item){
+                    $('#ETH_GFPlist').append("<option value='"+item+"'>"+item+"</option>")
+                });
+                $('#ETH_info').val(selectPortInfo['boardInfo']);
+                $("#ETH_mappinglist").find("option[value='"+selectPortInfo['mapping']+"']").attr("selected",true);
+                $("#ETH_GFPlist").find("option[value='"+selectPortInfo['GFP']+"']").attr("selected",true);
+            } else if(title == 'SDH') {
+                $('#SDH_mappinglist').empty();
+                $.each(type_mapping['SDH'],function(n,item){
+                    $('#SDH_mappinglist').append("<option value='"+item+"'>"+item+"</option>")
+                });
+
+                $('#SDH_info').val(selectPortInfo['boardInfo']);
+                $("#SDH_mappinglist").find("option[value='"+selectPortInfo['mapping']+"']").attr("selected",true);
+            } else if(title == 'ODUK') {
+                $('#ODUK_kxlist').empty();
+                for(var j = 0; j < 2; j++) {
+                    if(j == 0) {
+                        $('#ODUK_kxlist').append("<option value='终结'>终结</option>")
+                    }else {
+                        $('#ODUK_kxlist').append("<option value='透传'>透传</option>")
+                    }
+                }
+                if(selectPortInfo['kx'] == '终结') {
+                    $('#neconfig_zjInfo').text(selectPortInfo['zjInfo']);
+                    $('#neconfig_zjInfo').show();
+                } else {
+                    $('#neconfig_zjInfo').hide();
+                }
+                $('#ODUK_info').val(selectPortInfo['boardInfo']);
+                $('#ODUK_kxlist').find("option[value='"+selectPortInfo['kx']+"']").attr("selected",true);
+            } else if(title == 'CPRI') {
+                $('#CPRI_mappinglist').empty();
+                $('#CPRI_translist').empty();
+                $('#CPRI_alert').empty();
+                $('#CPRI_performance').empty();
+                $('#CPRI_info').val(selectPortInfo['boardInfo']);
+                $('#CPRI_status').val(selectPortInfo['status']);
+                $.each(selectPortInfo['alert'],function(n,item){
+                    $('#CPRI_alert').append("<p>"+item+"</p>")
+                });
+                $.each(selectPortInfo['performance'],function(n,item){
+                    $('#CPRI_performance').append("<p>"+item+"</p>")
+                });
+                $.each(type_mapping['CPRI'],function(n,item){
+                    $('#CPRI_mappinglist').append("<option value='"+item+"'>"+item+"</option>")
+                });
+                $.each(neconfigData['trans'],function(n,item){
+                    $('#CPRI_translist').append("<option value='"+item+"'>"+item+"</option>")
+                });
+                $("#CPRI_mappinglist").find("option[value='"+selectPortInfo['mapping']+"']").attr("selected",true);
+                $("#CPRI_translist").find("option[value='"+selectPortInfo['trans']+"']").attr("selected",true);
+            } else {
+                $('#other_info').val(selectPortInfo['boardInfo']);
+            }
+        }
+
+        function selectNe() {
+            neIndex = null;
+            var selectNe = $('#neconfig_nelist option:selected').val();
+            $('#neconfig_caodaolist').empty();
+            $.each(neconfigData["nes"],function(n,item){
+                if(item.name == selectNe) {
+                    neIndex = n;
+                    neconfigSlots = item.slots;
+                    $.each(item.slots, function(i, chan){
+                        $("#neconfig_caodaolist").append("<option value='"+chan.name+"'>"+chan.name+"</option>");
+                    })
+                }
+            });
+            selectSlot();
+        }
+
+        function selectSlot() {
+            slotsIndex = null;
+            var selectSlot = $('#neconfig_caodaolist option:selected').val();
+            $('#neconfig_typelist').empty();
+            $.each(neconfigSlots,function(n,item){
+                if(item.name == selectSlot) {
+                    slotsIndex = n;
+                    neconfigTypes = item.types;
+                    $.each(item.types, function(i, type){
+                        $("#neconfig_typelist").append("<option value='"+type.name+"'>"+type.name+"</option>");
+                    })
+                }
+            });
+            selectType();
+        }
+
+        function selectType() {
+            typesIndex = null;
+            var selectedType = $('#neconfig_typelist option:selected').val();
+            $('#neconfig_portlist').empty();
+            $.each(neconfigTypes,function(n,item){
+                if(item.name == selectedType) {
+                    typesIndex = n;
+                    neconfigPorts = item.ports;
+                    $.each(item.ports, function(i, port){
+                        $("#neconfig_portlist").append("<option value='"+port.name+"'>"+port.name+"</option>");
+                    })
+                }
+            });
+            selectPort();
+        }
+
+        function selectPort() {
+            portsIndex = null;
+            var selectPort = $('#neconfig_portlist option:selected').val();
+            $.each(neconfigPorts,function(n,item){
+                if(item.name == selectPort) {
+                    portsIndex = n;
+                }
+            });
+        }
+
+        function showDialog(title, id) {
+            var dialogId = '#' + id;
+
+            var w = $(document.body).width() * 0.3;
+            var d = dialog({
+                title: title,
+                width:w,
+                content: $(dialogId)
+            });
+            d.show();
+        }
+
+        var isSureSave = false;
+
+        function sure() {
+            var tempdialog = dialog.getCurrent();
+            if(tempdialog){
+                tempdialog.close();
+            }
+            if(sureFunc) {
+                sureFunc();
+            }
+        }
+
+        function no() {
+            var tempdialog = dialog.getCurrent();
+            if(tempdialog){
+                tempdialog.close();
+            }
+        }
+
+        function pushETHData() {
+            $('#wait_save_eth').show();
+            $('#ETH_BUTTON').attr("disabled","disabled");
+            setTimeout(function(){
+                neconfigData['nes'][neIndex]['slots'][slotsIndex]['types'][typesIndex]['ports'][portsIndex].mapping = $('#ETH_mappinglist option:selected').val();
+                neconfigData['nes'][neIndex]['slots'][slotsIndex]['types'][typesIndex]['ports'][portsIndex].GFP = $('#ETH_GFPlist option:selected').val();
+
+                var tempData = {
+                    'content':JSON.stringify(neconfigData),
+                    'filename':'/oms1350/web/eqm/omc_all/data/7_2_2/ne_config.json'}
+                $.post(cgi_path, tempData, function(resp) {
+                    $('#wait_save_eth').hide();
+                    $('#ETH_BUTTON').removeAttr("disabled");
+                    if(resp == 'success') {
+                        var tempdialog = dialog.getCurrent();
+                        if(tempdialog){
+                            tempdialog.close();
+                        }
+                        showDialog('提示','neconfig_DLGsuccess');
+                        setTimeout(function(){
+                            var tempdialog = dialog.getCurrent();
+                            if(tempdialog){
+                                tempdialog.close();
+                            }
+                        }, 2000);
+                    } else {
+                        alert('保存失败');
+
+                    }
+//                window.location.reload();
+                }).error(function(){
+                    $('#wait_save_eth').hide();
+                    alert("连接服务器失败!");
+                    $('#ETH_BUTTON').removeAttr("disabled");
+                });
+            },3000);
+        }
+
+        function pushSDHData() {
+            $('#wait_save_sdh').show();
+            $('#SDH_BUTTON').attr("disabled","disabled");
+            setTimeout(function(){
+                neconfigData['nes'][neIndex]['slots'][slotsIndex]['types'][typesIndex]['ports'][portsIndex].mapping = $('#SDH_mappinglist option:selected').val();
+                var tempData = {
+                    'content':JSON.stringify(neconfigData),
+                    'filename':'/oms1350/web/eqm/omc_all/data/7_2_2/ne_config.json'}
+                $.post(cgi_path, tempData, function(resp) {
+                    $('#wait_save_sdh').hide();
+                    $('#SDH_BUTTON').removeAttr("disabled");
+                    if(resp == 'success') {
+                        var tempdialog = dialog.getCurrent();
+                        if(tempdialog){
+                            tempdialog.close();
+                        }
+                        showDialog('提示','neconfig_DLGsuccess');
+                        setTimeout(function(){
+                            var tempdialog = dialog.getCurrent();
+                            if(tempdialog){
+                                tempdialog.close();
+                            }
+                        }, 2000);
+                    } else {
+                        alert('保存失败');
+                    }
+//                window.location.reload();
+                }).error(function(){
+                    $('#wait_save_sdh').hide();
+                    alert("连接服务器失败!");
+                    $('#SDH_BUTTON').removeAttr("disabled");
+                });
+            }, 3000);
+        }
+
+        function pushODUKData() {
+            $('#wait_save_oduk').show();
+            $('#ODUK_BUTTON').attr("disabled","disabled");
+            setTimeout(function(){
+                neconfigData['nes'][neIndex]['slots'][slotsIndex]['types'][typesIndex]['ports'][portsIndex].kx = $('#ODUK_kxlist option:selected').val();
+                var tempData = {
+                    'content':JSON.stringify(neconfigData),
+                    'filename':'/oms1350/web/eqm/omc_all/data/7_2_2/ne_config.json'}
+                $.post(cgi_path, tempData, function(resp) {
+                    $('#wait_save_oduk').hide();
+                    $('#ODUK_BUTTON').removeAttr("disabled");
+                    if(resp == 'success') {
+                        var tempdialog = dialog.getCurrent();
+                        if(tempdialog){
+                            tempdialog.close();
+                        }
+                        showDialog('提示','neconfig_DLGsuccess');
+                        setTimeout(function(){
+                            var tempdialog = dialog.getCurrent();
+                            if(tempdialog){
+                                tempdialog.close();
+                            }
+                        }, 2000);
+                        if($('#ODUK_kxlist option:selected').val() == '终结') {
+                            $('#neconfig_zjInfo').text(neconfigData['nes'][neIndex]['slots'][slotsIndex]['types'][typesIndex]['ports'][portsIndex].zjInfo);
+                            $('#neconfig_zjInfo').show();
+                        }else {
+                            $('#neconfig_zjInfo').hide();
+                        }
+                    } else {
+                        alert('保存失败');
+                    }
+//                window.location.reload();
+                }).error(function(){
+                    $('#wait_save_oduk').hide();
+                    alert("连接服务器失败!");
+                    $('#ODUK_BUTTON').removeAttr("disabled");
+                });
+            },3000);
+        }
+
+        function pushCPRIData() {
+            $('#wait_save_cpri').show();
+            $('#CPRI_BUTTON').attr("disabled","disabled");
+            setTimeout(function(){
+                neconfigData['nes'][neIndex]['slots'][slotsIndex]['types'][typesIndex]['ports'][portsIndex].mapping = $('#CPRI_mappinglist option:selected').val();
+                neconfigData['nes'][neIndex]['slots'][slotsIndex]['types'][typesIndex]['ports'][portsIndex].trans = $('#CPRI_translist option:selected').val();
+                var tempData = {
+                    'content':JSON.stringify(neconfigData),
+                    'filename':'/oms1350/web/eqm/omc_all/data/7_2_2/ne_config.json'}
+                $.post(cgi_path, tempData, function(resp) {
+                    $('#wait_save_cpri').hide();
+                    $('#CPRI_BUTTON').removeAttr("disabled");
+                    if(resp == 'success') {
+                        var tempdialog = dialog.getCurrent();
+                        if(tempdialog){
+                            tempdialog.close();
+                        }
+                        showDialog('提示','neconfig_DLGsuccess');
+                        setTimeout(function(){
+                            var tempdialog = dialog.getCurrent();
+                            if(tempdialog){
+                                tempdialog.close();
+                            }
+                        }, 2000);
+                    } else {
+                        alert('保存失败');
+                    }
+//                window.location.reload();
+                }).error(function(){
+                    $('#wait_save_cpri').hide();
+                    alert("连接服务器失败!");
+                    $('#CPRI_BUTTON').removeAttr("disabled");
+                });
+            }, 3000);
+        }
+
+        function saveETH() {
+            sureFunc = pushETHData;
+            showDialog('提示','neconfig_ConfrimDlg');
+        }
+
+        function saveSDH() {
+            sureFunc = pushSDHData;
+            showDialog('提示','neconfig_ConfrimDlg');
+        }
+
+        function saveODUK() {
+            sureFunc = pushODUKData;
+            showDialog('提示','neconfig_ConfrimDlg');
+        }
+
+        function saveCPRI() {
+            sureFunc = pushCPRIData;
+            showDialog('提示','neconfig_ConfrimDlg');
+        }
+
+        function ODUKkxlistChange() {
+            if($('#ODUK_kxlist option:selected').val() == '终结') {
+                $('#neconfig_zjInfo').text(neconfigData['zjInfo']);
+                $('#neconfig_zjInfo').show();
+            }else {
+                $('#neconfig_zjInfo').hide();
+            }
+
+        }
+    </script>
+</head>
+
+<body>
+
+<!-- comment start -->
+
+<div class="div">
+
+     <div class="dijitTitlePane dijitTitlePaneFocused dijitFocused" id="EPTnetwDetails_TP" widgetid="EPTnetwDetails_TP">
+      <div data-dojo-attach-event="ondijitclick:_onTitleClick, onkeydown:_onTitleKey" class="dijitTitlePaneTitle dijitTitlePaneTitleFixedOpen dijitFixedOpen" data-dojo-attach-point="titleBarNode" id="EPTnetwDetails_TP_titleBarNode">
+       <div class="dijitTitlePaneTitleFocus" data-dojo-attach-point="focusNode" role="heading">
+        <span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span><span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner">-</span><span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode" style="user-select: none;">网元配置</span>
+       </div>
+      </div>
+      <div class="dijitTitlePaneContentOuter" data-dojo-attach-point="hideNode" role="presentation">
+       <div style="text-align:center">
+        <span class="sysSpanCustom">网元选择: </span>
+           <select onchange="selectNe()" id="neconfig_nelist" class="neconfig-select" style="width:200px!important;">
+
+           </select><br><br>
+        <span class="sysSpanCustom">槽道选择: </span>
+           <select onchange="selectSlot()" id="neconfig_caodaolist" class="neconfig-select" style="width:200px!important;">
+
+            </select><br><br>
+           <span class="sysSpanCustom">类型选择: </span>
+           <select onchange="selectType()" id="neconfig_typelist" class="neconfig-select" style="width:200px!important;">
+
+           </select><br><br>
+           <span class="sysSpanCustom">端口选择: </span>
+           <select onchange="selectPort()" id="neconfig_portlist" class="neconfig-select" style="width:200px!important;">
+
+           </select><br><br>
+           <input type="submit" class="my_custom_btn" onclick="querySetting()" value="查询配置">
+       </div>
+      </div>
+     </div>
+
+    <!-- ETH -->
+    <div id="neconfig_ETH" style="display:none;text-align:center">
+        <span class="sysSpanCustom">板卡信息: </span>
+        <textarea id="ETH_info" style="width: 250px!important;height:100px;vertical-align:top;" readonly="readonly">
+
+        </textarea><br><br>
+        <span class="sysSpanCustom">映射模式: </span>
+        <select id="ETH_mappinglist" class="neconfig-select" style="width:250px!important;">
+
+        </select><br><br>
+        <span class="sysSpanCustom">GFP: </span>
+        <select id="ETH_GFPlist" class="neconfig-select" style="width:250px!important;">
+
+        </select><br><br>
+        <input id="ETH_index" style="display: none">
+        <p style="display: none" id="wait_save_eth">保存中,请稍候...</p>
+        <input type="submit" class="my_custom_btn" id="ETH_BUTTON" onclick="saveETH()" style="height: 24px!important;" value="应用">
+    </div>
+    <!-- SDH -->
+    <div id="neconfig_SDH" style="display:none;text-align:center">
+        <span class="sysSpanCustom">板卡信息: </span>
+        <textarea id="SDH_info" style="width: 250px!important;height:100px;vertical-align:top;" readonly="readonly">
+
+        </textarea><br><br>
+        <span class="sysSpanCustom">映射模式: </span>
+        <select id="SDH_mappinglist" class="neconfig-select" style="width:250px!important;">
+
+        </select><br><br>
+        <input id="SDH_index" style="display: none">
+        <p style="display: none" id="wait_save_sdh">保存中,请稍候...</p>
+        <input type="submit" id="SDH_BUTTON" onclick="saveSDH()" style="height: 24px!important;" value="应用">
+
+    </div>
+    <!-- ODUK -->
+    <div id="neconfig_ODUK" style="display:none;text-align:center">
+        <span class="sysSpanCustom">板卡信息: </span>
+        <textarea id="ODUK_info" style="width: 250px!important;height:100px;vertical-align:top;" readonly="readonly">
+
+        </textarea><br><br>
+        <span class="sysSpanCustom">开销: </span>
+        <select id="ODUK_kxlist" class="neconfig-select" style="width:250px!important;">
+        </select><br><br>
+        <div style="margin:0 auto;width:400px;border: 1px solid #000;display: none;height: auto;word-wrap:break-word;word-break:break-all;overflow: hidden; " id="neconfig_zjInfo">
+
+        </div><br>
+        <input id="ODUK_index" style="display: none">
+        <p style="display: none" id="wait_save_oduk">保存中,请稍候...</p>
+        <input type="submit" class="my_custom_btn" id="ODUK_BUTTON" onclick="saveODUK()" style="height: 24px!important;" value="应用">
+
+    </div>
+    <!-- CPRI -->
+    <div id="neconfig_CPRI" style="display:none;">
+        <div style="text-align:center;width: 33%;border:1px solid #000;display: inline-block;margin-right: 3px;float: left">
+            <p style="font-size: 120%;font-weight:bold;border-bottom:1px solid #000;margin-top: 0px;">信息</p>
+            <span class="sysSpanCustom">板卡信息: </span>
+            <textarea id="CPRI_info" style="width: 250px!important;height:100px;vertical-align:top;" readonly="readonly">
+
+            </textarea><br><br>
+            <span class="sysSpanCustom">映射模式: </span>
+            <select id="CPRI_mappinglist" class="neconfig-select" style="width:250px!important;">
+
+            </select><br><br>
+            <span class="sysSpanCustom">传送方式: </span>
+            <select id="CPRI_translist" class="neconfig-select" style="width:250px!important;">
+
+            </select><br>
+            <span class="sysSpanCustom">运行状态: </span><div class="dijit dijitReset dijitInline dijitLeft dijitTextBox dijitTextBoxDisabled dijitDisabled" id="widget_EPTntwGenTime" role="presentation" widgetid="EPTntwGenTime" style="width: 250px; margin-top: 15px; margin-bottom: 15px; margin-left: 4px;"><div class="dijitReset dijitInputField dijitInputContainer"><input class="dijitReset dijitInputInner" data-dojo-attach-point="textbox,focusNode" autocomplete="off" name="ntwGenTime" type="text" tabindex="-1" id="CPRI_status" title="Status" disabled="" aria-disabled="true"></div></div><br>
+            <p style="display: none" id="wait_save_cpri">保存中,请稍候...</p>
+            <input type="submit" class="my_custom_btn" id="CPRI_BUTTON" onclick="saveCPRI()" style="height: 24px!important;" value="应用">
+        </div>
+        <div style="width: 33%;border:1px solid #000;display: inline-block;">
+            <p style="font-size: 120%;font-weight:bold;border-bottom:1px solid #000;margin-top: 0px;text-align: center;">告警</p>
+            <div id="CPRI_alert" style="overflow-y: auto;height: 250px;">
+
+            </div>
+        </div>
+        <div style="width: 32%;border:1px solid #000;display: inline-block;">
+            <p style="font-size: 120%;font-weight:bold;border-bottom:1px solid #000;margin-top: 0px;text-align: center;">性能</p>
+            <div id="CPRI_performance" style="overflow-y: auto;height: 250px;">
+
+            </div>
+        </div>
+    </div>
+
+    <!-- other -->
+    <div id="neconfig_other" style="display:none;text-align:center">
+        <span class="sysSpanCustom">板卡信息: </span>
+        <textarea id="other_info" style="width: 250px!important;height:100px;vertical-align:top;" readonly="readonly">
+
+        </textarea><br><br>
+
+    </div>
+
+    <div id="neconfig_ConfrimDlg" style="display: none">
+        <div>
+            <h1 style="margin-top: 0px">是否应用?</h1>
+        </div>
+
+        <div style="text-align: center;">
+            <button id="neconfig_sure" onclick="sure()" style="width: 50px">是</button>
+            <button id="neconfig_no" onclick="no()" style="width: 50px">否</button>
+        </div>
+
+    </div>
+
+    <div id="neconfig_DLGsuccess" style="display: none;text-align: center;">
+        <h3><span >成功</span></h3>
+    </div>
+
+    <div id="neconfig_typenull" style="display: none;text-align: center;">
+        <h3><span >类型为空,不能配置</span></h3>
+    </div>
+</div>
+</body>
+
+</html>

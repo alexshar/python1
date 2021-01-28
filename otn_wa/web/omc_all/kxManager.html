@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+    <!--<link rel="stylesheet" href="https://135.251.96.54:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />-->
+    <style type="text/css">
+
+        ul#servserChose:after {
+            content: "";
+            display: block;
+            clear: both;
+            zoom: 1;
+        }
+        ul#servserChose {
+            list-style: none;
+            float: left;
+            width: 100%;
+        }
+        ul#servserChose>li {
+            float: left;
+            width: 25%;
+            border: 1px solid #ccc;
+            padding: 0;
+            text-align: center;
+            cursor: pointer;
+        }
+        div#costManagement {
+            padding-top: 10px;
+        }
+        #costManagement  select,#dlg select{
+            display: inline-block;
+            margin-bottom: 10px ! important;
+        }
+        .page{
+            text-align: center;
+        }
+        input[type='text']{
+            width: 200px ! important;
+            background: #fff ! important;
+        }
+        #dlg{
+            display: none;
+            text-align: center;
+        }
+        #costManagement .sysSpanCustom{
+            display: inline-block ! important;
+            width: 50px ! important;
+        }
+        #costManagement input[type="text"],#dlg input[type="text"]{
+            margin-bottom: 10px !important;
+        }
+        #dlg input[disabled]{
+            background: #eee ! important;
+			background: #eee! important;
+			color: #8D8C8C;
+			}
+        .page-c,.pageTp{
+            display:none;}
+			#ConfrimDlg,#operation,#DLGsuccess{
+			display:none
+			}
+    </style>
+    <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+    <!--<script type="text/javascript" src="https://135.251.96.54:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>-->
+</head>
+<body>
+
+<div class="dijitTitlePane dijitTitlePaneFocused dijitFocused" id="EPTnetwDetails_TP" widgetid="EPTnetwDetails_TP">
+    <div data-dojo-attach-event="ondijitclick:_onTitleClick, onkeydown:_onTitleKey" class="dijitTitlePaneTitle dijitTitlePaneTitleFixedOpen dijitFixedOpen" data-dojo-attach-point="titleBarNode" id="EPTnetwDetails_TP_titleBarNode">
+        <div class="dijitTitlePaneTitleFocus" data-dojo-attach-point="focusNode" role="heading">
+            <span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span><span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner">-</span><span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode" style="user-select: none;">开销管理</span>
+        </div>
+    </div>
+    <div class="dijitTitlePaneContentOuter" data-dojo-attach-point="hideNode" role="presentation">
+        <div class="page1 page dijitTitlePaneContentOuter" id="costManagement" style="text-align:center">
+            <div>
+                <span class="sysSpanCustom">网元</span>
+                <select name="ne" id="neList" class="neconfig-select" style="width:200px!important;">
+                </select>
+            </div>
+            <div>
+                <span class="sysSpanCustom neconfig-select" > 槽位</span>
+                <select name="" id="solt" style="width:200px!important;">
+                </select>
+            </div>
+            <div>
+                <span class="sysSpanCustom"> 端口类型</span>
+                <select name="ne" id="portType" class="neconfig-select" style="width:200px!important;">
+                    <option value="SDH">SDH</option>
+                    <option value="OTN">OTN</option>
+                </select>
+            </div>
+            <div>
+                <span class="sysSpanCustom"> 端口</span>
+                <select name="" id="port"  class="neconfig-select" style="width:200px!important;">
+                </select>
+            </div>
+            <input type="button" value="查询" id="search" />
+        </div>
+    </div>
+</div>
+
+
+<div id="dlg">
+    <div class="page2-1 page pageTp pageTp_SDH" id="SDH">
+        <div>
+            <span class="sysSpanCustom">J0期望值</span>
+            <input type="text" id="qxw"/>
+        </div>
+        <div>
+            <span class="sysSpanCustom">J0接收值</span>
+            <input type="text" disabled="disabled"  id="jjsz" />
+        </div>
+        <!--<div>-->
+        <!--<button value="">应用</button>-->
+        <!--</div>-->
+    </div >
+    <div id="serverTab" class="pageTp pageTp_OTN">
+        <div id="serverTitle">
+            <ul id="servserChose">
+                <li>SM</li>
+                <li>PM</li>
+                <li>TCM</li>
+                <li>OPU</li>
+            </ul>
+        </div>
+        <div id="serverBody">
+            <div class="S1 page-c ">
+                <div>
+                    <span class="sysSpanCustom">设置TT1数值</span>
+                    <input type="text" id="sm_sz" value=""/>
+                </div>
+                <div>
+                    <span class="sysSpanCustom">TT1期望值</span>
+                    <input type="text" id="sm_qw" value=""/>
+                </div>
+                <div>
+                    <span class="sysSpanCustom">TT1接收值</span>
+                    <input type="text" disabled="disabled" id="sm_js" value=""/>
+                </div>
+
+            </div>
+            <div class="S2 page-c">
+                <div>
+                    <span class="sysSpanCustom">TT1期望值</span>
+                    <input type="text" id="pm_qw" value=""/>
+                </div>
+                <div>
+                    <span class="sysSpanCustom">TT1接收值</span>
+                    <input type="text" id="pm_js" value=""/>
+                </div>
+                <div>
+                    <span class="sysSpanCustom">开销管理</span>
+                    <select name="" id="costTest"  class="neconfig-select" style="width:200px!important;">
+                        <option value="term">term</option>
+                        <option value="no_term">no_term</option>
+                    </select>
+                </div>
+            </div>
+            <div class="S3 page-c">
+                <div>
+                    <span class="sysSpanCustom">设置TCM-TT1数值</span>
+                    <input type="text" id="TCM_sz" value=""/>
+                </div>
+                <div>
+                    <span class="sysSpanCustom">TCM-TT1期望值</span>
+                    <input type="text" id="TCM_qw" value=""/>
+                </div>
+                <div>
+                    <span class="sysSpanCustom">TCM-TT1接收值</span>
+                    <input type="text"  disabled="disabled" id="TCM_js" value=""/>
+                </div>
+            </div>
+            <div class="S4 page-c">
+                <div>
+                    <span class="sysSpanCustom">PT数值</span>
+                    <input type="text"  disabled="disabled" id="numPt"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <button value="" id="use">应用</button>
+    </div>
+    <div id="ConfrimDlg">
+		<div style="text-align: center;">
+			<button class="sure" style="width: 50px">是</button>
+			<button class="no" style="width: 50px">否</button>
+		</div>
+	</div>
+
+	<div id="operation">
+		<h3><span class="contion">操作执行中.....</span></h3>
+	</div>
+
+	<div id="DLGsuccess">
+    <h3><span >成功</span></h3>
+	</div>
+</div>
+<script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/costManagement.js"></script>
+
+    <!--<script type="text/javascript" src="https://135.251.96.54:8443/oms1350/web/eqm/omc_all/js/costManagement.js"></script>-->
+</body>
+</html>

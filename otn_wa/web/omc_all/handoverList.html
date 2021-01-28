@@ -11,10 +11,10 @@
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     -->
-    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>
-    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>
-    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
-    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/index.css">    
+    <script src="https://10.110.141.108:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>
+    <script src="https://10.110.141.108:8443/oms1350/web/eqm/omc_all/js/element.js"></script>
+    <script src="https://10.110.141.108:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
+    <link rel="stylesheet" href="https://10.110.141.108:8443/oms1350/web/eqm/omc_all/css/index.css">    
 </head>
 
 <body>
@@ -59,7 +59,7 @@
         <el-card v-if="selectedConnection" style="margin: 1rem;">
             <div style="margin-bottom: 0.5rem;">
                 <span><strong>路径：{{selectedConnection.name}}</strong></span>
-                <el-button @click="exportDetail" type="primary" style="margin-left:1rem">导出</el-button>
+                <!-- <el-button @click="exportDetail" type="primary" style="margin-left:1rem">导出</el-button> -->
             </div>
             <el-table :data="filteredLogs" border max-height="300">
                 <el-table-column label="倒换时间" prop="time"></el-table-column>
@@ -98,7 +98,7 @@
     }
 
     .header .header-icon {
-        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        background: url("https://10.110.141.108:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
         height: 14px;
         width: 85px;
         display: block;
@@ -114,7 +114,7 @@
 </style>
 
 <script>
-    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+    axios.defaults.baseURL = 'https://10.110.141.108:8443';
     var app = new Vue({
         el: '#app',
         data() {
@@ -150,35 +150,51 @@
                     "ManageConnectionSNCPForceMain":   "强制倒换到工作",
                     "ManageConnectionSNCPForceSpare":  "强制倒换到保护",
                     "ManageConnectionSNCPManualMain":  "手动倒换到工作",
-                    "ManageConnectionSNCPManualSpare": "手动倒换到保护"
+                    "ManageConnectionSNCPManualSpare": "手动倒换到保护",
+                    "ManageConnectionExercise":        "自动倒换"
                 }
                 Promise.all([
                     axios.get("/oms1350/data/otn/connections/trails"),
-                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPLockout"),    //1
-                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPForceMain"),  //2
-                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPForceSpare"), //3
-                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPManualMain"), //4
-                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPManualSpare") //5
+                    axios.get('/oms1350/data/npr/nes'),
+                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPLockout"),     //2
+                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPForceMain"),   //3
+                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPForceSpare"),  //4
+                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPManualMain"),  //5
+                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionSNCPManualSpare"), //6
+                    axios.get("/oms1350/data/npr/commandLogs?act=ManageConnectionExercise")         //7
                 ])
                 .then( responseList => {
                     let connections = responseList[0];
                     if (connections && connections.data && connections.data.items) {
                         connections = connections.data.items;
+                        connections.forEach( v => {
+                            console.log(v.a1NodeAndPort, v.z1NodeAndPort, v.guiLabel)
+                        })
+                    } else {
+                        return;
+                    }
+                    let nes = []
+                    if (responseList[1] && responseList[1].data) {
+                        nes = responseList[1].data;
                     } else {
                         return;
                     }
                     let logs = [];
-                    for (let j = 1; j < responseList.length; j++) {
+                    for (let j = 2; j < responseList.length; j++) {
                         if (responseList[j] == undefined || responseList[j].data == undefined) {
                             continue;
                         }
                         let subLogs = responseList[j].data;
                         for (let k = 0; k < subLogs.length; k++) {
+                            // the connection name might be incomplete
                             let connectionName = subLogs[k].involved_object;
-                            let found = connections.find(v => v.guiLabel == connectionName);
+                            let found = connections.find(v => 
+                                v.guiLabel.includes(connectionName)
+                                || v.a1NodeAndPort.includes(connectionName)
+                                || v.z1NodeAndPort.includes(connectionName));
                             if (!found) continue;
                             logs.push({
-                                "involved_object": connectionName,
+                                "involved_object": found.guiLabel,
                                 "reason": actionNames[subLogs[k].act],
                                 "aPort": found.aPortLabel,
                                 "zPort": found.zPortLabel,
@@ -202,6 +218,7 @@
                         return false;
                     })
                 }
+                this.fullList.sort((a, b) => Number(b.end_time)-Number(a.end_time));
                 for (let i = 0; i < this.fullList.length; i ++) {
                     let log = this.fullList[i];
                     let found = this.connectionList.find(v => (v.name == log.involved_object));
@@ -305,8 +322,8 @@
                 let tableData = data;
 
                 for (const col of columns) {
-                header.push(col.prop);
-                headerLabel.push(col.label);
+                    header.push(col.prop);
+                    headerLabel.push(col.label);
                 }
                 let lines = [headerLabel.join(",")];
 
@@ -323,6 +340,20 @@
                     }
                     lines.push(elements.join(","));
                 }
+
+                for (let j = 0; j < this.connectionList.length; j ++) {
+                    name = this.connectionList[j].name
+                    lines.push(" ");
+                    lines.push(`路径 ${name} 倒换明细`);
+                    lines.push("倒换时间,倒换原因");
+                    this.fullList.forEach(log => {
+                        if (log.involved_object == name) {
+                            let timeObj = new Date(+log.end_time);
+                            lines.push(timeObj.toLocaleDateString() + ' ' + timeObj.toLocaleTimeString() + "," + log.reason);
+                        }
+                    })
+                }
+
                 const text = lines.join("\n");
                 this.download2(filename, text);
             },

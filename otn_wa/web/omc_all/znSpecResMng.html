@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .control-label{
+            display: inline-block;
+            width: 150px;
+        }
+        .actives{
+            width: 100px;
+            background-color: gray;
+        }
+        .Config{
+            position: relative;
+            margin-top: 10px;
+        }
+        .Config li{
+            list-style: none;
+            float: left;
+            width: 100px;
+            text-align: center;
+            border-bottom: 1px solid gainsboro;
+            cursor: pointer;
+        }
+        .Config li div{
+            border-top: 1px solid #c3bdbd;
+            width: 100%;
+            display: none;
+            position: absolute;
+            left: 0px;
+        }
+        .tabUL{
+            margin-top: 20px;
+            margin-left: 20px;
+            padding: 5px;
+            border-top: 1px solid #a59b9b;
+            height: 500px;
+        }
+
+        .Configs{
+            position: relative;
+            margin-top: 10px;
+        }
+        .Configs li{
+            list-style: none;
+            float: left;
+            width: 100px;
+            text-align: center;
+            border-bottom: 1px solid gainsboro;
+            cursor: pointer;
+        }
+        .Configs>li div{
+            border-top: 1px solid #c3bdbd;
+            width: 100%;
+            display: none;
+            position: absolute;
+            left: 0px;
+        }
+
+        *{
+            padding: 0px;
+            margin: 0px;
+        }
+        .route{
+            position: relative;
+        }
+        select{
+            display: block;
+        }
+        .control-label{
+            display: inline-block;
+            width: 150px;
+        }
+        .w-selelct{
+            display: inline-block;
+            width: 200px !important;
+        }
+
+        #Cofings div{
+            margin-top: 10px;
+        }
+        .PGBtnStyle{
+            background-color: #124191;
+            border: 1px solid #124191;
+            border-radius: 5%;
+            color: white;
+            margin-top: 4px;
+            padding: 5px;
+        }
+        table th{
+            border: 1px solid gray;
+            text-align: center;
+            padding: 3px 0;
+            background-color: #ccc;
+            color: white;
+        }
+        table td{
+            border: 1px solid gray;
+            text-align: center;
+            padding: 3px 0;
+        }
+
+        .odukTable{
+            background-color: #124191;
+            text-align: left;
+            color: white;
+            padding: 3px 0 3px 2%;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        #handSetTab{
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 20px;
+        }
+        #handSetTab:after{
+            content: "";
+            display: block;
+            clear: both;
+            zoom: 1;
+        }
+        #handSetTab>li {
+            list-style: none;
+            float: left;
+            width: 24%;
+            text-align: center;
+            border: 1px solid #cccccc;
+            cursor: pointer;
+        }
+        .activeTab{
+            background: #ccc;
+        }
+        .defaultTab{
+            background-color: #fff;
+        }
+        .tabCount{
+            display: none;
+        }
+        div#revp_state {
+            margin-top: 10px;
+        }
+        #rsvpTool,#ospfTool,#lmpfTool{
+            text-align:center;
+            margin-top:20px;
+        }
+        #LMP,#OSPF,#RSVP{
+            text-align:center;
+        }
+        #LMP [type="checkbox"]:not(:checked){
+            opacity: 1 ! important;
+        }
+        .leftTable{
+            text-align: left;
+        }
+        #conNelist{
+            display:block;
+        }
+        #ConfrimDlgCon,#ConfrimDlgChange,#tabCheck,#ConfrimDlgRemove{
+            display:none;
+        }
+
+        #communicationTypeCon,.nodeItemTitle{
+            margin:0;
+            padding:0;
+            margin-left:20px;
+            width:40%;
+        }
+        #communicationTypeCon:after,.nodeItemTitle:after{
+            content:""
+            display:block;
+            clear:both;
+            zoom:1;
+        }
+        #communicationTypeCon>li,.nodeItemTitle>li{
+            list-style: none;
+            cursor: pointer;
+            float: left;
+            width: 20%;
+            margin-top: 10px;
+        }
+        .communicationItemBox{
+            display:none;
+            overflow:hidden;
+        }
+
+        #dlg{
+            display:none;
+        }
+        #CmalPerMang table{
+            padding:2px 15px;
+        }
+        #CmalPerMang table th {
+            background: #124191;
+            color: #fff;
+            text-align: center;
+            padding: 4px 0;
+        }
+        #CmalPerMang table {
+            /* padding: 2px 15px; */
+            margin: 20px 10px 0px 20px;
+            border: 1px solid #ccc;
+        }
+        .nodeItemBox,.communicationList{
+            display:none;
+        }
+        .itemBoxActive{
+            display:block;
+        }
+
+        .communicationItemTopo {
+            background: #fff;
+            margin-top: 36px;
+            padding-left: 20px;
+        }
+        #communicationTypeCon li {
+            background: #124191;
+            color: #fff;
+            margin-right: 2px;
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        #CmalPerMang{
+            text-align:center;
+        }
+        .communicationItemTitle {
+            padding: 6px 10px ! important;
+            background: #124191 ! important;
+            box-shadow: none ! important;
+            color: #fff;
+            cursor: pointer;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+        .nodeItemTitle{
+            padding: 2px 4px ! important;
+            background: #124191 ! important;
+            box-shadow: none ! important;
+            color: #fff;
+            cursor: pointer;
+        }
+        .domFocus{
+            background:#3ABDB5 ! important;
+            color:#fff;
+        }
+        #CmalPerMang td{
+            border: 1px solid #ccc;
+            padding: 6px;
+        }
+        #rockView{
+            width:90%;
+            border:1px solid gray;
+            margin-left:5%;
+        }
+        #content{
+            margin-top:20px;
+            /*height: 30%;*/
+        }
+        #rockContent{
+            /*width:90%;*/
+            /*height:200px;*/
+            /*overflow-y: auto;*/
+            width:100%;
+
+        }
+        #rockCanvas{
+            z-index:999;
+        }
+        .DCNBtnStyle{
+            padding: 6px 10px ! important;
+            background: #124191 ! important;
+            box-shadow: none ! important;
+            color: #fff;
+            cursor: pointer;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+        .PGBtnStyle{
+            background-color: #124191;
+            border: 1px solid #124191;
+            border-radius: 5%;
+            color: white;
+            margin-top: 4px;
+            padding: 5px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+    <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+</head>
+<body>
+
+
+<ul class="tab Config">
+    <li>自动发现资源管理
+        <div class="tablop">
+            <select id="tabULSelct"></select>
+            <div class="tabUL" id="tabULs">
+                <ul class="tab Configs">
+                    <li class="1">rsvp协议
+                        <div>
+                            <table >
+                                <thead>
+                                <th>名称</th>
+                                <th>链路号</th>
+                                <th>带宽</th>
+                                <th>类型</th>
+                                <th>本节点</th>
+                                <th>远节点</th>
+                                <th>RSVP状态</th>
+                                <th>地址</th>
+                                <th>协议ID</th>
+                                <th>封装方式</th>
+                                </thead>
+                                <tbody class="psvp"></tbody>
+                            </table>
+
+                        </div>
+                    </li>
+                    <li class="cur">OSPF协议
+                        <div>
+                            <table>
+                                <thead>
+                                <th>名称</th>
+                                <th>链路号</th>
+                                <th>带宽</th>
+                                <th>类型</th>
+                                <th>本节点</th>
+                                <th>远节点</th>
+                                <th>OSPF状态</th>
+                                <th>地址</th>
+                                <th>协议ID</th>
+                                <th>封装方式</th>
+                                <th>约束条件</th>
+                                </thead>
+                                <tbody class="OSPF"></tbody>
+                            </table>
+                            <p style="text-align: left">邻居表:</p>
+                            <table class="lbelerTbake">
+                                <thead>
+                                <th>名称</th>
+                                <th>IP</th>
+                                <!-- <th>状态</th>-->
+                                </thead>
+                                <tbody id="lbelerBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </li>
+                    <li>TE链路信息
+                        <div>
+                            <table class="TE">
+                            </table>
+
+                            <!--     <div class="rsvpLabel" style="margin-top: 10px">
+                                     <label class="control-label" for="lmp_treaty">TE状态:</label>
+                                     <select name="neName" id="TEStauscheck" class="neconfig-select  w-selelct" >
+                                         <option value="">激活</option>
+                                         <option value="">禁止</option>
+                                     </select>
+                                 </div>
+                 -->
+                            <p style="text-align: left" >链路列表:</p>
+                            <table class="TEConnlist">
+                                <thead>
+                                <th >名称</th>
+                                <th>链路号</th>
+                                <th>带宽</th>
+                                <th>类型</th>
+                                <th>本节点</th>
+                                <th>远节点</th>
+                                <th>端口</th>
+                                <th>波长</th>
+                                <th>状态</th>
+                                <!--    <th>操作</th>-->
+                                </thead>
+                                <tbody id="TEcheck">
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </li>
+                    <li>自动发现
+                        <div>
+                            <table class="tabdiscovery">
+                            </table>
+                        </div>
+                    </li>
+                    <li>LMP
+                        <div>
+                            <table >
+                                <table>
+                                    <thead>
+                                    <th>名称</th>
+                                    <th>链路号</th>
+                                    <th>带宽</th>
+                                    <th>类型</th>
+                                    <th>本节点</th>
+                                    <th>远节点</th>
+                                    <th>协议ID</th>
+                                    <th>UDP端口</th>
+                                    <th>发现方式</th>
+                                    </thead>
+                                    <tbody class="LMP"></tbody>
+                                </table>
+                            </table>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </li>
+    <li class="1">控制平面划分
+        <div class="tablop">>
+            <select id="conNelist">
+            </select>
+            <h2>传统平面</h2>
+            <table  id="traditionalGraphic">
+                <thead>
+                <tr>
+                    <th>端口名字</th>
+                    <th>端口类型</th>
+                    <th>启用</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <h2>控制平面</h2>
+            <table id="controllerGraphic">
+                <thead>
+                <tr>
+                    <th>端口名字</th>
+                    <th>端口类型</th>
+                    <th>状态</th>
+                    <th>设置</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </li>
+    <li class="cur">链路资源管理
+        <div class="tablop" style=" text-align: left">
+            <button onclick="showTopo()"  class="PGBtnStyle">显示拓扑</button>
+            <table class="reousMangument">
+                <thead>
+                <th>节点</th>
+                <th>链路名称</th>
+                <th>ID</th>
+                <th>资源带宽</th>
+                <th>已使用资源</th>
+                </thead>
+                <tbody class="reousBOady"></tbody>
+            </table>
+
+        </div>
+    </li>
+
+</ul>
+
+
+<div id="content">
+
+    <div id="rockContent">
+        <button class="PGBtnStyle colstop" >关闭</button>
+        <div id="rockView">
+            <canvas id="rockCanvas"></canvas>
+        </div>
+    </div>
+</div>
+
+<div id="ConfrimDlg">
+    <div>
+        <h1 style="margin-top: 0px">是否应用?</h1>
+    </div>
+
+    <div style="
+    text-align: center;
+   ">
+        <button class="sure" style="width: 50px">是</button>
+        <button class="no" style="width: 50px">否</button>
+    </div>
+
+</div>
+<div id="ConfrimDlgCon">
+    <div>
+        <h1 style="margin-top: 0px"></h1>
+    </div>
+
+    <div style="
+    text-align: center;
+   ">
+        <button class="sureCon" style="width: 50px">是</button>
+        <button class="noCon" style="width: 50px">否</button>
+    </div>
+
+</div>
+<div id="ConfrimDlgChange">
+    <div>
+        <h1 style="margin-top: 0px"></h1>
+    </div>
+
+    <div style="
+    text-align: center;
+   ">
+        <button class="sureChang" style="width: 50px">是</button>
+        <button class="no" style="width: 50px">否</button>
+    </div>
+
+</div>
+<div id="ConfrimDlgRemove">
+    <div>
+        <h1 style="margin-top: 0px"></h1>
+    </div>
+
+    <div style="
+    text-align: center;
+   ">
+        <button class="sureRemove" style="width: 50px">是</button>
+        <button class="no" style="width: 50px">否</button>
+    </div>
+
+</div>
+<div id="operation">
+    <h3><span class="contion">操作执行中.....</span></h3>
+</div>
+<div id="tabCheck">
+    <h3><span class="contion">请切换到down状态.....</span></h3>
+</div>
+<div id="DLGsuccess">
+    <h3><span >成功</span></h3>
+</div>
+
+
+
+<!--config html-->
+
+<div id="handSet">
+    <ul class="tab" id="handSetTab">
+        <li>RSVP</li>
+        <li>OSPF</li>
+        <li>LMP</li>
+        <li>TE</li>
+    </ul>
+    <div id="RSVP" class="tabCount">
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="neName">网元:</label>
+            <select name="neName" id="" class="neList neconfig-select  w-selelct">
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="rsvp_address">地址:</label>
+            <input type="text" id="rsvp_address" class="IPtest"  style="width: 200px">
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="rsvp_treaty">协议ID:</label>
+            <input type="text" id="rsvp_treaty" style="width: 200px"/>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="rsvp_encapsulation">封装方式:</label>
+            <select name="neName" id="rsvp_encapsulation" class="neconfig-select  w-selelct" style="width:200px!important">
+                <option value="noen">noen</option>
+                <option value="en">en</option>
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="revp_state">RSVP状态:</label>
+            <select name="state" id="revp_state" class="neconfig-select  w-selelct" style="width:200px!important">
+                <option value="rsvpActivate">RSVP激活</option>
+                <option value="rsvpStart">RSVP停止</option>
+                <option value="rsvpStop">RSVP重启</option>
+            </select>
+        </div>
+        <div id="rsvpTool" style="margin-top: 20px">
+            <button class="use">应用</button>
+            <!--          <button class="deit">修改</button>-->
+        </div>
+    </div>
+    <div id="OSPF" class="tabCount">
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="neName">网元:</label>
+            <select name="neName" id="" class="neList neconfig-select  w-selelct">
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="ospf_address">地址:</label>
+            <input type="text" id="ospf_address" class="IPtest"  style="width: 200px">
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="ospf_treaty">协议ID:</label>
+            <input type="text" id="ospf_treaty" style="width: 200px"/>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="ospf_encapsulation">封装方式:</label>
+            <select name="encapsulation" id="ospf_encapsulation" class="neconfig-select  w-selelct" style="width:200px!important">
+                <option value="noen">noen</option>
+                <option value="en">en</option>
+            </select>
+        </div>
+
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="ospf_constraint">约束条件:</label>
+            <select  class="neconfig-select  w-selelct" style="width:200px!important;" id="ospf_constraint">
+                <option value="代价最小">代价最小</option>
+                <option value="条数最小">条数最小</option>
+                <option value="代价/条数最小">代价/条数最小</option>
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="ospf_state">OSPF状态:</label>
+            <select name="state" id="ospf_state" class="neconfig-select  w-selelct" style="width:200px!important">
+                <option value="OSPF激活">OSPF激活</option>
+                <option value="OSPF停止">OSPF停止</option>
+                <option value="OSPF重启">OSPF重启</option>
+            </select>
+        </div>
+        <div id="ospfTool" style="margin-top: 20px">
+            <button class="use">应用</button>
+            <!--  <button class="deit">修改</button>-->
+        </div>
+    </div>
+    <div id="LMP" class="tabCount">
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="neName">网元:</label>
+            <select name="neName" id="" class="neList neconfig-select  w-selelct">
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="lmp_treaty">协议ID:</label>
+            <input type="text" id="lmp_treaty" style="width: 200px"/>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="lmp_port">UDP端口:</label>
+            <input type="text" id="lmp_port" style="width: 200px"/>
+        </div>
+        <div class="rsvpLabel" id="lmp_auto" style="margin-top: 10px">
+            <label class="control-label" for="autoFind">发现方式:</label>
+            <select  class="neconfig-select  w-selelct" id="autoFind"style="width:200px!important;" >
+                <option value="自动发现激活">自动发现激活</option>
+                <option value="自动发现停止">自动发现停止</option>
+            </select>
+        </div>
+        <div id="lmpfTool" style="margin-top: 10px">
+            <button class="use">应用</button>
+            <!--            <button class="deit">修改</button>-->
+        </div>
+    </div>
+    <div id="TE" class="tabCount" style="text-align: center">
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="neName">网元:</label>
+            <select name="neName" id="" class="TENe neconfig-select  w-selelct">
+            </select>
+        </div>
+        <div class="rsvpLabel" style="margin-top: 10px">
+            <label class="control-label" for="lmp_treaty">端口:</label>
+            <select name="neName" id="TEPROT" class="neconfig-select  w-selelct"></select>
+        </div>
+
+        <div class="rsvpLabel" id="TETABLE" style="margin-top: 10px">
+            <label class="control-label" for="autoFind">链路列表:</label>
+            <table>
+                <thead>
+                <th><input type="checkbox"  class="thcheck" style='position: inherit;opacity: 1;left: 0px'></th>
+                <th>名称</th>
+                </thead>
+                <tbody class="TEConn">
+                </tbody>
+            </table>
+        </div>
+        <div id="TETool" style="margin-top: 10px">
+            <button class="use">应用</button>
+            <!--            <button class="deit">修改</button>-->
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</body>
+<!--<script src="jquery.js"></script>-->
+<!--<script src="js/NeCofigJs.js"></script>-->
+<script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/znSpec.js"></script>
+</html>

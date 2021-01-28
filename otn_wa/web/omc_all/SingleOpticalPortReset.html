@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>单光口复位</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/index.css">
+</head>
+<body>
+<div id="app">
+    <div class="header">
+        <span class="header-icon"></span>
+        <span class="word">单光口复位</span>
+    </div>
+    <div class="main-content"
+         v-loading="loading"
+         element-loading-text="加载中"
+         element-loading-spinner="el-icon-loading"
+         element-loading-background="rgba(0, 0, 0, 0.8)">
+        <el-button v-show="!show" style="margin: 10px" size="mini" type="primary" @click="goBack">返回网元列表</el-button>
+        <el-button v-show="!show" icon="el-icon-download" style="margin: 10px" size="mini" type="primary" @click="exportData2Csv">下载</el-button>
+        <el-table
+                v-if="show"
+                :data="tableData"
+                style="width: 100%">
+            <el-table-column
+                    label="名称"
+                    prop="guiLabel">
+            </el-table-column>
+            <el-table-column
+                    label="节点类型"
+                    prop="nodeType">
+            </el-table-column>
+            <el-table-column
+                    label="版本"
+                    prop="version">
+            </el-table-column>
+            </el-table-column>
+            <el-table-column
+                    label="位置"
+                    prop="siteName">
+            </el-table-column>
+            <el-table-column
+                    label="操作"
+                    width="100">
+                <template slot-scope="scope">
+                    <el-button @click="handleClick(scope.row)" type="text" size="small">查看端口</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <el-table
+                v-if="!show"
+                :data="tableData2"
+                style="width: 100%">
+            <el-table-column
+                    label="端口地址"
+                    prop="displayLabel">
+            </el-table-column>
+            <el-table-column
+                    label="告警状态"
+                    prop="alarmStatus">
+            </el-table-column>
+            <el-table-column
+                    label="节点名称"
+                    prop="nodeLabel">
+            </el-table-column>
+        </el-table>
+    </div>
+
+
+</div>
+</body>
+</html>
+<style>
+    body{margin: 0;height: 100%}
+    html,#app{height: 100%}
+    #app{height: calc(100% - 68px)}
+    .header{
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+    .main-content{
+        min-height: 100%;
+    }
+    .header .header-icon{
+        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+    .header .word{
+        color: rgba(255,255,255,0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+</style>
+<script>
+    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                tableData: [],
+                tableData2: [],
+                show:true,
+                loading:false,
+                renderColumn:[
+                    {label:'端口地址', prop:'displayLabel'},
+                    {label:'告警状态', prop:'alarmStatus'},
+                    {label:'节点名称', prop:'nodeLabel'},
+                ],
+            }
+        },
+        methods: {
+            async getList(){
+                let _this= this;
+                _this.loading=true;
+                axios.get('/oms1350/data/npr/nes')
+                .then(async function (response) {
+                    _this.tableData = response.data;
+                    _this.loading = false;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    _this.loading=false;
+                });
+            },
+            handleClick(row){
+                let _this= this;
+                _this.loading=true;
+                _this.show = false;
+                axios.get('/oms1350/data/npr/wdmPorts?neId='+row.id+'&involvedOnPhyConn=Boolean_false&involvedOnInternalCable=Boolean_false')
+                .then(async function (response) {
+                    let _data = response.data;
+                    let strs= new Array();
+                    let rtn = [];
+                    for (let i=0;i<_data.length;i++){
+                        strs=_data[i].guiLabel.split("-"); //字符分割
+                        let re = /^(L+(?=\d))|(C+(?=\d))/;//匹配L+数字或C+数字
+                        if(re.test(strs[(strs.length-1)])){
+                            rtn.push(_data[i])
+                        }
+                    }
+                    _this.tableData2 = rtn;
+                    _this.loading = false;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    _this.loading=false;
+                });
+            },
+            exportData2Csv() {
+                let header=[];
+                let headerLabel= [];
+                let tableData = this.tableData2;
+                let columns = this.renderColumn;
+                for (const col of columns) {
+                    header.push(col.prop);
+                    headerLabel.push(col.label);
+                }
+                let lines = [headerLabel.join(",")];
+                for (let i = 0; i <tableData.length; i++) {
+                    let row = tableData[i];
+                    let elements = [];
+                    for (const key of header) {
+                        if (row.hasOwnProperty(key)) {
+                            const element = row[key];
+                            elements.push(`"${element}"`);
+                        } else {
+                            elements.push("");
+                        }
+                    }
+                    lines.push(elements.join(","));
+                }
+                const text = lines.join("\n");
+                this.download2('单光口复位.csv', text);
+            },
+            download2(filename, text) {
+                var a = document.createElement('a');
+                var url = window.URL.createObjectURL(new Blob(["\ufeff"+text],
+                    { type: ("text/plain") + ";charset=" + ('utf-8') }));
+                a.href = url;
+                a.download = filename || 'file';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            },
+            goBack(){
+                this.show = true;
+            }
+        },
+        created(){
+            this.getList();
+        }
+    })
+
+
+
+
+
+
+
+
+</script>

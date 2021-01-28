@@ -28,7 +28,7 @@
             <span>点击文件上传文件</span>
             <el-table :data="fileList" border highlight-current-row @current-change="handleCurrentChange">
                 <el-table-column label="类别" prop="category" min-width="100"></el-table-column>
-                <el-table-column label="备份时间" prop="date" min-width="110"></el-table-column>
+                <el-table-column label="备份时间" prop="date" min-width="110" :formatter=formatTime></el-table-column>
                 <el-table-column label="备份文件名" prop="file_name" min-width="120"></el-table-column>
                 <el-table-column label="域" prop="domain" min-width="100"></el-table-column>
                 <el-table-column label="上传的FTP服务器" prop="host" min-width="100"></el-table-column>
@@ -51,7 +51,7 @@
                     <el-input disabled v-model="currentFile.category" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="备份时间" :label-width="formLabelWidth">
-                    <el-input disabled v-model="currentFile.date" autocomplete="off"></el-input>
+                    <el-input disabled v-model="currentFile.bjDate" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="FTP主机" :label-width="formLabelWidth">
                     <el-input v-model="form.host" autocomplete="off"></el-input>
@@ -172,7 +172,8 @@ var app = new Vue({
             this.dialogFormVisible = true;
             this.loading = false;
             this.form.remote_name = current.file_name;
-            this.currentFile = current
+            this.currentFile = current;
+            this.currentFile.bjDate = this.formatTime(1, 2, this.currentFile.date, 3);
         },
         onUpload() {
             let url = `${bkBaseUrl}/file_upload`;
@@ -197,6 +198,12 @@ var app = new Vue({
             }).then(() => {
                 this.loading = false;
             })
+        },
+        formatTime(a, b, input, c) {
+            let timestamp = (new Date(input)).getTime();
+            timestamp += 8*3600*1000;
+            let timeObj = new Date(timestamp);
+            return timeObj.toLocaleDateString() + ' ' + timeObj.toLocaleTimeString();
         }
     },
     created() {

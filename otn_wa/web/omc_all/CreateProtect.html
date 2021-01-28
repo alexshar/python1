@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            padding: 0px;
+            margin: 0px;
+        }
+        .route{
+            position: relative;
+        }
+        select{
+            display: block;
+        }
+        .control-label{
+            display: inline-block;
+            width: 150px;
+        }
+        .w-selelct{
+            display: inline-block;
+           width: 200px !important;
+        }
+        .tab2{
+            float: left;
+            margin-left: 20px;
+        }
+        #CreateDlgdiv div {
+            margin-top: 10px;
+        }
+        #CreateDlg{
+            margin-left: 80px;
+        }
+        .PGBtnStyle{
+            background-color: #124191;
+            border: 1px solid #124191;
+            border-radius: 5%;
+            color: white;
+            margin-top: 4px;
+            padding: 5px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/ui-dialog.css" />
+    <script type="text/javascript" src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/dialog-plus.js"></script>
+</head>
+<body>
+<div id="CreateDlg">
+    <from id="CreateDlgdiv">
+        <input style="display: none" id="ids" value=""/>
+        <div class="">
+            <label class="control-label" for="neName">名称:</label>
+            <input type="text" class="form-control userlabel"  style="width: 200px">
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">保护类型:</label>
+            <select name="" id="" class="type w-selelct">
+                <option value="SNCP/I">SNCP/I</option>
+                <option value="SNCP/N">SNCP/N</option>
+                <option value="SNCP/S">SNCP/S</option>
+            </select>
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">返回:</label>
+            <select name="" id="" class="back w-selelct">
+                <option value="返回">返回</option>
+                <option value="非返回">非返回</option>
+            </select>
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">恢复等待时间WTR:</label>
+            <select name="" id="" class="time w-selelct">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+
+            </select>
+            <label class="control-label" for="neName">分钟</label>
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">保护使能:</label>
+            <select name="" id="" class="SNpro w-selelct">
+                <option value="使能" selected="selected">使能</option>
+                <option value="非使能">非使能</option>
+            </select>
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">额外业务标识:</label>
+            <select name="" id="" class="EWYW w-selelct">
+                <option value="是" selected="selected">是</option>
+                <option value="否">否</option>
+            </select>
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">源节点:</label>
+            <select name="" id="" class="Sourcenode w-selelct">
+            </select>
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">源端口:</label>
+            <select name="" id="" class="SourcePort w-selelct"></select>
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">宿节点:</label>
+            <select name="" id="" class="SinkNode w-selelct"></select>
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">宿端口:</label>
+            <select name="" id="" class="SinkPort w-selelct" ></select>
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">主用路由</label>
+            <select name="" id="" class="mainrouts w-selelct" ></select>
+        </div>
+        <div class="">
+            <label class="control-label" for="neName">备用路由:</label>
+            <select name="" id="" class="Sparerouts w-selelct"></select>
+        </div>
+
+    </from>
+    <div style="text-align: center;margin-top: 20px">
+        <button class="btnConfrim btn" >应用</button>
+    </div>
+</div>
+
+
+<div id="ConfrimDlg">
+    <div>
+        <h1 style="margin-top: 0px">是否应用?</h1>
+    </div>
+
+    <div style="
+    text-align: center;
+   ">
+        <button class="sure" style="width: 50px">是</button>
+        <button class="no" style="width: 50px">否</button>
+    </div>
+
+</div>
+
+<div id="operation">
+    <h3><span class="contion">操作执行中.....</span></h3>
+</div>
+
+<div id="DLGsuccess">
+    <h3><span >成功</span></h3>
+</div>
+
+<div class="PmList redundancyProtect" style="padding-left: 20px">
+    <div style="margin-top: 10px">
+        <button class="createPro PGBtnStyle">新建</button>
+        <button class="Refresh PGBtnStyle">刷新</button>
+      <!--  <button class="Switching PGBtnStyle">倒换</button>-->
+        <button class="working PGBtnStyle">保护锁定</button>
+        <button class="release PGBtnStyle" >释放</button>
+        <button class="PGBtnStyle qzSwitching">强制倒换</button>
+        <button class="Switching PGBtnStyle">人工倒换</button>
+        <button class="delect PGBtnStyle">删除</button>
+    </div>
+
+    <table style="margin-top: 10px" >
+        <thead>
+        <th><input type="checkbox"  class="thcheck" style='position: inherit;opacity: 1;left: 0px' onclick="" ></th>
+        <th>名称</th>
+        <th>类型</th>
+        <th>返回方式</th>
+        <th>恢复等待时间</th>
+        <th>源节点</th>
+        <th>源端口</th>
+        <th>宿节点</th>
+        <th>宿端口</th>
+        <th>保护使能</th>
+        <th>工作状态</th>
+        <th>倒换状态</th>
+       <!-- <th>是否锁定</th>-->
+        <th>工作路由</th>
+        <th>额外业务标识</th>
+        <th>配置业务</th>
+        <th>操作</th>
+        </thead>
+        <tbody class="ProList">
+        <tr >
+            <td><input type="checkbox"></td>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>4</td>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>4</td>
+            <td><button>修改</button></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="route" style="margin-left: 20px;margin-top: 20px;">
+    <div >
+        <table >
+            <thead>
+            <th  style="width: 100px">名称</th>
+            <th  style="width: 100px">主路由</th>
+            <th  style="width: 100px">备用路由</th>
+            <th  style="width: 100px">业务工作路由</th>
+            <th  style="width: 100px">配置业务</th>
+            </thead>
+            <tbody class="routeList">
+            </tbody>
+        </table>
+    </div>
+  <!--<div class="tab2">
+      <table >
+          <thead>
+          <th>备用路由</th>
+          </thead>
+          <tbody class="routesList">
+
+          </tbody>
+      </table>
+  </div>-->
+
+</div>
+<div id="titleNE">
+
+</div>
+</body>
+<!--<script src="jquery.js"></script>
+<script src="protectionManagement.js"></script>-->
+<script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/protectionManagement.js"></script>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>业务串接</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/vue.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/element.js"></script>
+    <script src="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/js/axios.min.js"></script>
+    <link rel="stylesheet" href="https://135.251.96.98:8443/oms1350/web/eqm/omc_all/css/index.css">
+
+<!--    <script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+<!--    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
+<!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+<!--    <script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
+</head>
+<body>
+<div id="app" class="Cutover-task-management">
+    <div class="header">
+        <span class="header-icon"></span>
+        <span class="word">业务串接</span>
+    </div>
+    <div class="main-content" v-loading="loading"
+         :element-loading-text="loadingWord"
+         element-loading-spinner="el-icon-loading"
+         element-loading-background="rgba(0, 0, 0, 0.8)">
+    <div style="padding-top: 20px;padding-left: 20px">
+        <template>
+            <el-radio v-model="radio" label= '1'>业务串接</el-radio>
+            <el-radio v-model="radio" label= '2'>业务拆分</el-radio>
+        </template>
+        <el-button type="primary" @click="submit">提交</el-button>
+    </div>
+
+    <el-table
+            :data="tableData"
+            @selection-change="handleSelectionChange"
+            style="width: 100%">
+        <el-table-column
+                type="selection"
+                width="55">
+        </el-table-column>
+        <el-table-column
+                label="业务"
+                prop="guiLabel">
+        </el-table-column>
+        </el-table-column>
+        <el-table-column
+                label="源节点"
+                prop="a1NodeName">
+        </el-table-column>
+        <el-table-column
+                label="源端口"
+                prop="a1PortName">
+        </el-table-column>
+        <el-table-column
+                label="宿节点"
+                prop="z1NodeName">
+        </el-table-column>
+        </el-table-column>
+        <el-table-column
+                label="宿端口"
+                prop="z1PortName">
+        </el-table-column>
+        <el-table-column
+                label="速率"
+                prop="effectiveRate">
+        </el-table-column>
+    </el-table>
+    </div>
+</div>
+</body>
+</html>
+<style>
+    body{margin: 0;height: 100%}
+    html,#app{height: 100%}
+    #app{height: calc(100% - 68px)}
+    .header{
+        height: 48px;
+        background-color: #124191;
+        display: flex;
+    }
+    .main-content{
+        min-height: 100%;
+    }
+    .header .header-icon{
+        background: url("https://135.251.96.98:8443/oms1350/otnWeb/icons/common/NOKIA_Logo_for_Banner.png");
+        height: 14px;
+        width: 85px;
+        display: block;
+        margin-left: 24px;
+        margin-top: 17px;
+    }
+    .header .word{
+        color: rgba(255,255,255,0.75);
+        margin-left: 28px;
+        line-height: 48px;
+    }
+    .flex-1{
+        display: flex;
+        flex: 1;
+        margin-left: 10px;
+        padding-top: 20px;
+    }
+    .row-1{
+        margin-right: 10px;
+    }
+    .row-1 select{
+        display: block;
+    }
+    .table-div{
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #EBEEF5;
+        border-bottom: 0;
+        margin: 10px;
+    }
+    .table-div .table-row{
+        display: flex;
+        flex-direction: row;
+    }
+    .table-div .table-row div{
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        height: 30px;
+        padding: 5px 0;
+        border: 1px solid #EBEEF5;
+        border-right:0 ;
+        border-top:0 ;
+    }
+    .table-div .table-row .input{
+        padding: 5px!important;
+        width: 90%;
+        /*border: 1px solid #DCDFE6;*/
+    }
+
+    .Cutover-task-management .full-select .el-select{
+        display: block;
+    }
+</style>
+<script>
+    axios.defaults.baseURL = 'https://135.251.96.98:8443';
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                radio:'1',
+                tableData:[],
+                loading:false,
+                multipleSelection:[],
+                loadingWord:'加载中',
+            }
+        },
+        methods: {
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+            submit(){
+                let a = this.multipleSelection[0];
+                let b = this.multipleSelection[1];
+                if(this.radio ==1){
+                    if(this.multipleSelection.length!=2){
+                        this.$message({
+                            message: '请选择两条数据进行业务串接',
+                            type: 'warning'
+                        });
+                    }else {
+                        if(a.effectiveRate!=b.effectiveRate){
+                            this.$message({
+                                message: '速率不同无法进行业务串接',
+                                type: 'warning'
+                            });
+                        }else {
+                            if((a.a1NodeName==b.a1NodeName||a.a1NodeName==b.z1NodeName)||(a.z1NodeName==b.a1NodeName||a.z1NodeName==b.z1NodeName)){
+                                this.loading=true;
+                                this.loadingWord ='业务串接中';
+                                setTimeout(()=>{
+                                    this.getPaths();
+                                },480000)//5分钟后刷新
+                            }else{
+                                this.$message({
+                                    message: '无法进行业务串接',
+                                    type: 'warning'
+                                });
+                            }
+                        }
+                    }
+
+                }else{
+                    if(this.multipleSelection.length!=1){
+                        this.$message({
+                            message: '请选择一条数据进行业务拆分',
+                            type: 'warning'
+                        });
+                    }else {
+                        this.loading=true;
+                        this.loadingWord ='业务拆分中';
+                        setTimeout(()=>{
+                            this.getPaths();
+                        },480000)//5分钟后刷新
+                    }
+                }
+            },
+            getPaths(){
+                this.loadingWord ='加载中';
+                this.loading=true;
+                axios.get('/oms1350/data/otn/connections/paths')
+                .then( (response)=> {
+                    this.tableData = response.data.items;
+                    this.loading=false;
+                })
+                .catch(function (error) {
+                    this.loading=false;
+                    console.log(error);
+                });
+            },
+        },
+        created(){
+            this.getPaths();
+        }
+    })
+
+</script>
