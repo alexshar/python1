@@ -1,3 +1,30 @@
+from math import sqrt
+import random
+
+def gen():
+    # this is a configurable parameter, density
+    region_num = random.randint(5, 20)
+    regions = []
+    for i in range(region_num):
+        region_begin = random.randint(1, 65534)
+        region_length = random.randint(30,4000)
+        region_end = region_begin + region_length
+        if region_end > 65535: region_end = 65535
+        regions.append((region_begin, region_end))
+
+    s = []
+    # 以1为中心把均匀分布进行变形
+    for region in regions:
+        a = int(1+sqrt(region[0]-1))
+        b = int(1+sqrt(region[1]-1))
+        if a == b:
+            s.append(str(a))
+        else:
+            s.append(str(a)+':'+str(b))
+    result = ','.join(s)
+    return result
+
+
 def pre_order(ports_string):
     '''把输入的端口范围拆成离散的单个端口，以list输出'''
     if not ports_string: return None
@@ -46,12 +73,18 @@ def ports_aggragate(ports):
             result.append(str(begin))
         else:
             result.append(str(begin)+':'+str(end))
+    result = ','.join(result)
     return result
 
 
 if __name__ == '__main__':
-    ports = pre_order('1, 3, 5, 7, 5:9')
+    
+    ports = pre_order('1,3,5,7,5:9')
     ports_string = ports_aggragate(ports)
     pass
-
-    
+    ports = gen()
+    print(ports)
+    ports = pre_order(ports)
+    ports_string = ports_aggragate(ports)
+    print(ports_string)
+    pass
